@@ -41,12 +41,15 @@
         .video-section {
             display: flex;
             flex-direction: column;
+            gap: 15px;
         }
         .video-feed {
             width: 100%;
             border-radius: 10px;
             border: 3px solid #667eea;
             background: #000;
+            aspect-ratio: 4/3;
+            object-fit: cover;
         }
         .control-section {
             display: flex;
@@ -130,14 +133,31 @@
             color: #666;
             line-height: 1.6;
         }
+        .prediction-panel {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+        .pred-title {
+            font-size: 0.85em;
+            text-transform: uppercase;
+            color: #64748b;
+            font-weight: bold;
+        }
+        .pred-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #2563eb;
+            margin: 5px 0;
+        }
         .status {
             padding: 15px;
             border-radius: 8px;
             text-align: center;
             font-weight: bold;
             margin-top: 15px;
-        }
-        .status.active {
             background: #d4edda;
             color: #155724;
             border: 2px solid #28a745;
@@ -159,6 +179,12 @@
         <div class="content">
             <div class="video-section">
                 <img src="/video_feed" class="video-feed" alt="Live camera feed">
+                
+                <div class="prediction-panel">
+                    <div class="pred-title">Detected Sign</div>
+                    <div class="pred-value" id="predText">NO HAND DETECTED</div>
+                    <div style="font-size: 0.9em; color: #64748b;" id="confText">Confidence: 0%</div>
+                </div>
             </div>
             
             <div class="control-section">
@@ -185,7 +211,7 @@
                     4. Watch real-time predictions below!</p>
                 </div>
                 
-                <div class="status active">
+                <div class="status">
                     ✓ System Ready - 39 Models Loaded
                 </div>
             </div>
@@ -209,11 +235,15 @@
                     
                     fetch('/api/group')
                         .then(r => r.json())
-                        .then(data => select.value = data.current_group);
+                        .then(data => {
+                            if (data.current_group) {
+                                select.value = data.current_group;
+                            }
+                        });
                 });
         });
         
-        // Group change
+        // Group change handler
         document.getElementById('group-select').addEventListener('change', (e) => {
             if (e.target.value) {
                 fetch('/api/group', {
@@ -224,7 +254,7 @@
             }
         });
         
-        // Search
+        // Class Search handler
         function searchClass() {
             const query = document.getElementById('search-input').value.trim();
             if (!query) return;
@@ -238,17 +268,43 @@
             .then(data => {
                 if (data.found) {
                     document.getElementById('group-select').value = data.group;
-                    fetch('/api/group', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({group_id: data.group})
-                    });
                     alert(`✓ Found! Switched to ${data.group} - ${data.class}`);
                 } else {
                     alert(`❌ Class "${query}" not found`);
                 }
             });
         }
+
+        // Live prediction polling (polls state every 150ms)
+        function pollState() {
+            fetch('/api/state')
+                .then(r => r.json())
+                .then(data => {
+                    const predText = document.getElementById('predText');
+                    const confText = document.getElementById('confText');
+                    
+                    if (data.class_name) {
+                        predText.innerText = data.class_name;
+                        confText.innerText = `Confidence: ${data.confidence}%`;
+                    } else if (data.hands_detected) {
+                        predText.innerText = "Analyzing...";
+                        confText.innerText = "Confidence: --";
+                    } else {
+                        predText.innerText = "NO HAND DETECTED";
+                        confText.innerText = "Confidence: 0%";
+                    }
+
+                    if (data.group_id) {
+                        const select = document.getElementById('group-select');
+                        if (select.value !== data.group_id) {
+                            select.value = data.group_id;
+                        }
+                    }
+                })
+                .catch(() => {});
+        }
+
+        setInterval(pollState, 150);
     </script>
 </body>
 </html>
