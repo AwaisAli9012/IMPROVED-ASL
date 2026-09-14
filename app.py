@@ -22,7 +22,13 @@ from google import genai
 
 from Config import GROUPS, MODELS_DIR, APP_CONFIG
 
-GEMINI_API_KEY = "AQ.Ab8RN6I5ugDUkIzQm8JpoIRZUVYWmY5vEZq1Q0S6eFBFLMBGqg"
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 app = Flask(__name__)
 CORS(app)
