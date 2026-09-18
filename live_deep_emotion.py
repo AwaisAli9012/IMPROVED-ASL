@@ -16,7 +16,7 @@ from pathlib import Path
 from face_aligner import FaceAligner
 from feature_extractor import VisionFeatureExtractor
 
-# 1. Define MLP Architecture matching training
+# 1. Define MLP Architecture matching training (RobustEmotionClassifier layout)
 class EmotionClassifier(nn.Module):
     def __init__(self, input_dim=1024, num_classes=4):
         super().__init__()
@@ -24,10 +24,11 @@ class EmotionClassifier(nn.Module):
             nn.Linear(input_dim, 256),
             nn.BatchNorm1d(256),
             nn.ReLU(),
-            nn.Dropout(0.3),
+            nn.Dropout(0.4),
             nn.Linear(256, 64),
             nn.BatchNorm1d(64),
             nn.ReLU(),
+            nn.Dropout(0.2),
             nn.Linear(64, num_classes)
         )
 
