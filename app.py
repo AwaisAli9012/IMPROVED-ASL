@@ -11,6 +11,13 @@ from queue import Queue
 from collections import deque
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
+# Replace:
+# import mediapipe as mp
+
+# With explicit solution sub-module imports:
+import mediapipe as mp
+import mediapipe.python.solutions.hands as mp_hands
+import mediapipe.python.solutions.drawing_utils as mp_drawing
 
 from flask import Flask, render_template, Response, request, jsonify
 from flask_cors import CORS
@@ -53,19 +60,18 @@ for group_id in GROUPS:
 print(f"✓ Loaded {len(models)} model groups")
 
 # Initialize MediaPipe (Optimized for speed)
+# Replace the MediaPipe initialization block with:
 try:
-    mp_hands = mp.solutions.hands
-    mp_drawing = mp.solutions.drawing_utils
     hands = mp_hands.Hands(
         static_image_mode=False,
-        max_num_hands=2,  # Track up to 2 hands
-        model_complexity=0,  # Lowest complexity for zero latency
-        min_detection_confidence=0.5,
-        min_tracking_confidence=0.5
+        max_num_hands=2,
+        model_complexity=1,           # Set to 1 for reliable landmark tracking
+        min_detection_confidence=0.3, # Lowered slightly for low-light stability
+        min_tracking_confidence=0.3
     )
-    print("✓ MediaPipe initialized (Optimized mode)")
+    print("✓ MediaPipe initialized successfully")
 except Exception as e:
-    print(f"❌ MediaPipe error: {e}")
+    print(f"❌ MediaPipe initialization failed: {e}")
     hands = None
 
 sign_buffer = []  

@@ -1,11 +1,34 @@
-.env
+# Security & Credentials
+service_account.json
+*.json
+
+# Virtual Environment & Caches
+.venv/
 __pycache__/
 *.pyc
-*.pyo
-*.egg-info/
-dist/
-build/
-.DS_Store
-*.swp
-*.swo
-improved_asl/
+
+# Heavy Models & Weights
+*.pth
+*.pkl
+*.task
+*.onnx
+Models/
+models/
+
+# Dataset Files & Arrays
+Dataset/
+data/
+*.npy
+*.npz
+keypoints_extracted/
+emotion_keypoints_extracted/
+
+# Log files
+*.log
+# Environment Variables & Secrets
+.env
+*.env
+
+# Additional Keras/Model Directories
+Emotion_Models/
+*.keras

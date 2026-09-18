@@ -1,144 +1,91 @@
 """
-IMPROVED ASL - Real-Time Detection (Fullscreen + Side Panel)
-=============================================================
+IMPROVED ASL - Scale-Invariant Live Inference
+============================================
 """
 
 import cv2
-import numpy as np
 import pickle
+import numpy as np
 import mediapipe as mp
-from pathlib import Path
-from Config import GROUPS, MODELS_DIR
+from collections import deque
 
-print("=" * 70)
-print("IMPROVED ASL - REAL-TIME DETECTION")
-print("=" * 70)
+from emotion_config import EMOTIONS, EMOTION_MODELS_DIR
 
-# Load ensemble models
-models = {}
-for group_id in GROUPS:
-    try:
-        with open(MODELS_DIR / f"{group_id}_rf.pkl", 'rb') as f:
-            models[group_id] = {
-                'rf': pickle.load(f),
-                'xgb': pickle.load(open(MODELS_DIR / f"{group_id}_xgb.pkl", 'rb')),
-                'meta': pickle.load(open(MODELS_DIR / f"{group_id}_meta.pkl", 'rb'))
-            }
-    except Exception:
-        pass
+model_path = EMOTION_MODELS_DIR / "emotion_temporal_xgb.pkl"
+with open(model_path, "rb") as f:
+    emotion_model = pickle.load(f)
 
-mp_hands = mp.solutions.hands
-mp_drawing = mp.solutions.drawing_utils
-
-def extract_keypoints(results):
-    keypoints = []
-    if results.multi_hand_landmarks:
-        for hand_landmarks in results.multi_hand_landmarks:
-            for lm in hand_landmarks.landmark:
-                keypoints.extend([lm.x, lm.y, lm.z])
-    while len(keypoints) < 126:
-        keypoints.append(0.0)
-    return np.array(keypoints[:126], dtype=np.float32)
-
-def predict_ensemble(keypoints, group_id):
-    if group_id not in models or keypoints is None:
-        return None, None
-    try:
-        x = keypoints.reshape(1, -1)
-        rf_probs = models[group_id]['rf'].predict_proba(x)[0]
-        xgb_probs = models[group_id]['xgb'].predict_proba(x)[0]
-        meta_x = np.hstack([rf_probs, xgb_probs]).reshape(1, -1)
-        final_probs = models[group_id]['meta'].predict_proba(meta_x)[0]
-        class_idx = int(np.argmax(final_probs))
-        confidence = float(np.max(final_probs))
-        return class_idx, confidence
-    except Exception:
-        return None, None
-
-def get_class_name(group_id, class_idx):
-    group_classes = GROUPS[group_id]['classes']
-    if class_idx < len(group_classes):
-        return group_classes[class_idx]
-    return "Unknown"
-
-CURRENT_GROUP = 'ALPHA1'
-cap = cv2.VideoCapture(0)
-
-cv2.namedWindow("IMPROVED ASL - Detection", cv2.WND_PROP_FULLSCREEN)
-cv2.setWindowProperty("IMPROVED ASL - Detection", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
-
-with mp_hands.Hands(
-    static_image_mode=False,
-    max_num_hands=2,
+mp_face_mesh = mp.solutions.face_mesh
+face_mesh = mp_face_mesh.FaceMesh(
+    max_num_faces=1,
+    refine_landmarks=True,
     min_detection_confidence=0.5,
     min_tracking_confidence=0.5
-) as hands:
+)
 
-    while cap.isOpened():
-        ret, frame = cap.read()
-        if not ret:
-            break
-
-        frame = cv2.flip(frame, 1)
-        h, w = frame.shape[:2]
+def extract_live_scale_invariant(landmarks):
+    coords = np.array([[lm.x, lm.y] for lm in landmarks.landmark[:468]], dtype=np.float32)
+    
+    scale = np.linalg.norm(coords[33] - coords[263])
+    if scale == 0:
+        scale = 1e-6
         
-        # Process MediaPipe detection
-        image_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        results = hands.process(image_rgb)
+    norm_coords = (coords - coords[1]) / scale
+    
+    mouth_h = np.linalg.norm(norm_coords[13] - norm_coords[14])
+    mouth_w = np.linalg.norm(norm_coords[61] - norm_coords[291])
+    mouth_ratio = mouth_h / (mouth_w + 1e-6)
+    
+    l_brow = np.linalg.norm(norm_coords[70] - norm_coords[1])
+    r_brow = np.linalg.norm(norm_coords[300] - norm_coords[1])
+    
+    l_corner_y = norm_coords[61][1]
+    r_corner_y = norm_coords[291][1]
+    
+    return np.hstack([
+        norm_coords.flatten(), 
+        [mouth_h, mouth_w, mouth_ratio, l_brow, r_brow, l_corner_y, r_corner_y]
+    ])
 
-        hand_detected = bool(results.multi_hand_landmarks)
-        if hand_detected:
-            for hand_landmarks in results.multi_hand_landmarks:
-                mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
-            keypoints = extract_keypoints(results)
-            class_idx, conf = predict_ensemble(keypoints, CURRENT_GROUP)
-            class_name = get_class_name(CURRENT_GROUP, class_idx) if (class_idx is not None and conf > 0.5) else None
-        else:
-            class_name, conf = None, 0.0
+cap = cv2.VideoCapture(0)
+sequence_buffer = deque(maxlen=5)
 
-        # Create canvas with side panel overlay
-        sidebar_w = 320
-        canvas = np.zeros((h, w + sidebar_w, 3), dtype=np.uint8)
-        canvas[:, :w] = frame
-        
-        # Sidebar background
-        canvas[:, w:] = (30, 30, 30)
-        cv2.line(canvas, (w, 0), (w, h), (70, 70, 70), 2)
+while cap.isOpened():
+    ret, frame = cap.read()
+    if not ret:
+        continue
 
-        # Draw main camera HUD
-        cv2.putText(canvas, f"GROUP: {CURRENT_GROUP}", (30, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.1, (0, 255, 0), 2)
-        if not hand_detected:
-            cv2.putText(canvas, "NO HAND DETECTED", (30, 100), cv2.FONT_HERSHEY_SIMPLEX, 1.1, (0, 0, 255), 2)
-        elif class_name:
-            cv2.putText(canvas, f"DETECTED: {class_name} ({conf:.1%})", (30, 100), cv2.FONT_HERSHEY_SIMPLEX, 1.1, (0, 255, 0), 2)
+    frame = cv2.flip(frame, 1)
+    rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    results = face_mesh.process(rgb_frame)
 
-        # Draw Side Panel Controls & Signs
-        cv2.putText(canvas, "AVAILABLE SIGNS", (w + 20, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
-        cv2.line(canvas, (w + 20, 65), (w + sidebar_w - 20, 65), (100, 100, 100), 1)
+    current_emotion = "Waiting..."
+    confidence = 0.0
 
-        classes = GROUPS[CURRENT_GROUP]['classes']
-        for i, sign_label in enumerate(classes):
-            y_pos = 110 + (i * 45)
-            is_active = (class_name == sign_label)
-            color = (0, 255, 0) if is_active else (200, 200, 200)
-            prefix = "► " if is_active else "  "
-            cv2.putText(canvas, f"{prefix}{sign_label}", (w + 30, y_pos), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2 if is_active else 1)
+    if results.multi_face_landmarks:
+        face_landmarks = results.multi_face_landmarks[0]
+        features = extract_live_scale_invariant(face_landmarks)
+        sequence_buffer.append(features)
 
-        # Draw Hotkey Instructions at bottom
-        cv2.putText(canvas, "HOTKEYS:", (w + 20, h - 90), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 215, 255), 1)
-        cv2.putText(canvas, "1-6: Alphabets (ALPHA1-6)", (w + 20, h - 65), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (180, 180, 180), 1)
-        cv2.putText(canvas, "a-g: Signs (SIGN1-7)", (w + 20, h - 45), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (180, 180, 180), 1)
-        cv2.putText(canvas, "q: Quit", (w + 20, h - 25), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (180, 180, 180), 1)
+        if len(sequence_buffer) == 5:
+            input_seq = np.concatenate(list(sequence_buffer)).reshape(1, -1)
+            probs = emotion_model.predict_proba(input_seq)[0]
+            
+            pred_idx = np.argmax(probs)
+            current_emotion = EMOTIONS[pred_idx].upper()
+            confidence = float(probs[pred_idx]) * 100
 
-        cv2.imshow("IMPROVED ASL - Detection", canvas)
-        
-        key = cv2.waitKey(1) & 0xFF
-        if key == ord('q'):
-            break
-        elif chr(key) in '123456':
-            CURRENT_GROUP = f'ALPHA{key - ord("0")}'
-        elif chr(key) in 'abcdefg':
-            CURRENT_GROUP = f'SIGN{ord(chr(key)) - ord("a") + 1}'
+            print(f"H: {probs[0]:.2f} | N: {probs[1]:.2f} | S: {probs[2]:.2f} | A: {probs[3]:.2f} -> {current_emotion}")
+
+    cv2.putText(frame, f"Emotion: {current_emotion}", (20, 50), 
+                cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 255, 0), 2)
+    if confidence > 0:
+        cv2.putText(frame, f"Confidence: {confidence:.1f}%", (20, 90), 
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+
+    cv2.imshow("Emotion Detector Live Test", frame)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
 
 cap.release()
 cv2.destroyAllWindows()
