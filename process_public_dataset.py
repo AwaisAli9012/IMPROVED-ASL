@@ -25,7 +25,7 @@ TARGET_CLASSES = {
 }
 
 # Cap at 300 aligned samples per class for fast processing & ideal balance
-MAX_SAMPLES_PER_CLASS = 300  
+MAX_SAMPLES_PER_CLASS = 10000
 
 X_public, y_public = [], []
 

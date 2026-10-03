@@ -2,7 +2,7 @@
 IMPROVED ASL - Balance Emotion Dataset (Vectorized & 3D Jittered)
 =============================================================================
 Balanced via vectorized 3D rotation augmentation and safe target scaling.
-Updated for 1409-dimensional vectors (1404 coords + 5 engineered ratios).
+Updated to output directly to emotion_keypoints.npy for seamless training.
 """
 
 import numpy as np
@@ -35,50 +35,53 @@ target_samples = max(class_counts)
 print(f"\n🎯 Target samples per class: {target_samples}")
 
 
-def augment_landmarks_batch(kp_flat_batch):
+def standardize_and_augment(kp_flat_batch, do_augment=True):
     """
-    Vectorized geometry augmentation applying subtle 3D rotational jitter.
-    Splits the 1409-dim vector into 1404 coordinates + 5 ratios, modifies 3D 
-    coordinates, and recalculates key facial ratios dynamically.
+    Standardizes any input landmark batch to strictly 1409 dimensions 
+    (1404 raw coords + 5 engineered geometric ratios), and optionally 
+    applies a vectorized 3D rotational jitter augmentation.
     """
     N = len(kp_flat_batch)
     
-    # Split coordinates (0:1404) and ratios (1404:1409)
+    # Always slice strictly the first 1404 coordinates to clear any shape drift
     coords_flat = kp_flat_batch[:, :1404]
-    
-    # Reshape coordinates to (N, 468, 3)
     kp_3d = coords_flat.reshape(N, 468, 3).copy()
 
-    # Small angular jitter in radians (~ +/- 3 degrees)
-    angles = np.random.uniform(-0.05, 0.05, size=(N, 3))
+    if do_augment:
+        # Small angular jitter in radians (~ +/- 3 degrees)
+        angles = np.random.uniform(-0.05, 0.05, size=(N, 3))
 
-    # Apply 3D rotation matrix per batch element
-    for i in range(N):
-        ax, ay, az = angles[i]
-
-        # Rotation matrices
-        Rx = np.array([[1, 0, 0], [0, np.cos(ax), -np.sin(ax)], [0, np.sin(ax), np.cos(ax)]])
-        Ry = np.array([[np.cos(ay), 0, np.sin(ay)], [0, 1, 0], [-np.sin(ay), 0, np.cos(ay)]])
-        Rz = np.array([[np.cos(az), -np.sin(az), 0], [np.sin(az), np.cos(az), 0], [0, 0, 1]])
-
-        R = Rz @ Ry @ Rx
-        kp_3d[i] = kp_3d[i] @ R.T
+        # Apply 3D rotation matrix per batch element
+        for i in range(N):
+            ax, ay, az = angles[i]
+            Rx = np.array([[1, 0, 0], [0, np.cos(ax), -np.sin(ax)], [0, np.sin(ax), np.cos(ax)]])
+            Ry = np.array([[np.cos(ay), 0, np.sin(ay)], [0, 1, 0], [-np.sin(ay), 0, np.cos(ay)]])
+            Rz = np.array([[np.cos(az), -np.sin(az), 0], [np.sin(az), np.cos(az), 0], [0, 0, 1]])
+            R = Rz @ Ry @ Rx
+            kp_3d[i] = kp_3d[i] @ R.T
 
     augmented_coords = kp_3d.reshape(N, 1404)
 
-    # Recalculate expression ratios for augmented 68-point landmarks
-    augmented_ratios = np.zeros((N, 5), dtype=np.float32)
-    for i in range(N):
-        pts = kp_3d[i][:68]
-        mouth_width = np.linalg.norm(pts[48] - pts[54])
-        mouth_height = np.linalg.norm(pts[51] - pts[57])
-        eyebrow_dist = np.linalg.norm(pts[21] - pts[22])
-        left_brow_eye = np.linalg.norm(pts[19] - pts[37])
-        right_brow_eye = np.linalg.norm(pts[24] - pts[44])
+    # Replicate the exact 5 extra metrics used in training
+    pts = kp_3d[:, :68, :]
+    lip_top_bottom = np.linalg.norm(pts[:, 51, :] - pts[:, 57, :], axis=-1, keepdims=True)
+    lip_left_right = np.linalg.norm(pts[:, 48, :] - pts[:, 54, :], axis=-1, keepdims=True)
+    brow_inner = np.linalg.norm(pts[:, 21, :] - pts[:, 22, :], axis=-1, keepdims=True)
+    left_brow_height = np.linalg.norm(pts[:, 19, :] - pts[:, 37, :], axis=-1, keepdims=True)
+    right_brow_height = np.linalg.norm(pts[:, 24, :] - pts[:, 44, :], axis=-1, keepdims=True)
+    
+    mouth_center_y = (pts[:, 51, 1] + pts[:, 57, 1]) / 2.0
+    left_corner_y = pts[:, 48, 1] - mouth_center_y
+    right_corner_y = pts[:, 54, 1] - mouth_center_y
+    lip_corners_y = np.stack([left_corner_y, right_corner_y], axis=-1)
 
-        augmented_ratios[i] = [mouth_width, mouth_height, eyebrow_dist, left_brow_eye, right_brow_eye]
-
-    return np.hstack([augmented_coords, augmented_ratios])
+    extra_metrics = np.hstack([
+        lip_top_bottom, lip_left_right, brow_inner, 
+        left_brow_height, right_brow_height, lip_corners_y
+    ])
+    
+    # Strictly concatenate to 1404 + 5 = 1409 dimensions
+    return np.hstack([augmented_coords, extra_metrics])
 
 
 balanced_keypoints = []
@@ -100,19 +103,20 @@ for emotion_id in range(len(EMOTIONS)):
 
     if count < target_samples:
         diff = target_samples - count
-        
-        # Sample base indices randomly for augmentation
         sampled_indices = np.random.choice(count, diff, replace=True)
         base_samples = emotion_kp[sampled_indices]
         
-        # Fast vectorized batch augmentation
-        augmented_samples = augment_landmarks_batch(base_samples)
-
-        emotion_kp = np.vstack([emotion_kp, augmented_samples])
+        # Generate augmented samples and standardize existing ones to match 1409 shape
+        augmented_samples = standardize_and_augment(base_samples, do_augment=True)
+        standardized_existing = standardize_and_augment(emotion_kp, do_augment=False)
+        
+        emotion_kp = np.vstack([standardized_existing, augmented_samples])
         print(f" (vectorized 3D augmented +{diff})")
     else:
         indices = np.random.choice(count, target_samples, replace=False)
         emotion_kp = emotion_kp[indices]
+        # Standardize clean select samples to enforce uniform 1409 shape
+        emotion_kp = standardize_and_augment(emotion_kp, do_augment=False)
         print(f" (exact match / clean select)")
 
     balanced_keypoints.append(emotion_kp)
@@ -125,8 +129,8 @@ print(f"\nAfter balancing:")
 print(f"  Total balanced samples: {len(balanced_keypoints)}")
 print(f"  Balanced Matrix Shape:  {balanced_keypoints.shape}")
 
-# Save output to dedicated target files
-np.save(EMOTION_KEYPOINTS_DIR / "emotion_keypoints_balanced.npy", balanced_keypoints)
-np.save(EMOTION_KEYPOINTS_DIR / "emotion_labels_balanced.npy", balanced_labels)
+# Save output directly to standard filenames for seamless trainer pick-up
+np.save(X_path, balanced_keypoints)
+np.save(y_path, balanced_labels)
 
-print(f"\n✓ Balanced dataset saved as emotion_keypoints_balanced.npy!")
+print(f"\n✓ Balanced dataset successfully overwritten to standard keypoint files!")

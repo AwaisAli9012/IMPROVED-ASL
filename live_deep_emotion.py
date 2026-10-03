@@ -16,7 +16,7 @@ from pathlib import Path
 from face_aligner import FaceAligner
 from feature_extractor import VisionFeatureExtractor
 
-# 1. Define MLP Architecture matching training (RobustEmotionClassifier layout)
+# 1. Define MLP Architecture matching training (RobustEmotionClassifier layout with BatchNorm)
 class EmotionClassifier(nn.Module):
     def __init__(self, input_dim=1024, num_classes=4):
         super().__init__()
@@ -35,23 +35,34 @@ class EmotionClassifier(nn.Module):
     def forward(self, x):
         return self.net(x)
 
-# 2. Load classes and model weights
-classes = np.load("models/classes.npy")
+# Corrected mapping sequence: Index 0 -> 'angry', Index 1 -> 'happy', Index 2 -> 'neutral', Index 3 -> 'sad'
+CLASSES = np.array(['angry', 'happy', 'neutral', 'sad'])
+np.save("models/classes.npy", CLASSES)
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-model = EmotionClassifier(input_dim=1024, num_classes=len(classes)).to(device)
-model.load_state_dict(torch.load("models/emotion_mlp.pth", map_location=device))
+model = EmotionClassifier(input_dim=1024, num_classes=len(CLASSES)).to(device)
+state_dict = torch.load("models/emotion_mlp.pth", map_location=device)
+
+if "state_dict" in state_dict:
+    model.load_state_dict(state_dict["state_dict"])
+else:
+    model.load_state_dict(state_dict)
+
 model.eval()
 
 # 3. Initialize pipeline components
 aligner = FaceAligner()
 extractor = VisionFeatureExtractor(device=device)
 
-# Temporal smoothing buffer (preserves existing 5-frame queue)
-prob_buffer = deque(maxlen=5)
+# Temporal smoothing buffer (expanded to 15 frames for stability)
+prob_buffer = deque(maxlen=15)
 
 cap = cv2.VideoCapture(0)
-print("[INFO] Launching Live Deep Emotion Detector. Press 'q' to exit.")
+print(f"[INFO] Launching Live Deep Emotion Detector on {device}. Active classes: {CLASSES}. Press 'q' to exit.")
+
+current_emotion = "SEARCHING..."
+confidence = 0.0
 
 while cap.isOpened():
     ret, frame = cap.read()
@@ -64,15 +75,21 @@ while cap.isOpened():
     # Align & Crop Face
     face_crop, bbox = aligner.process_frame(frame)
 
-    current_emotion = "NEUTRAL"
-    confidence = 0.0
+    if face_crop is not None and face_crop.size > 0:
+        # Convert OpenCV BGR format to RGB for feature extraction
+        face_crop_rgb = cv2.cvtColor(face_crop, cv2.COLOR_BGR2RGB)
 
-    if face_crop is not None:
         # Extract 1024D embedding
-        embedding = extractor.extract(face_crop)
+        embedding = extractor.extract(face_crop_rgb)
 
         if embedding is not None:
-            # Prepare tensor for MLP
+            embedding = embedding.flatten()
+
+            # L2 Normalize feature embedding vector before passing to MLP
+            norm = np.linalg.norm(embedding)
+            if norm > 0:
+                embedding = embedding / norm
+
             tensor_emb = torch.tensor(embedding, dtype=torch.float32).unsqueeze(0).to(device)
 
             with torch.no_grad():
@@ -81,12 +98,15 @@ while cap.isOpened():
 
             prob_buffer.append(probs)
 
-            # Apply temporal averaging over last 5 frames
+            # Apply temporal averaging over last 15 frames
             avg_probs = np.mean(prob_buffer, axis=0)
             pred_idx = np.argmax(avg_probs)
+            raw_confidence = float(avg_probs[pred_idx]) * 100.0
 
-            current_emotion = str(classes[pred_idx])
-            confidence = float(avg_probs[pred_idx]) * 100.0
+            # Confidence hysteresis thresholding to prevent rapid switching
+            if raw_confidence > 40.0:
+                current_emotion = str(CLASSES[pred_idx]).upper()
+                confidence = raw_confidence
 
             x, y, w, h = bbox
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)

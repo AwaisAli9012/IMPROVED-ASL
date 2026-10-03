@@ -3,391 +3,450 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IMPROVED ASL - Sign Buffer</title>
+    <title>ASL Multimodal Wizard Translator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        .cursor-active {
+            border-bottom: 4px solid #3b82f6;
+            animation: pulse 1.5s infinite;
         }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            overflow: hidden;
-        }
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-        .content {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 30px;
-            padding: 30px;
-        }
-        .video-section {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        .video-feed {
-            width: 100%;
-            border-radius: 10px;
-            border: 3px solid #667eea;
-            background: #000;
-            max-height: 600px;
-        }
-        .control-section {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        .group-selector {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .group-selector label {
-            font-weight: bold;
-            color: #333;
-            font-size: 1.1em;
-        }
-        select {
-            padding: 12px;
-            border: 2px solid #667eea;
-            border-radius: 8px;
-            font-size: 1em;
-            cursor: pointer;
-        }
-        .word-bank {
-            background: #f5f5f5;
-            border: 2px solid #667eea;
-            border-radius: 10px;
-            padding: 15px;
-        }
-        .word-bank h3 {
-            color: #667eea;
-            margin-bottom: 15px;
-        }
-        .signs-display {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            min-height: 50px;
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-        }
-        .sign-tag {
-            background: #667eea;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 1em;
-        }
-        .empty-signs {
-            color: #999;
-            font-style: italic;
-        }
-        .button-group {
-            display: flex;
-            gap: 10px;
-        }
-        button {
-            flex: 1;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 1em;
-            transition: all 0.3s;
-        }
-        .btn-backspace {
-            background: #ff9800;
-            color: white;
-        }
-        .btn-backspace:hover {
-            background: #f57c00;
-        }
-        .btn-clear {
-            background: #f44336;
-            color: white;
-        }
-        .btn-clear:hover {
-            background: #da190b;
-        }
-        .btn-generate {
-            background: #4caf50;
-            color: white;
-            grid-column: 1 / -1;
-            padding: 15px;
-            font-size: 1.1em;
-        }
-        .btn-generate:hover {
-            background: #45a049;
-        }
-        .status-box {
-            background: #e8f5e9;
-            border-left: 4px solid #4caf50;
-            padding: 15px;
-            border-radius: 8px;
-            color: #2e7d32;
-        }
-        .status-box h4 {
-            margin-bottom: 8px;
-        }
-        .status-info {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.9em;
-        }
-        .sentence-output {
-            background: #e3f2fd;
-            border-left: 4px solid #2196f3;
-            padding: 15px;
-            border-radius: 8px;
-            color: #1565c0;
-            display: none;
-            margin-top: 10px;
-        }
-        .sentence-output.show {
-            display: block;
-        }
-        .sentence-output p {
-            margin-top: 10px;
-            font-size: 1.1em;
-            line-height: 1.6;
-        }
-        .error {
-            color: #d32f2f;
-        }
-        .success {
-            color: #388e3c;
-        }
-        @media (max-width: 968px) {
-            .content {
-                grid-template-columns: 1fr;
-            }
+        @keyframes pulse {
+            0%, 100% { border-color: #3b82f6; }
+            50% { border-color: #93c5fd; }
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>🤖 IMPROVED ASL - Sign Buffer + Sentence Generator</h1>
-            <p>Detect signs → Build word bank → Generate sentences</p>
-        </div>
-        
-        <div class="content">
-            <div class="video-section">
-                <img src="/video_feed" class="video-feed" alt="Live camera feed">
-                <div class="status-box">
-                    <h4>📊 System Status</h4>
-                    <div class="status-info">
-                        <span>Group: <strong id="current-group">SIGN1</strong></span>
-                        <span>Hands: <strong id="hands-status">No</strong></span>
-                    </div>
-                </div>
-            </div>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans">
+
+    <!-- Header Navigation -->
+    <header class="bg-slate-800 border-b border-slate-700 p-4">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
+            <h1 class="text-xl font-bold text-blue-400 flex items-center gap-2">
+                <i class="fa-solid fa-hands-asl"></i> ASL Multimodal Wizard
+            </h1>
             
-            <div class="control-section">
-                <div class="group-selector">
-                    <label for="group-select">Select Group:</label>
-                    <select id="group-select">
-                        <option value="">Loading...</option>
-                    </select>
+            <!-- Group Selector displaying all words -->
+            <div class="flex items-center gap-2">
+                <label for="groupSelect" class="text-sm font-medium text-slate-400">Sign Model Group:</label>
+                <select id="groupSelect" class="bg-slate-700 text-white rounded border border-slate-600 px-3 py-1.5 text-sm focus:outline-none focus:border-blue-500 max-w-md">
+                    <!-- Populated dynamically without truncating class words -->
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Left Column: Video Feed & Group Words Overview -->
+        <div class="lg:col-span-7 flex flex-col gap-4">
+            <div class="relative bg-black rounded-xl overflow-hidden border border-slate-700 shadow-2xl aspect-video flex items-center justify-center">
+                <img id="videoFeed" src="/video_feed" class="w-full h-full object-cover" alt="Video Stream">
+                
+                <!-- Latched Sign Badge Overlay -->
+                <div class="absolute top-4 left-4 bg-slate-900/80 backdrop-blur border border-slate-700 rounded-lg px-4 py-2 flex items-center gap-3">
+                    <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold">Latched Sign:</span>
+                    <span id="latchedSignText" class="text-lg font-bold text-green-400">WAITING...</span>
                 </div>
-                
-                <div class="word-bank">
-                    <h3>📝 Word Bank</h3>
-                    <div class="signs-display" id="signs-container">
-                        <span class="empty-signs">No signs detected yet...</span>
-                    </div>
+            </div>
+
+            <!-- Full Group Words Display Card -->
+            <div class="bg-slate-800/80 border border-slate-700 rounded-xl p-3">
+                <div class="text-xs font-semibold uppercase text-slate-400 mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-list-check text-blue-400"></i> All Available Signs in Selected Group:
                 </div>
-                
-                <div class="button-group">
-                    <button class="btn-backspace" onclick="backspace()">⌫ Backspace</button>
-                    <button class="btn-clear" onclick="clearBuffer()">🗑️ Clear</button>
+                <div id="availableWordsContainer" class="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto">
+                    <!-- Words rendered via JS -->
                 </div>
-                
-                <button class="btn-generate" onclick="generateSentence()">✨ Generate Sentence</button>
-                
-                <div class="sentence-output" id="sentence-output">
-                    <h4>📄 Generated Sentence</h4>
-                    <p id="sentence-text"></p>
+            </div>
+
+            <!-- Keyboard Shortcuts Helper -->
+            <div class="bg-slate-800/60 border border-slate-700 rounded-lg p-3 grid grid-cols-4 gap-2 text-center text-xs text-slate-300">
+                <div class="bg-slate-700/50 p-2 rounded border border-slate-600">
+                    <kbd class="px-1.5 py-0.5 bg-slate-800 rounded border border-slate-500 font-mono text-blue-300">Enter</kbd> Confirm
+                </div>
+                <div class="bg-slate-700/50 p-2 rounded border border-slate-600">
+                    <kbd class="px-1.5 py-0.5 bg-slate-800 rounded border border-slate-500 font-mono text-blue-300">← / →</kbd> Move Cursor
+                </div>
+                <div class="bg-slate-700/50 p-2 rounded border border-slate-600">
+                    <kbd class="px-1.5 py-0.5 bg-slate-800 rounded border border-slate-500 font-mono text-blue-300">Backspace</kbd> Delete
+                </div>
+                <div class="bg-slate-700/50 p-2 rounded border border-slate-600">
+                    <kbd class="px-1.5 py-0.5 bg-slate-800 rounded border border-slate-500 font-mono text-blue-300">Tab</kbd> Toggle Step
                 </div>
             </div>
         </div>
-    </div>
 
+        <!-- Right Column: Interactive State Control & Output -->
+        <div class="lg:col-span-5 flex flex-col gap-4">
+            
+            <!-- Workflow Step Tabs -->
+            <div class="flex border-b border-slate-700">
+                <button id="tabSign" onclick="switchTab('SIGN')" class="flex-1 py-2 text-center font-semibold text-sm border-b-2 border-blue-500 text-blue-400">
+                    Step 1: Sign Sequence
+                </button>
+                <button id="tabEmotion" onclick="switchTab('EMOTION')" class="flex-1 py-2 text-center font-semibold text-sm border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+                    Step 2: Facial Tone
+                </button>
+            </div>
+
+            <!-- Tab 1: Sign Sequence Workspace -->
+            <div id="panelSign" class="flex-1 bg-slate-800 rounded-xl border border-slate-700 p-4 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-center mb-3">
+                        <h2 class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Confirmed Sequence</h2>
+                        <button onclick="clearAll()" class="text-xs bg-red-500/20 text-red-400 hover:bg-red-500/30 px-2 py-1 rounded border border-red-500/30 transition">
+                            Clear All
+                        </button>
+                    </div>
+
+                    <!-- Interactive Sign Chips -->
+                    <div id="signContainer" class="flex flex-wrap gap-2 p-3 bg-slate-900 rounded-lg min-h-[120px] border border-slate-700/50 items-center">
+                        <!-- Rendered via JS -->
+                    </div>
+                </div>
+
+                <div class="flex gap-2 mt-4">
+                    <button onclick="confirmSign()" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-medium py-2.5 rounded-lg transition text-sm flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Confirm Sign (Enter)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab 2: Facial Tone Workspace -->
+            <div id="panelEmotion" class="hidden flex-1 bg-slate-800 rounded-xl border border-slate-700 p-4 flex flex-col justify-between">
+                <div class="flex flex-col gap-3">
+                    <h2 class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Facial Emotion Recognition</h2>
+                    
+                    <!-- Dynamic Live Emotion Permission & Calibration Controls -->
+                    <div id="permissionContainer" class="bg-slate-900/90 p-3 rounded-lg border border-slate-700 flex flex-col gap-2">
+                        <!-- Step A: Request Permission -->
+                        <button id="btnGrantPerm" onclick="requestPermission()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-2 transition">
+                            <i class="fa-solid fa-video"></i> Enable Live Emotion Detection
+                        </button>
+
+                        <!-- Step B: Neutral Calibration Prompt (Hidden until permission granted) -->
+                        <button id="btnCalibrateNeutral" onclick="calibrateNeutral()" class="hidden w-full bg-amber-600 hover:bg-amber-500 text-white font-semibold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-2 transition">
+                            <i class="fa-solid fa-face-meh"></i> Look Relaxed & Click: Capture Neutral Baseline
+                        </button>
+                    </div>
+
+                    <!-- Live Camera Feed Emotion Detection Display -->
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 flex flex-col gap-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-slate-400 font-semibold">Live Camera Detection:</span>
+                            <span id="cameraEmotionDisplay" class="font-bold text-sm text-amber-400">PERMISSION REQUIRED</span>
+                        </div>
+                        <div class="flex justify-between items-center border-t border-slate-800 pt-2">
+                            <span class="text-xs text-slate-400 font-semibold">Locked Emotion Tone:</span>
+                            <span id="activeEmotionDisplay" class="font-bold text-md text-blue-400">NEUTRAL</span>
+                        </div>
+                    </div>
+
+                    <p class="text-xs text-slate-400">
+                        <i class="fa-solid fa-camera text-blue-400"></i> Change your expression toward the webcam. Press <kbd class="px-1 bg-slate-700 rounded border border-slate-600 font-mono text-blue-300">Enter</kbd> to lock in the live emotion, or pick manually below:
+                    </p>
+
+                    <!-- Manual Override Grid -->
+                    <div class="grid grid-cols-2 gap-2 mt-1">
+                        <button onclick="setEmotion('HAPPY')" class="bg-slate-700/70 hover:bg-slate-600 p-2.5 rounded-lg border border-slate-600 text-left flex items-center gap-2 text-xs">
+                            <span class="text-xl">😊</span>
+                            <div><div class="font-bold">Happy</div></div>
+                        </button>
+                        <button onclick="setEmotion('ANGRY')" class="bg-slate-700/70 hover:bg-slate-600 p-2.5 rounded-lg border border-slate-600 text-left flex items-center gap-2 text-xs">
+                            <span class="text-xl">😠</span>
+                            <div><div class="font-bold">Angry</div></div>
+                        </button>
+                        <button onclick="setEmotion('SAD')" class="bg-slate-700/70 hover:bg-slate-600 p-2.5 rounded-lg border border-slate-600 text-left flex items-center gap-2 text-xs">
+                            <span class="text-xl">😢</span>
+                            <div><div class="font-bold">Sad</div></div>
+                        </button>
+                        <button onclick="setEmotion('NEUTRAL')" class="bg-slate-700/70 hover:bg-slate-600 p-2.5 rounded-lg border border-slate-600 text-left flex items-center gap-2 text-xs">
+                            <span class="text-xl">😐</span>
+                            <div><div class="font-bold">Neutral</div></div>
+                        </button>
+                    </div>
+                </div>
+
+                <button id="btnLockEmotion" onclick="confirmEmotion()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-2.5 rounded-lg transition text-sm flex items-center justify-center gap-2 mt-4">
+                    <i class="fa-solid fa-lock"></i> Lock Live Camera Emotion (Enter)
+                </button>
+            </div>
+
+            <!-- Step 3: Multimodal Synthesis Output -->
+            <div class="bg-slate-800 rounded-xl border border-slate-700 p-4 flex flex-col gap-3">
+                <button onclick="generateSentence()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-lg transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/20">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Synthesize Sentence (Gemini)
+                </button>
+                <div class="bg-slate-900 rounded-lg p-3 border border-slate-700 min-h-[60px]">
+                    <div class="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-1">Synthesized Output</div>
+                    <p id="generatedSentence" class="text-slate-200 text-sm italic">Your synthesized sentence will appear here...</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Client Script -->
     <script>
-        // Load groups on page load
-        window.addEventListener('load', () => {
-            loadGroups();
-            updateBuffer();
-            updateHealth(); // Initialize health updates
-            setInterval(() => {
-                updateBuffer();
-                updateHealth(); // Poll health dynamically every second
-            }, 1000);
-        });
-        
-        // Load groups
-        function loadGroups() {
-            fetch('/api/groups')
-                .then(r => r.json())
-                .then(groups => {
-                    const select = document.getElementById('group-select');
-                    select.innerHTML = '';
-                    Object.entries(groups).forEach(([id, info]) => {
-                        const opt = document.createElement('option');
-                        opt.value = id;
-                        opt.textContent = `${id}: ${info.classes.join(', ')}`;
-                        select.appendChild(opt);
-                    });
-                    
-                    fetch('/api/group')
-                        .then(r => r.json())
-                        .then(data => {
-                            select.value = data.current_group;
-                            document.getElementById('current-group').textContent = data.current_group;
-                        });
-                });
-        }
-        
-        // Group change
-        document.getElementById('group-select').addEventListener('change', (e) => {
-            if (e.target.value) {
-                fetch('/api/group', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({group_id: e.target.value})
-                })
-                .then(r => r.json())
-                .then(data => {
-                    document.getElementById('current-group').textContent = data.group;
-                });
+        let currentTab = 'SIGN';
+        let groupsData = {};
+
+        async function loadGroups() {
+            try {
+                const res = await fetch('/api/groups_detail');
+                groupsData = await res.json();
+                
+                const select = document.getElementById('groupSelect');
+                select.innerHTML = '';
+                
+                for (const [g_id, g_info] of Object.entries(groupsData)) {
+                    const opt = document.createElement('option');
+                    opt.value = g_id;
+                    opt.innerText = g_info.display_name;
+                    select.appendChild(opt);
+                }
+
+                if (select.value) {
+                    renderAvailableWords(select.value);
+                }
+            } catch (err) {
+                console.error("Failed to load groups:", err);
             }
-        });
-        
-        // Update buffer display
-        function updateBuffer() {
-            fetch('/api/buffer')
-                .then(r => r.json())
-                .then(data => {
-                    const container = document.getElementById('signs-container');
-                    
-                    if (data.signs.length === 0) {
-                        container.innerHTML = '<span class="empty-signs">No signs detected yet...</span>';
-                    } else {
-                        container.innerHTML = data.signs
-                            .map(sign => `<span class="sign-tag">${sign}</span>`)
-                            .join('');
-                    }
-                });
         }
 
-        // Update system health and hand status display dynamically
-        function updateHealth() {
-            fetch('/api/health')
-                .then(r => r.json())
-                .then(data => {
-                    const handsStatusEl = document.getElementById('hands-status');
-                    if (data.hands_detected) {
-                        handsStatusEl.textContent = data.active_prediction ? `Yes (${data.active_prediction})` : "Yes";
-                        handsStatusEl.style.color = "#2e7d32";
-                    } else {
-                        handsStatusEl.textContent = "No";
-                        handsStatusEl.style.color = "#d32f2f";
-                    }
-                    if (data.current_group) {
-                        document.getElementById('current-group').textContent = data.current_group;
-                    }
-                })
-                .catch(err => console.error("Health fetch error:", err));
+        function renderAvailableWords(groupId) {
+            const container = document.getElementById('availableWordsContainer');
+            container.innerHTML = '';
+            
+            if (!groupsData[groupId] || !groupsData[groupId].classes) return;
+
+            groupsData[groupId].classes.forEach(word => {
+                const badge = document.createElement('span');
+                badge.className = "px-2 py-0.5 bg-slate-700/80 text-blue-300 rounded border border-slate-600 text-xs font-mono";
+                badge.innerText = word;
+                container.appendChild(badge);
+            });
         }
-        
-        // Backspace
-        function backspace() {
-            fetch('/api/buffer', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({action: 'backspace'})
-            })
-            .then(r => r.json())
-            .then(() => updateBuffer());
-        }
-        
-        // Clear buffer
-        function clearBuffer() {
-            if (confirm('Clear all signs?')) {
-                fetch('/api/buffer', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({action: 'clear'})
-                })
-                .then(r => r.json())
-                .then(() => {
-                    updateBuffer();
-                    document.getElementById('sentence-output').classList.remove('show');
-                });
+
+        async function requestPermission() {
+            try {
+                const res = await fetch('/api/grant_emotion_permission', { method: 'POST' });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    document.getElementById('btnGrantPerm').classList.add('hidden');
+                    document.getElementById('btnCalibrateNeutral').classList.remove('hidden');
+                }
+            } catch (err) {
+                console.error("Permission request error:", err);
             }
         }
-        
-        // Generate sentence
-        function generateSentence() {
-            fetch('/api/buffer')
-                .then(r => r.json())
-                .then(data => {
-                    if (data.signs.length === 0) {
-                        alert('No signs in buffer. Add some signs first!');
-                        return;
-                    }
-                    
-                    const output = document.getElementById('sentence-output');
-                    const textEl = document.getElementById('sentence-text');
-                    
-                    textEl.innerHTML = '<span class="success">⏳ Generating...</span>';
-                    output.classList.add('show');
-                    
-                    fetch('/api/generate', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({signs: data.signs})
-                    })
-                    .then(r => r.json())
-                    .then(result => {
-                        if (result.sentence) {
-                            textEl.innerHTML = `<span class="success">✓ ${result.sentence}</span>`;
-                        } else if (result.error) {
-                            textEl.innerHTML = `<span class="error">❌ ${result.error}</span>`;
-                        } else {
-                            textEl.innerHTML = `<span class="error">❌ Unknown error</span>`;
-                        }
-                    })
-                    .catch(err => {
-                        textEl.innerHTML = `<span class="error">❌ ${err.message}</span>`;
-                    });
-                });
+
+        async function calibrateNeutral() {
+            try {
+                const res = await fetch('/api/calibrate_neutral', { method: 'POST' });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    const calibrateBtn = document.getElementById('btnCalibrateNeutral');
+                    calibrateBtn.className = "w-full bg-emerald-700 hover:bg-emerald-600 text-white font-semibold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-2 transition";
+                    calibrateBtn.innerHTML = `<i class="fa-solid fa-check"></i> Neutral Calibrated (Click to Recalibrate)`;
+                }
+            } catch (err) {
+                console.error("Calibration error:", err);
+            }
         }
+
+        async function fetchState() {
+            try {
+                const res = await fetch('/api/state');
+                const data = await res.json();
+                
+                // Update Latched Sign
+                const latchedText = document.getElementById('latchedSignText');
+                if (data.last_valid_sign) {
+                    latchedText.innerText = `${data.last_valid_sign} (${data.last_confidence}%)`;
+                    latchedText.className = "text-lg font-bold text-green-400";
+                } else {
+                    latchedText.innerText = "WAITING FOR HANDS...";
+                    latchedText.className = "text-lg font-bold text-slate-500";
+                }
+
+                // Render Signs & Cursor
+                renderSigns(data.signs, data.cursor_index);
+                
+                // Update UI state for Permission and Calibration controls
+                if (data.permission_granted) {
+                    document.getElementById('btnGrantPerm').classList.add('hidden');
+                    document.getElementById('btnCalibrateNeutral').classList.remove('hidden');
+                }
+                
+                // Update Live Camera & Locked Emotion Badges
+                const camDisplay = document.getElementById('cameraEmotionDisplay');
+                if (data.permission_granted) {
+                    camDisplay.innerText = `${data.camera_detected_emotion} (${data.emotion_confidence}%)`;
+                    camDisplay.className = "font-bold text-md text-emerald-400";
+                } else {
+                    camDisplay.innerText = "PERMISSION REQUIRED";
+                    camDisplay.className = "font-bold text-sm text-amber-400";
+                }
+
+                document.getElementById('activeEmotionDisplay').innerText = data.locked_emotion;
+            } catch (err) {
+                console.error("State sync error:", err);
+            }
+        }
+
+        function renderSigns(signs, cursorIndex) {
+            const container = document.getElementById('signContainer');
+            container.innerHTML = '';
+
+            if (!signs || signs.length === 0) {
+                container.innerHTML = `<span class="text-slate-500 text-xs italic">No signs confirmed yet. Hold a sign and press Enter.</span>`;
+                return;
+            }
+
+            signs.forEach((sign, idx) => {
+                const chip = document.createElement('div');
+                const isCursor = idx === cursorIndex;
+                
+                chip.className = `px-3 py-1.5 rounded-md font-mono text-sm font-semibold flex items-center gap-2 ${
+                    isCursor ? 'bg-blue-600 text-white cursor-active' : 'bg-slate-800 text-slate-300 border border-slate-700'
+                }`;
+                chip.innerText = sign;
+                container.appendChild(chip);
+            });
+
+            if (cursorIndex === signs.length) {
+                const endCursor = document.createElement('div');
+                endCursor.className = 'w-2 h-6 bg-blue-500 animate-pulse rounded';
+                container.appendChild(endCursor);
+            }
+        }
+
+        async function confirmSign() {
+            await fetch('/api/confirm_sign', { method: 'POST' });
+            fetchState();
+        }
+
+        async function confirmEmotion() {
+            await fetch('/api/confirm_emotion', { method: 'POST' });
+            fetchState();
+        }
+
+        async function setEmotion(emotion) {
+            await fetch('/api/confirm_emotion', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ emotion })
+            });
+            fetchState();
+        }
+
+        async function navigateCursor(direction) {
+            await fetch('/api/navigate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ direction })
+            });
+            fetchState();
+        }
+
+        async function deleteSign() {
+            await fetch('/api/delete_sign', { method: 'POST' });
+            fetchState();
+        }
+
+        async function clearAll() {
+            await fetch('/api/clear', { method: 'POST' });
+            fetchState();
+        }
+
+        async function generateSentence() {
+            const outputEl = document.getElementById('generatedSentence');
+            outputEl.innerText = "Synthesizing sentence with Gemini...";
+            outputEl.className = "text-blue-400 text-sm animate-pulse";
+
+            try {
+                const res = await fetch('/api/generate', { method: 'POST' });
+                const data = await res.json();
+                if (data.sentence) {
+                    outputEl.innerText = `"${data.sentence}"`;
+                    outputEl.className = "text-green-400 font-medium text-sm";
+                } else {
+                    outputEl.innerText = data.error || "Generation failed";
+                    outputEl.className = "text-red-400 text-sm";
+                }
+            } catch (err) {
+                outputEl.innerText = "Error connecting to backend server.";
+                outputEl.className = "text-red-400 text-sm";
+            }
+        }
+
+        async function switchTab(tab) {
+            currentTab = tab;
+            await fetch('/api/tab', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ tab })
+            });
+
+            const tabSign = document.getElementById('tabSign');
+            const tabEmotion = document.getElementById('tabEmotion');
+            const panelSign = document.getElementById('panelSign');
+            const panelEmotion = document.getElementById('panelEmotion');
+
+            if (tab === 'SIGN') {
+                tabSign.className = "flex-1 py-2 text-center font-semibold text-sm border-b-2 border-blue-500 text-blue-400";
+                tabEmotion.className = "flex-1 py-2 text-center font-semibold text-sm border-b-2 border-transparent text-slate-400 hover:text-slate-200";
+                panelSign.classList.remove('hidden');
+                panelEmotion.classList.add('hidden');
+            } else {
+                tabEmotion.className = "flex-1 py-2 text-center font-semibold text-sm border-b-2 border-blue-500 text-blue-400";
+                tabSign.className = "flex-1 py-2 text-center font-semibold text-sm border-b-2 border-transparent text-slate-400 hover:text-slate-200";
+                panelEmotion.classList.remove('hidden');
+                panelSign.classList.add('hidden');
+            }
+        }
+
+        // Global Keyboard Event Listener
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (currentTab === 'SIGN') {
+                    confirmSign();
+                } else {
+                    confirmEmotion();
+                }
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                navigateCursor('left');
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                navigateCursor('right');
+            } else if (e.key === 'Backspace') {
+                e.preventDefault();
+                deleteSign();
+            } else if (e.key === 'Tab') {
+                e.preventDefault();
+                switchTab(currentTab === 'SIGN' ? 'EMOTION' : 'SIGN');
+            }
+        });
+
+        // Group Selector Change Listener
+        document.getElementById('groupSelect').addEventListener('change', async (e) => {
+            const groupId = e.target.value;
+            renderAvailableWords(groupId);
+            await fetch('/api/group', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ group_id: groupId })
+            });
+        });
+
+        // Initialize Page
+        loadGroups();
+        setInterval(fetchState, 200);
     </script>
 </body>
 </html>
