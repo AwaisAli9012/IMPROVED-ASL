@@ -1,7 +1,7 @@
 """
 IMPROVED ASL - Train Models for All Groups
 ===========================================
-Trains RF + XGBoost + Meta-Learner for each of 13 groups
+Trains RF + XGBoost + Meta-Learner for each configured group
 5-fold cross-validation
 Saves trained models to Models/ directory
 Resume capability: skips already trained groups

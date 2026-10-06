@@ -1,0 +1,169 @@
+Not at all—taking it step-by-step is the smartest way to make sure we don't end up with hidden UI bugs or silent thread crashes!
+
+To build app.py from scratch, let's lay down the foundational backend framework first (Step 1: Imports, State, and Groups Configuration).
+
+Step 1: Core Imports, Global State & Group Mapping
+Create or update the top portion of app.py. This sets up:
+
+Low-latency background queues for frame capture and inference.
+
+Group mappings that cleanly feed both the dropdown menu and the ALL AVAILABLE SIGNS IN SELECTED GROUP section on the frontend.   
+PNG
+
+Neutral face calibration state variables for Step 2: Facial Tone.
+
+Python
+"""
+ASL Multimodal Wizard - Step 1: Foundation & State Setup
+=========================================================
+"""
+
+import os
+import gc
+import pickle
+import threading
+from queue import Queue
+from collections import deque
+from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor
+
+import cv2
+import numpy as np
+import mediapipe as mp
+import mediapipe.python.solutions.hands as mp_hands
+import mediapipe.python.solutions.face_mesh as mp_face_mesh
+import mediapipe.python.solutions.drawing_utils as mp_drawing
+
+from flask import Flask, render_template, Response, request, jsonify
+from flask_cors import CORS
+from google import genai
+from dotenv import load_dotenv
+
+# Load Config & Environment Variables
+from Config import GROUPS, MODELS_DIR, APP_CONFIG
+
+load_dotenv()
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+app = Flask(__name__)
+CORS(app)
+
+print("=" * 70)
+print("ASL MULTIMODAL WIZARD - ENGINE STARTING")
+print("=" * 70)
+
+# -------------------------------------------------------------------------
+# 1. GLOBAL STATE & LOCKS
+# -------------------------------------------------------------------------
+# Default starting group
+initial_group = list(GROUPS.keys())[0] if GROUPS else 'SIGN1'
+current_group = initial_group
+
+# Model Containers
+models = {}
+
+# Live State across Threads
+latest_detection_state = {
+    'hands_detected': False,
+    'class_name': None,
+    'confidence': 0.0,
+    'group_id': current_group,
+    'facial_emotion': 'Neutral',
+    'calibrated': False
+}
+state_lock = threading.Lock()
+
+# Sign Sequence Buffer
+sign_buffer = []
+buffer_lock = threading.Lock()
+
+# Facial Calibration Vectors
+neutral_face_landmarks = None
+calibration_lock = threading.Lock()
+
+# Queues for Streaming Pipeline
+capture_queue = Queue(maxsize=1)
+render_queue = Queue(maxsize=1)
+executor = ThreadPoolExecutor(max_workers=2)
+
+# Video Recording Guard
+RECORDING_PATH = Path("debug_recording.avi")
+video_writer = None
+writer_lock = threading.Lock()
+
+# -------------------------------------------------------------------------
+# 2. MODEL LOADING & VALIDATION
+# -------------------------------------------------------------------------
+for group_id in GROUPS:
+    try:
+        rf_path = MODELS_DIR / f"{group_id}_rf.pkl"
+        xgb_path = MODELS_DIR / f"{group_id}_xgb.pkl"
+        meta_path = MODELS_DIR / f"{group_id}_meta.pkl"
+
+        if rf_path.exists() and xgb_path.exists() and meta_path.exists():
+            with open(rf_path, 'rb') as f_rf, \
+                 open(xgb_path, 'rb') as f_xgb, \
+                 open(meta_path, 'rb') as f_meta:
+                models[group_id] = {
+                    'rf': pickle.load(f_rf),
+                    'xgb': pickle.load(f_xgb),
+                    'meta': pickle.load(f_meta)
+                }
+            print(f"   ✓ Loaded models for group: {group_id}")
+        else:
+            print(f"   ⚠️  {group_id}: Missing model file(s) (.pkl)")
+    except Exception as e:
+        print(f"   ❌ Failed loading group {group_id}: {e}")
+
+print(f"✓ Active model groups loaded: {len(models)}")
+Step 2: Essential API Endpoints for Frontend Sync
+Next, we add the routes that feed the top dropdown and available signs list, along with the baseline index renderer:   
+PNG
+
+Python
+# -------------------------------------------------------------------------
+# 3. CORE FLASK ROUTES FOR FRONTEND SYNC
+# -------------------------------------------------------------------------
+@app.route('/')
+def index():
+    return render_template('index.html', groups=GROUPS, current_group=current_group)
+
+@app.route('/api/groups')
+def get_groups():
+    """Returns group list and associated candidate vocabulary for UI render."""
+    formatted_groups = {}
+    for gid, gdata in GROUPS.items():
+        if isinstance(gdata, dict) and 'classes' in gdata:
+            formatted_groups[gid] = gdata['classes']
+        elif isinstance(gdata, list):
+            formatted_groups[gid] = gdata
+        else:
+            formatted_groups[gid] = []
+    return jsonify(formatted_groups)
+
+@app.route('/api/group', methods=['GET', 'POST'])
+def handle_group():
+    """Handles switching sign model groups via dropdown."""
+    global current_group
+    if request.method == 'POST':
+        data = request.get_json(force=True, silent=True) or {}
+        group_id = data.get('group_id') or data.get('group')
+        
+        if group_id in GROUPS:
+            with state_lock:
+                current_group = group_id
+                latest_detection_state['group_id'] = group_id
+            
+            ginfo = GROUPS[group_id]
+            classes = ginfo.get('classes', ginfo) if isinstance(ginfo, dict) else ginfo
+            return jsonify({'status': 'success', 'group': group_id, 'classes': classes})
+        return jsonify({'status': 'error', 'message': f'Invalid group: {group_id}'}), 400
+    
+    with state_lock:
+        ginfo = GROUPS[current_group]
+        classes = ginfo.get('classes', ginfo) if isinstance(ginfo, dict) else ginfo
+        return jsonify({'current_group': current_group, 'classes': classes})
+Next Step Check-In
+How does this initial structure look?
+
+If you are ready to proceed, in our next step we will build the MediaPipe Keypoint Extractor & Facial Neutral Calibration engine (handling hand keypoints clipping + eyebrow/mouth distance neutral calibration for facial emotions).

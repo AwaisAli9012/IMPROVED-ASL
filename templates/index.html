@@ -61,6 +61,28 @@
                 </div>
             </div>
 
+            <div class="bg-slate-800/80 border border-emerald-800/70 rounded-lg p-3 flex flex-col gap-2">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                        <div class="text-xs font-semibold uppercase text-emerald-300">Word Sequence Pilot</div>
+                        <div class="text-xs text-slate-400">Candidate vocabulary: need, dance, eat</div>
+                    </div>
+                    <span id="wordModeStatus" class="text-xs text-slate-300">Checking model...</span>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button id="btnStartWordClip" onclick="startWordClip()" class="bg-emerald-700 hover:bg-emerald-600 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-medium px-3 py-2 rounded border border-emerald-500/40" disabled>
+                        Start Word Clip
+                    </button>
+                    <button id="btnFinishWordClip" onclick="finishWordClip()" class="bg-amber-700 hover:bg-amber-600 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-medium px-3 py-2 rounded border border-amber-500/40" disabled>
+                        Finish & Predict
+                    </button>
+                    <button id="btnAddWordClip" onclick="addWordPrediction()" class="bg-blue-700 hover:bg-blue-600 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-medium px-3 py-2 rounded border border-blue-500/40" disabled>
+                        Add to Sequence
+                    </button>
+                </div>
+                <div id="wordPredictionResult" class="text-sm text-slate-200" aria-live="polite">No word clip recorded.</div>
+            </div>
+
             <!-- Keyboard Shortcuts Helper -->
             <div class="bg-slate-800/60 border border-slate-700 rounded-lg p-3 grid grid-cols-4 gap-2 text-center text-xs text-slate-300">
                 <div class="bg-slate-700/50 p-2 rounded border border-slate-600">
@@ -208,6 +230,12 @@
                     select.appendChild(opt);
                 }
 
+                const stateRes = await fetch('/api/state');
+                const state = await stateRes.json();
+                if (state.selected_group && groupsData[state.selected_group]) {
+                    select.value = state.selected_group;
+                }
+
                 if (select.value) {
                     renderAvailableWords(select.value);
                 }
@@ -261,6 +289,20 @@
             try {
                 const res = await fetch('/api/state');
                 const data = await res.json();
+
+                const wordStatus = document.getElementById('wordModeStatus');
+                const wordResult = document.getElementById('wordPredictionResult');
+                const startWordButton = document.getElementById('btnStartWordClip');
+                const finishWordButton = document.getElementById('btnFinishWordClip');
+                const addWordButton = document.getElementById('btnAddWordClip');
+                wordStatus.innerText = data.word_status || 'Candidate word model unavailable';
+                wordStatus.className = data.word_recording ? 'text-xs text-amber-300' : 'text-xs text-slate-300';
+                startWordButton.disabled = !data.word_model_available || data.word_recording;
+                finishWordButton.disabled = !data.word_recording;
+                addWordButton.disabled = !data.word_prediction || data.word_recording;
+                wordResult.innerText = data.word_prediction
+                    ? `Candidate: ${data.word_prediction} (${data.word_confidence}%, ${data.word_frame_count} frames)`
+                    : (data.word_recording ? `Recording... ${data.word_frame_count} detected-hand frames` : 'No word clip predicted yet.');
                 
                 // Update Latched Sign
                 const latchedText = document.getElementById('latchedSignText');
@@ -326,6 +368,27 @@
 
         async function confirmSign() {
             await fetch('/api/confirm_sign', { method: 'POST' });
+            fetchState();
+        }
+
+        async function startWordClip() {
+            const response = await fetch('/api/word_record/start', { method: 'POST' });
+            const data = await response.json();
+            if (!response.ok) window.alert(data.message || 'Could not start word recording.');
+            fetchState();
+        }
+
+        async function finishWordClip() {
+            const response = await fetch('/api/word_record/finish', { method: 'POST' });
+            const data = await response.json();
+            if (!response.ok) window.alert(data.message || 'Could not classify word clip.');
+            fetchState();
+        }
+
+        async function addWordPrediction() {
+            const response = await fetch('/api/word_record/add', { method: 'POST' });
+            const data = await response.json();
+            if (!response.ok) window.alert(data.message || 'No candidate word to add.');
             fetchState();
         }
 

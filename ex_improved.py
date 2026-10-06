@@ -1,158 +1,184 @@
-"""
-IMPROVED ASL - Extract Hand Keypoints using MediaPipe
-=====================================================
-Extracts 21 3D hand keypoints (padded to 126 values for 2 hands)
-from all 65 classes (36 signs + 29 alphabets).
-"""
+"""Extract raw 126-value hand keypoints for the ASL image datasets."""
 
-import os
-import cv2
-import numpy as np
-import mediapipe as mp
+import argparse
+import csv
 from pathlib import Path
+
+import cv2
+import mediapipe as mp
+import numpy as np
+
 from Config import (
-    SIGNS_FRAMES_DIR, ALPHABETS_DIR, KEYPOINTS_DIR,
-    SIGN_CLASSES, ALPHABET_CLASSES, TRAINING_CONFIG
+    ALPHABETS_DIR,
+    KEYPOINTS_DIR,
+    SIGN_CLASSES,
+    ALPHABET_CLASSES,
+    SIGNS_FRAMES_DIR,
 )
 
-Path(KEYPOINTS_DIR).mkdir(parents=True, exist_ok=True)
+IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}
+FEATURE_COUNT = 126
 
-print("=" * 70)
-print("IMPROVED ASL - EXTRACT HAND KEYPOINTS (MEDIAPIPE)")
-print("=" * 70)
 
-# Initialize MediaPipe Hands solution
-mp_hands = mp.solutions.hands
+def list_class_images(folder: Path, limit: int) -> list[Path]:
+    if not folder.is_dir():
+        return []
+    images = sorted(
+        path for path in folder.iterdir()
+        if path.is_file() and path.suffix.lower() in IMAGE_SUFFIXES
+    )
+    return images[:limit]
 
-def extract_keypoints_mediapipe(image_path, hands_detector):
-    try:
-        image = cv2.imread(str(image_path))
-        if image is None:
-            return None
-        
-        # Convert BGR image to RGB for MediaPipe
-        image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        results = hands_detector.process(image_rgb)
-        
-        keypoints = []
-        if results.multi_hand_landmarks:
-            for hand_landmarks in results.multi_hand_landmarks:
-                for lm in hand_landmarks.landmark:
-                    keypoints.extend([lm.x, lm.y, lm.z])
-        
-        # Pad with zeros if fewer than 2 hands are detected (up to 126 float values)
-        while len(keypoints) < 126:
-            keypoints.append(0.0)
-            
-        return np.array(keypoints[:126], dtype=np.float32)
-    except Exception as e:
+
+def extract_keypoints(image_path: Path, hands_detector) -> np.ndarray | None:
+    image = cv2.imread(str(image_path))
+    if image is None:
         return None
 
-def augment_keypoints(keypoints):
-    augmented = []
-    kp = np.array(keypoints)
-    augmented.append(kp.copy())
-    
-    # Mirror X coordinates
-    kp_flip = kp.copy()
-    kp_flip[0::3] = 1.0 - kp_flip[0::3]
-    augmented.append(kp_flip)
-    
-    # Add light Gaussian noise
-    kp_noise = kp + np.random.normal(0, 0.005, kp.shape)
-    kp_noise = np.clip(kp_noise, 0, 1)
-    augmented.append(kp_noise)
-    
-    # Scale keypoints slightly
-    scale_factor = np.random.uniform(0.95, 1.05)
-    kp_scale = kp * scale_factor
-    kp_scale = np.clip(kp_scale, 0, 1)
-    augmented.append(kp_scale)
-    
-    return augmented
+    rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    results = hands_detector.process(rgb_image)
+    if not results.multi_hand_landmarks:
+        return None
 
-if __name__ == "__main__":
-    all_keypoints = []
-    all_labels = []
+    values = []
+    for hand_landmarks in results.multi_hand_landmarks:
+        for landmark in hand_landmarks.landmark:
+            values.extend((landmark.x, landmark.y, landmark.z))
+
+    features = np.zeros(FEATURE_COUNT, dtype=np.float32)
+    copied_count = min(len(values), FEATURE_COUNT)
+    features[:copied_count] = values[:copied_count]
+    return features
+
+
+def build_class_sources(max_images_per_class: int):
+    classes = []
+    for class_id, class_name in SIGN_CLASSES.items():
+        classes.append((class_id, class_name, SIGNS_FRAMES_DIR / class_name))
+    for class_id, class_name in ALPHABET_CLASSES.items():
+        classes.append((36 + class_id, class_name, ALPHABETS_DIR / class_name))
+
+    return [
+        (class_id, class_name, list_class_images(folder, max_images_per_class))
+        for class_id, class_name, folder in classes
+    ]
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--max-images-per-class",
+        type=int,
+        default=3000,
+        help="Maximum source images attempted per class (default: 3000).",
+    )
+    parser.add_argument(
+        "--class-name",
+        action="append",
+        help="Limit extraction to a class name; may be supplied multiple times for a pilot.",
+    )
+    parser.add_argument(
+        "--output-prefix",
+        default="raw",
+        help="Output filename prefix (default: raw; writes keypoints_<prefix>.npy, labels_<prefix>.npy, and a manifest).",
+    )
+    parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Replace the raw output files if they already exist.",
+    )
+    args = parser.parse_args()
+
+    if args.max_images_per_class <= 0:
+        parser.error("--max-images-per-class must be greater than zero")
+    if not args.output_prefix or Path(args.output_prefix).name != args.output_prefix:
+        parser.error("--output-prefix must be a simple filename prefix")
+
+    KEYPOINTS_DIR.mkdir(parents=True, exist_ok=True)
+    keypoints_path = KEYPOINTS_DIR / f"keypoints_{args.output_prefix}.npy"
+    labels_path = KEYPOINTS_DIR / f"labels_{args.output_prefix}.npy"
+    manifest_path = KEYPOINTS_DIR / f"keypoints_{args.output_prefix}_manifest.csv"
+    output_paths = (keypoints_path, labels_path, manifest_path)
+
+    if not args.overwrite and any(path.exists() for path in output_paths):
+        parser.error(
+            "Raw output already exists. Move it aside or pass --overwrite to replace it."
+        )
+
+    class_sources = build_class_sources(args.max_images_per_class)
+    if args.class_name:
+        requested = set(args.class_name)
+        known = {class_name for _, class_name, _ in class_sources}
+        unknown = requested - known
+        if unknown:
+            parser.error(f"Unknown class name(s): {', '.join(sorted(unknown))}")
+        class_sources = [
+            item for item in class_sources if item[1] in requested
+        ]
+
+    total_images = sum(len(images) for _, _, images in class_sources)
+    print(f"Attempting up to {total_images:,} source images across {len(class_sources)} classes.")
+    print("Only original extracted keypoints are saved; augmentation is not applied.")
+
+    keypoint_chunks = []
+    label_chunks = []
+    manifest_rows = []
+    mp_hands = mp.solutions.hands
 
     with mp_hands.Hands(
         static_image_mode=True,
         max_num_hands=2,
-        min_detection_confidence=0.5
-    ) as hands:
+        model_complexity=1,
+        min_detection_confidence=0.5,
+    ) as detector:
+        for class_id, class_name, image_paths in class_sources:
+            class_features = []
+            class_sources_used = []
+            unreadable_count = 0
 
-        print("\n📊 PROCESSING SIGN CLASSES (36)...")
-        print("-" * 70)
+            for image_path in image_paths:
+                features = extract_keypoints(image_path, detector)
+                if features is None:
+                    unreadable_count += 1
+                    continue
+                class_features.append(features)
+                class_sources_used.append(image_path)
 
-        sign_class_id = 0
-        for sign_name, sign_folder in SIGN_CLASSES.items():
-            sign_path = SIGNS_FRAMES_DIR / sign_folder
-            if not sign_path.exists():
-                continue
-            image_files = list(sign_path.glob('*.jpg')) + list(sign_path.glob('*.png'))
-            if not image_files:
-                continue
-            keypoints_list = []
-            for img_file in image_files:
-                kp = extract_keypoints_mediapipe(img_file, hands)
-                if kp is not None and np.sum(kp) > 0:  # Ensure hand landmark was detected
-                    keypoints_list.append(kp)
-                    augmented = augment_keypoints(kp)
-                    keypoints_list.extend(augmented)
-                if len(keypoints_list) >= TRAINING_CONFIG['samples_per_class']:
-                    break
-            keypoints_list = keypoints_list[:TRAINING_CONFIG['samples_per_class']]
-            if len(keypoints_list) > 0:
-                print(f"  ✓ {sign_folder:15} → {len(keypoints_list):3} samples (label {sign_class_id})")
-                all_keypoints.extend(keypoints_list)
-                all_labels.extend([sign_class_id] * len(keypoints_list))
-            sign_class_id += 1
+            if class_features:
+                feature_array = np.asarray(class_features, dtype=np.float32)
+                keypoint_chunks.append(feature_array)
+                label_chunks.append(
+                    np.full(len(feature_array), class_id, dtype=np.int32)
+                )
+                manifest_rows.extend(
+                    (class_id, class_name, str(path)) for path in class_sources_used
+                )
 
-        print("\n📊 PROCESSING ALPHABET CLASSES (29)...")
-        print("-" * 70)
+            print(
+                f"{class_name:10} label={class_id:2} "
+                f"images={len(image_paths):4} extracted={len(class_features):4} "
+                f"unreadable/no-hand={unreadable_count:4}"
+            )
 
-        alphabet_class_id = 36  # ALPHABETS START AT 36
-        for alpha_id, alpha_name in ALPHABET_CLASSES.items():
-            alpha_path = ALPHABETS_DIR / alpha_name
-            if not alpha_path.exists():
-                continue
-            image_files = list(alpha_path.glob('*.jpg')) + list(alpha_path.glob('*.png'))
-            if not image_files:
-                continue
-            keypoints_list = []
-            for img_file in image_files:
-                kp = extract_keypoints_mediapipe(img_file, hands)
-                if kp is not None and np.sum(kp) > 0:
-                    keypoints_list.append(kp)
-                    augmented = augment_keypoints(kp)
-                    keypoints_list.extend(augmented)
-                if len(keypoints_list) >= TRAINING_CONFIG['samples_per_class']:
-                    break
-            keypoints_list = keypoints_list[:TRAINING_CONFIG['samples_per_class']]
-            if len(keypoints_list) > 0:
-                print(f"  ✓ {alpha_name:15} → {len(keypoints_list):3} samples (label {alphabet_class_id})")
-                all_keypoints.extend(keypoints_list)
-                all_labels.extend([alphabet_class_id] * len(keypoints_list))
-            alphabet_class_id += 1
+    if not keypoint_chunks:
+        raise RuntimeError("No hand keypoints were extracted; output files were not written.")
 
-    print("\n" + "=" * 70)
-    print("SAVING KEYPOINTS...")
-    print("=" * 70)
+    keypoints = np.concatenate(keypoint_chunks, axis=0)
+    labels = np.concatenate(label_chunks, axis=0)
+    np.save(keypoints_path, keypoints)
+    np.save(labels_path, labels)
 
-    all_keypoints = np.array(all_keypoints, dtype=np.float32)
-    all_labels = np.array(all_labels, dtype=np.int32)
+    with manifest_path.open("w", newline="", encoding="utf-8") as manifest_file:
+        writer = csv.writer(manifest_file)
+        writer.writerow(("label_id", "class_name", "source_image"))
+        writer.writerows(manifest_rows)
 
-    print(f"\nTotal samples extracted: {len(all_keypoints)}")
-    print(f"  - Shape: {all_keypoints.shape}")
-    print(f"  - Unique classes: {len(np.unique(all_labels))}")
-    print(f"  - Labels range: {np.min(all_labels)}-{np.max(all_labels)}")
+    print(f"\nSaved {len(labels):,} raw samples with shape {keypoints.shape}.")
+    print(f"Keypoints: {keypoints_path}")
+    print(f"Labels:    {labels_path}")
+    print(f"Manifest:  {manifest_path}")
+    print("Existing keypoints.npy and labels.npy were not modified.")
 
-    keypoints_file = KEYPOINTS_DIR / 'keypoints.npy'
-    labels_file = KEYPOINTS_DIR / 'labels.npy'
 
-    np.save(str(keypoints_file), all_keypoints)
-    np.save(str(labels_file), all_labels)
-
-    print(f"\n✅ Saved: {keypoints_file}")
-    print(f"✅ Saved: {labels_file}")
-    print("\n✅ EXTRACTION COMPLETE!")
+if __name__ == "__main__":
+    main()

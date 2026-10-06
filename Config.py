@@ -3,8 +3,8 @@ IMPROVED ASL - Configuration File
 ==================================
 Defines all classes, groups, paths, and search database
 Total: 65 classes (36 signs + 29 alphabets)
-Organized into 13 groups (6 alphabet + 7 sign groups)
-Smart grouping ensures NO similar signs in same group
+Organized into 13 focused groups (6 alphabet + 7 sign groups) plus 1 all-class group
+Smart grouping ensures NO similar signs in the focused groups
 """
 
 from pathlib import Path
@@ -30,6 +30,12 @@ ALPHABET_CLASSES = {
     25: 'Z', 26: 'space', 27: 'nothing', 28: 'del',
 }
 
+ALL_CLASS_NAMES = list(SIGN_CLASSES.values()) + list(ALPHABET_CLASSES.values())
+CLASS_IDS = {
+    **{name: class_id for class_id, name in SIGN_CLASSES.items()},
+    **{name: 36 + class_id for class_id, name in ALPHABET_CLASSES.items()},
+}
+
 GROUPS = {
     'ALPHA1': {'name': 'Alphabet Group 1', 'type': 'alphabet', 'classes': ['A', 'B', 'C', 'D', 'E'], 'description': 'Letters A-E'},
     'ALPHA2': {'name': 'Alphabet Group 2', 'type': 'alphabet', 'classes': ['F', 'G', 'H', 'I', 'J'], 'description': 'Letters F-J'},
@@ -44,12 +50,15 @@ GROUPS = {
     'SIGN5': {'name': 'Sign Group 5', 'type': 'sign', 'classes': ['give', 'like', 'meet', 'no', 'play'], 'description': 'Action, emotion, social, negation, activity - like SEPARATED from enjoy, no from yes'},
     'SIGN6': {'name': 'Sign Group 6', 'type': 'sign', 'classes': ['now', 'son', 'tell', 'walk', 'woman'], 'description': 'Timing, family, communication, movement, person - walk SEPARATED from go, woman from man'},
     'SIGN7': {'name': 'Sign Group 7', 'type': 'sign', 'classes': ['want', 'what', 'who', 'work', 'wrong', 'yes'], 'description': 'Request, questions, place, negation, affirmation - want SEPARATED from help, yes from no'},
+    'ALL': {'name': 'All Classes', 'type': 'universal', 'classes': ALL_CLASS_NAMES, 'description': 'All 65 signs and alphabet classes'},
 }
 
 SIGNS_DB = {}
 ALPHABETS_DB = {}
 
 for group_id, group_info in GROUPS.items():
+    if group_info['type'] == 'universal':
+        continue
     for class_name in group_info['classes']:
         search_entry = {'group_id': group_id, 'group_name': group_info['name'], 'type': group_info['type'], 'class_name': class_name}
         if group_info['type'] == 'alphabet':
@@ -108,7 +117,7 @@ STATS = {
 
 if __name__ == '__main__':
     print("=" * 70)
-    print("IMPROVED ASL - CONFIGURATION (UPDATED)")
+    print("IMPROVED ASL - CONFIGURATION")
     print("=" * 70)
     print(f"\nTotal Groups: {STATS['total_groups']}")
     print(f"Total Classes: {STATS['total_classes']}")
