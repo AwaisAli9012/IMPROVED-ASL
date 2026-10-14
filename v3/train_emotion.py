@@ -25,8 +25,11 @@ from pathlib import Path
 
 import joblib
 import numpy as np
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, f1_score
 from sklearn.model_selection import StratifiedShuffleSplit
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
 from sklearn.utils.class_weight import compute_sample_weight
 from xgboost import XGBClassifier
 
@@ -140,14 +143,35 @@ except TypeError:   # older xgboost
     model.fit(X_tr, y_tr, sample_weight=w_tr, eval_set=[(X_va, y_va)],
               early_stopping_rounds=40, verbose=50)
 
+# ------------------------------------------------------------------ cue model
+# A small, interpretable model on the 16 expression features only (mouth width, mouth corners, eye
+# openness, brow height, inner-brow drop, ...). At run time it is fed the person's CHANGE from their own
+# calibrated neutral face, and its output is blended with the XGBoost model above.
+EXPR = slice(134, N_FEATURES)
+cue = make_pipeline(StandardScaler(), LogisticRegression(C=1.0, max_iter=3000, class_weight="balanced"))
+cue.fit(X_tr[:, EXPR], y_tr)
+
+pv_x, pv_c = model.predict_proba(X_va), cue.predict_proba(X_va[:, EXPR])
+best_w, best_va = 0.0, -1.0
+for w in (0.0, 0.25, 0.5, 0.75, 1.0):
+    a = accuracy_score(y_va, np.argmax((1 - w) * pv_x + w * pv_c, axis=1))
+    if a > best_va + 1e-9:
+        best_w, best_va = w, a
+print(f"\nBlend weight chosen on the validation split: cue model weight = {best_w} (val acc {best_va * 100:.1f}%)")
+
+pt_x, pt_c = model.predict_proba(X_test), cue.predict_proba(X_test[:, EXPR])
+acc_xgb = accuracy_score(y_test, np.argmax(pt_x, axis=1))
+acc_cue = accuracy_score(y_test, np.argmax(pt_c, axis=1))
+
 # ------------------------------------------------------------------ honest evaluation
-y_pred = model.predict(X_test)
+y_pred = np.argmax((1 - best_w) * pt_x + best_w * pt_c, axis=1)
 acc = accuracy_score(y_test, y_pred)
 macro = f1_score(y_test, y_pred, average="macro")
 majority = np.bincount(y_test).max() / len(y_test)
 labels = sorted(names)
 print("\n" + "=" * 60)
-print(f"Test accuracy: {acc * 100:.2f}%   Macro F1: {macro:.4f}   (always-guess-majority = {majority * 100:.1f}%)")
+print(f"XGBoost alone: {acc_xgb * 100:.2f}%   Cue model alone: {acc_cue * 100:.2f}%")
+print(f"BLENDED test accuracy: {acc * 100:.2f}%   Macro F1: {macro:.4f}   (always-guess-majority = {majority * 100:.1f}%)")
 print("=" * 60)
 print(classification_report(y_test, y_pred, labels=labels,
                             target_names=[names[k] for k in labels], zero_division=0))
@@ -163,6 +187,7 @@ neutral_id = next((k for k, v in names.items() if v == "neutral"), None)
 neutral_median = np.median(X_trainval[y_trainval == neutral_id], axis=0) if neutral_id is not None else np.zeros(N_FEATURES)
 
 joblib.dump(model, OUT_DIR / "emotion_model.pkl")
+joblib.dump(cue, OUT_DIR / "emotion_cue_model.pkl")
 meta = {
     "classes": {str(k): names[k] for k in sorted(names)},
     "n_features": int(N_FEATURES),
@@ -170,9 +195,11 @@ meta = {
     "neutral_median": [float(v) for v in neutral_median],
     "n_train": int(len(y_tr)), "n_test": int(len(y_test)),
     "test_accuracy": float(acc), "macro_f1": float(macro),
+    "xgb_test_accuracy": float(acc_xgb), "cue_test_accuracy": float(acc_cue),
+    "cue_weight": float(best_w), "expr_start": 134,
     "trained_utc": datetime.now(timezone.utc).isoformat(),
     "note": "single-frame model, 68-point face_alignment landmarks, clean (non-augmented) rows only",
 }
 with open(OUT_DIR / "emotion_meta.json", "w") as f:
     json.dump(meta, f, indent=2)
-print(f"\n✓ Saved emotion_model.pkl and emotion_meta.json to {OUT_DIR}")
+print(f"\n✓ Saved emotion_model.pkl, emotion_cue_model.pkl and emotion_meta.json to {OUT_DIR}")

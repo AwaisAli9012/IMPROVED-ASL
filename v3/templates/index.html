@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASL Multimodal Wizard Translator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .cursor-active {
+            border-bottom: 4px solid #3b82f6;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { border-color: #3b82f6; }
+            50% { border-color: #93c5fd; }
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans">
+
+    <!-- Header Navigation -->
+    <header class="bg-slate-800 border-b border-slate-700 p-4">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
+            <h1 class="text-xl font-bold text-blue-400 flex items-center gap-2">
+                <i class="fa-solid fa-hands"></i> ASL Multimodal Wizard
+            </h1>
+            
+            <div class="flex items-center gap-2">
+                <label for="groupSelect" class="text-sm font-medium text-slate-400">Sign Model Group:</label>
+                <select id="groupSelect" class="bg-slate-700 text-white rounded border border-slate-600 px-3 py-1.5 text-sm focus:outline-none focus:border-blue-500 max-w-md">
+                    <!-- Populated dynamically -->
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Left Column: Video Feed & Group Words Overview -->
+        <div class="lg:col-span-7 flex flex-col gap-4">
+            <div class="relative bg-black rounded-xl overflow-hidden border border-slate-700 shadow-2xl aspect-video flex items-center justify-center">
+                <!-- Visitor's own browser webcam stream -->
+                <video id="webcamVideo" autoplay playsinline muted class="w-full h-full object-cover transform -scale-x-100"></video>
+                <!-- Canvas overlay for hand landmarks -->
+                <canvas id="landmarkCanvas" class="absolute inset-0 w-full h-full pointer-events-none transform -scale-x-100"></canvas>
+                
+                <div class="absolute top-4 left-4 bg-slate-900/80 backdrop-blur border border-slate-700 rounded-lg px-4 py-2 flex items-center gap-3">
+                    <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold">Active Detection:</span>
+                    <span id="latchedSignText" class="text-lg font-bold text-green-400">WAITING...</span>
+                    <div id="timerContainer" style="display:none" class="items-center gap-2">
+                        <span class="text-xs text-amber-400 font-semibold">Auto-add:</span>
+                        <div class="w-20 bg-slate-700 h-2 rounded-full overflow-hidden">
+                            <div id="timerProgressBar" class="bg-amber-400 h-full" style="width:0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="absolute bottom-4 left-4 bg-slate-900/80 backdrop-blur border border-slate-700 rounded-lg px-3 py-1.5 flex items-center gap-2">
+                    <span class="text-xs text-slate-400 font-semibold">Active Group:</span>
+                    <span id="activeGroupOverlay" class="text-xs font-bold text-blue-400">Alphabet Auto-Scan</span>
+                </div>
+            </div>
+
+            <!-- Full Group Words Display Card -->
+            <div class="bg-slate-800/80 border border-slate-700 rounded-xl p-3">
+                <div class="text-xs font-semibold uppercase text-slate-400 mb-2 flex justify-between items-center">
+                    <span class="flex items-center gap-2"><i class="fa-solid fa-list-check text-blue-400"></i> All Available Signs in Active Group:</span>
+                    <span id="activeGroupTitle" class="text-xs text-blue-300 font-mono">Alphabet Auto-Scan</span>
+                </div>
+                <div id="availableWordsContainer" class="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto">
+                    <!-- Words rendered via JS -->
+                </div>
+            </div>
+
+            <!-- Keyboard Shortcuts Helper -->
+            <div class="bg-slate-800/60 border border-slate-700 rounded-lg p-3 grid grid-cols-2 md:grid-cols-6 gap-2 text-center text-xs text-slate-300">
+                <div class="bg-slate-700/50 p-2 rounded border border-slate-600">
+                    <kbd class="px-1.5 py-0.5 bg-slate-800 rounded border border-slate-500 font-mono text-blue-300">A / W</kbd> Alphabet / Word Auto-Scan
+                </div>
+                <div class="bg-slate-700/50 p-2 rounded border border-slate-600">
+                    <kbd class="px-1.5 py-0.5 bg-slate-800 rounded border border-slate-500 font-mono text-blue-300">↑ / ↓</kbd> Groups in section
+                </div>
+                <div class="bg-slate-700/50 p-2 rounded border border-slate-600">
+                    <kbd class="px-1.5 py-0.5 bg-slate-800 rounded border border-slate-500 font-mono text-blue-300">← / →</kbd> Move Cursor
+                </div>
+                <div class="bg-slate-700/50 p-2 rounded border border-slate-600">
+                    <kbd class="px-1.5 py-0.5 bg-slate-800 rounded border border-slate-500 font-mono text-blue-300">Enter</kbd> Confirm Sign
+                </div>
+                <div class="bg-slate-700/50 p-2 rounded border border-slate-600">
+                    <kbd class="px-1.5 py-0.5 bg-slate-800 rounded border border-slate-500 font-mono text-blue-300">Space</kbd> Insert Space
+                </div>
+                <div class="bg-slate-700/50 p-2 rounded border border-slate-600">
+                    <kbd class="px-1.5 py-0.5 bg-slate-800 rounded border border-slate-500 font-mono text-blue-300">Backspace</kbd> Delete Sign
+                </div>
+            </div>
+            <div id="debugLine" class="text-[11px] text-slate-500 font-mono px-1">UI build 2026-10-11-a | waiting for a key...</div>
+        </div>
+
+        <!-- Right Column: Interactive Controls -->
+        <div class="lg:col-span-5 flex flex-col gap-4">
+            <div class="flex border-b border-slate-700">
+                <button id="tabBtnSign" onclick="showTab('sign')" class="flex-1 py-2 text-center font-semibold text-sm border-b-2 border-blue-500 text-blue-400">
+                    Sign Sequence Builder
+                </button>
+                <button id="tabBtnEmotion" onclick="showTab('emotion')" class="flex-1 py-2 text-center font-semibold text-sm border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+                    Facial Tone / Emotion
+                </button>
+            </div>
+
+            <div id="panelSign" class="flex-1 bg-slate-800 rounded-xl border border-slate-700 p-4 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-center mb-3">
+                        <h2 class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Confirmed Sequence</h2>
+                        <button onclick="clearAll()" class="text-xs bg-red-500/20 text-red-400 hover:bg-red-500/30 px-2 py-1 rounded border border-red-500/30 transition">
+                            Clear All
+                        </button>
+                    </div>
+
+                    <div id="signContainer" class="flex flex-wrap gap-2 p-3 bg-slate-900 rounded-lg min-h-[120px] border border-slate-700/50 items-center">
+                        <!-- Rendered via JS -->
+                    </div>
+                </div>
+
+                <div class="flex gap-2 mt-4">
+                    <button onclick="confirmSign()" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-medium py-2.5 rounded-lg transition text-sm flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Confirm Sign (Enter)
+                    </button>
+                    <button onclick="addSpace()" class="bg-slate-700 hover:bg-slate-600 text-slate-200 font-medium px-4 py-2.5 rounded-lg transition text-sm border border-slate-600 flex items-center justify-center gap-1.5" title="Insert word space">
+                        <i class="fa-solid fa-space-key"></i> Space
+                    </button>
+                </div>
+            </div>
+
+            <!-- Facial Tone / Emotion tab -->
+            <div id="panelEmotion" style="display:none" class="flex-1 bg-slate-800 rounded-xl border border-slate-700 p-4 flex flex-col gap-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-sm font-semibold text-slate-300 uppercase tracking-wider">Facial Emotion Tone</h2>
+                    <span id="calibBadge" class="text-xs font-mono px-2 py-1 rounded border bg-amber-500/10 text-amber-400 border-amber-500/30">Not Calibrated</span>
+                </div>
+
+                <div class="bg-slate-900 rounded-lg border border-slate-700 p-3 flex flex-col gap-3">
+                    <div class="flex justify-between items-center text-xs text-slate-400">
+                        <span>Neutral Baseline:</span>
+                        <button id="btnCalibrate" onclick="calibrateNeutral()" class="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium px-3 py-1.5 rounded text-xs flex items-center gap-2 transition">
+                            <i class="fa-solid fa-face-smile"></i> Calibrate Neutral
+                        </button>
+                    </div>
+                    <div class="border-t border-slate-800"></div>
+                    <div class="flex justify-between items-center text-xs text-slate-400">
+                        <span>Live Camera Detection:</span>
+                        <button id="btnDetect" onclick="detectTone()" class="bg-slate-700 hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed text-blue-300 font-medium px-3 py-1.5 rounded text-xs flex items-center gap-2 border border-slate-600 transition">
+                            <i class="fa-solid fa-camera"></i> Detect Tone
+                        </button>
+                    </div>
+                </div>
+
+                <p id="emotionStatus" class="text-xs text-slate-400 min-h-[1rem]"></p>
+
+                <div>
+                    <div class="text-xs font-semibold text-slate-400 mb-1">Locked Tone for Synthesis:</div>
+                    <div id="lockedTone" class="bg-slate-900 border border-slate-700 rounded-lg py-3 text-center font-mono font-bold text-green-400">NEUTRAL</div>
+                </div>
+
+                <div>
+                    <div class="text-xs font-semibold text-slate-400 mb-1">Manual Override:</div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button data-tone="happy" onclick="setManualTone('happy')" class="tone-btn bg-slate-700/60 hover:bg-slate-600 border border-slate-600 text-slate-200 text-sm py-1.5 rounded transition">Happy</button>
+                        <button data-tone="neutral" onclick="setManualTone('neutral')" class="tone-btn bg-slate-700/60 hover:bg-slate-600 border border-slate-600 text-slate-200 text-sm py-1.5 rounded transition">Neutral</button>
+                        <button data-tone="sad" onclick="setManualTone('sad')" class="tone-btn bg-slate-700/60 hover:bg-slate-600 border border-slate-600 text-slate-200 text-sm py-1.5 rounded transition">Sad</button>
+                        <button data-tone="angry" onclick="setManualTone('angry')" class="tone-btn bg-slate-700/60 hover:bg-slate-600 border border-slate-600 text-slate-200 text-sm py-1.5 rounded transition">Angry</button>
+                    </div>
+                </div>
+
+                <details class="text-xs text-slate-400 bg-slate-900/60 border border-slate-700 rounded-lg px-3 py-2">
+                    <summary class="cursor-pointer select-none">What the camera measured</summary>
+                    <div id="emoSignals" class="mt-2 font-mono flex flex-col gap-1"></div>
+                    <button onclick="resetCalibration()" class="mt-3 text-[11px] text-slate-400 hover:text-red-300 underline">Reset calibration</button>
+                </details>
+
+                <p class="text-[11px] italic text-slate-500 text-center mt-auto">Tone influences Gemini sentence phrasing and punctuation.</p>
+            </div>
+
+            <!-- Multimodal Synthesis Output -->
+            <div class="bg-slate-800 rounded-xl border border-slate-700 p-4 flex flex-col gap-3">
+                <button onclick="generateSentence()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-lg transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/20">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Synthesize Sentence (Gemini)
+                </button>
+                <div class="bg-slate-900 rounded-lg p-3 border border-slate-700 min-h-[60px]">
+                    <div class="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-1">Synthesized Output</div>
+                    <p id="generatedSentence" class="text-slate-200 text-sm italic">Your synthesized sentence will appear here...</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Client Script -->
+    <script>
+        let groupsData = {};
+        let unifiedGroupList = [];
+        let sections = { alphabet: [], word: [] };
+        let alphaAutoScanKey = 'ALPHA_ALL';
+        let wordAutoScanKey = 'SIGN_ALL';
+        let groupLockUntil = 0;
+
+        function setDebug(msg) {
+            const el = document.getElementById('debugLine');
+            if (el) el.innerText = 'UI build 2026-10-11-a | ' + msg;
+            console.log('[ASL UI]', msg);
+        }
+
+        // Initialize client browser webcam and streaming loop with landmark drawing overlay
+        async function initClientWebcam() {
+            const videoElement = document.getElementById('webcamVideo');
+            const canvasElement = document.getElementById('landmarkCanvas');
+            const canvasCtx = canvasElement.getContext('2d');
+
+            try {
+                const constraints = {
+                    video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: 'user' },
+                    audio: false
+                };
+                const stream = await navigator.mediaDevices.getUserMedia(constraints);
+                videoElement.srcObject = stream;
+                await videoElement.play();
+                setDebug("Visitor webcam initialized successfully.");
+
+                const captureCanvas = document.createElement('canvas');
+                const captureCtx = captureCanvas.getContext('2d');
+
+                setInterval(async () => {
+                    if (!videoElement.videoWidth || !videoElement.videoHeight) return;
+
+                    canvasElement.width = videoElement.videoWidth;
+                    canvasElement.height = videoElement.videoHeight;
+
+                    captureCanvas.width = videoElement.videoWidth;
+                    captureCanvas.height = videoElement.videoHeight;
+                    captureCtx.drawImage(videoElement, 0, 0, captureCanvas.width, captureCanvas.height);
+
+                    captureCanvas.toBlob(async (blob) => {
+                        if (!blob) return;
+                        const formData = new FormData();
+                        formData.append('frame', blob, 'frame.jpg');
+                        try {
+                            const res = await fetch('/api/predict_frame', { method: 'POST', body: formData });
+                            const data = await res.json();
+
+                            // Draw hand landmarks overlay
+                            canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+                            if (data.landmarks && data.landmarks.length > 0) {
+                                canvasCtx.fillStyle = '#3b82f6';
+                                canvasCtx.strokeStyle = '#93c5fd';
+                                canvasCtx.lineWidth = 2;
+
+                                data.landmarks.forEach(hand => {
+                                    hand.forEach(lm => {
+                                        const x = lm.x * canvasElement.width;
+                                        const y = lm.y * canvasElement.height;
+                                        canvasCtx.beginPath();
+                                        canvasCtx.arc(x, y, 4, 0, 2 * Math.PI);
+                                        canvasCtx.fill();
+                                        canvasCtx.stroke();
+                                    });
+                                });
+                            }
+                        } catch (err) {
+                            console.error("Frame upload error:", err);
+                        }
+                    }, 'image/jpeg', 0.6);
+                }, 150);
+
+            } catch (err) {
+                console.error("Webcam access denied or unavailable:", err);
+                setDebug("Camera access error: " + err.message);
+            }
+        }
+
+        function sectionOf(groupId) {
+            const g = groupsData[groupId];
+            if (!g) return null;
+            return g.section || ((g.type || '').startsWith('alphabet') ? 'alphabet' : 'word');
+        }
+
+        async function loadGroups() {
+            try {
+                const res = await fetch('/api/groups_detail');
+                groupsData = await res.json();
+
+                const alpha = [], word = [];
+                let alphaAuto = null, wordAuto = null;
+                for (const g_id of Object.keys(groupsData)) {
+                    const g = groupsData[g_id];
+                    const isAuto = g.is_auto || (g.type || '').endsWith('_auto');
+                    if (sectionOf(g_id) === 'alphabet') { if (isAuto) alphaAuto = g_id; else alpha.push(g_id); }
+                    else                                { if (isAuto) wordAuto = g_id;  else word.push(g_id); }
+                }
+                const byNumber = (a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+                alpha.sort(byNumber);
+                word.sort(byNumber);
+                if (alphaAuto) alphaAutoScanKey = alphaAuto;
+                if (wordAuto) wordAutoScanKey = wordAuto;
+                sections.alphabet = [alphaAuto, ...alpha].filter(Boolean);
+                sections.word = [wordAuto, ...word].filter(Boolean);
+                unifiedGroupList = [...sections.alphabet, ...sections.word];
+
+                populateDropdown();
+
+                const stateRes = await fetch('/api/state');
+                const state = await stateRes.json();
+                if (state.selected_group && unifiedGroupList.includes(state.selected_group)) {
+                    document.getElementById('groupSelect').value = state.selected_group;
+                    renderAvailableWords(state.selected_group);
+                } else if (unifiedGroupList.length > 0) {
+                    document.getElementById('groupSelect').value = unifiedGroupList[0];
+                    switchGroupById(unifiedGroupList[0]);
+                }
+            } catch (err) {
+                console.error("Failed to load groups:", err);
+            }
+        }
+
+        function populateDropdown() {
+            const select = document.getElementById('groupSelect');
+            select.innerHTML = '';
+            [['alphabet', 'Alphabet'], ['word', 'Words']].forEach(([sec, label]) => {
+                if (!sections[sec].length) return;
+                const og = document.createElement('optgroup');
+                og.label = label;
+                sections[sec].forEach(g_id => {
+                    const opt = document.createElement('option');
+                    opt.value = g_id;
+                    opt.textContent = groupsData[g_id].display_name || g_id;
+                    og.appendChild(opt);
+                });
+                select.appendChild(og);
+            });
+        }
+
+        function renderAvailableWords(groupId) {
+            const container = document.getElementById('availableWordsContainer');
+            const titleEl = document.getElementById('activeGroupTitle');
+            const overlayEl = document.getElementById('activeGroupOverlay');
+            container.innerHTML = '';
+            
+            if (!groupsData[groupId] || !groupsData[groupId].classes) return;
+
+            const name = groupsData[groupId].display_name || groupsData[groupId].name || groupId;
+            const list = sections[sectionOf(groupId)] || [];
+            const pos = list.indexOf(groupId);
+            titleEl.innerText = name;
+            overlayEl.innerText = pos >= 0 ? name + '  \u00b7  ' + (pos + 1) + '/' + list.length : name;
+
+            groupsData[groupId].classes.forEach(word => {
+                const badge = document.createElement('span');
+                badge.className = "px-2 py-0.5 bg-slate-700/80 text-blue-300 rounded border border-slate-600 text-xs font-mono";
+                badge.innerText = word;
+                container.appendChild(badge);
+            });
+        }
+
+        async function switchGroupById(groupId) {
+            if (!groupId || !groupsData[groupId]) {
+                setDebug(`unknown group "${groupId}"`);
+                return;
+            }
+            groupLockUntil = Date.now() + 1000;
+            const select = document.getElementById('groupSelect');
+            select.value = groupId;
+            renderAvailableWords(groupId);
+            try {
+                const res = await fetch('/api/group', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ group_id: groupId })
+                });
+                if (res.ok) {
+                    setDebug(`group set to ${groupId}`);
+                } else {
+                    groupLockUntil = 0;
+                    setDebug(`SERVER REJECTED group ${groupId} (HTTP ${res.status})`);
+                }
+            } catch (err) {
+                groupLockUntil = 0;
+                setDebug('could not reach the server: ' + err);
+            }
+            fetchState();
+        }
+
+        function cycleGroup(direction) {
+            const select = document.getElementById('groupSelect');
+            const list = sections[sectionOf(select.value)] || sections.alphabet;
+            if (!list || list.length === 0) return;
+            let idx = list.indexOf(select.value);
+            if (idx === -1) idx = 0;
+            else idx = direction === 'next' ? (idx + 1) % list.length : (idx - 1 + list.length) % list.length;
+            switchGroupById(list[idx]);
+        }
+
+        async function fetchState() {
+            try {
+                const res = await fetch('/api/state');
+                const data = await res.json();
+
+                const select = document.getElementById('groupSelect');
+                if (Date.now() > groupLockUntil && data.selected_group && select.value !== data.selected_group && unifiedGroupList.includes(data.selected_group)) {
+                    select.value = data.selected_group;
+                    renderAvailableWords(data.selected_group);
+                }
+
+                const latchedText = document.getElementById('latchedSignText');
+                if (data.last_valid_sign) {
+                    latchedText.innerText = `${data.last_valid_sign} (${data.last_confidence}%)`;
+                    latchedText.className = "text-lg font-bold text-green-400";
+                } else {
+                    latchedText.innerText = "WAITING FOR HANDS...";
+                    latchedText.className = "text-lg font-bold text-slate-500";
+                }
+
+                const timerBox = document.getElementById('timerContainer');
+                if (data.last_valid_sign && data.timer_progress > 0) {
+                    timerBox.style.display = 'flex';
+                    document.getElementById('timerProgressBar').style.width = data.timer_progress + '%';
+                } else {
+                    timerBox.style.display = 'none';
+                }
+
+                renderSigns(data.signs, data.cursor_index);
+                renderEmotion(data);
+            } catch (err) {
+                console.error("State sync error:", err);
+            }
+        }
+
+        function renderSigns(signs, cursorIndex) {
+            const container = document.getElementById('signContainer');
+            container.innerHTML = '';
+
+            if (!signs || signs.length === 0) {
+                container.innerHTML = `<span class="text-slate-500 text-xs italic">No signs confirmed yet. Hold a sign and press Enter.</span>`;
+                return;
+            }
+
+            signs.forEach((sign, idx) => {
+                const chip = document.createElement('div');
+                const isCursor = idx === cursorIndex;
+                const isSpace = sign === "[SPACE]";
+
+                if (isSpace) {
+                    chip.className = `px-3 py-1.5 rounded-md text-xs font-semibold flex items-center justify-center ${
+                        isCursor ? 'bg-blue-600 text-white cursor-active' : 'bg-slate-800/50 text-slate-400 border border-dashed border-slate-700'
+                    }`;
+                    chip.innerHTML = `<i class="fa-solid fa-arrows-left-right text-[11px]" title="Space"></i>`;
+                } else {
+                    chip.className = `px-3 py-1.5 rounded-md font-mono text-sm font-semibold flex items-center gap-2 ${
+                        isCursor ? 'bg-blue-600 text-white cursor-active' : 'bg-slate-800 text-slate-300 border border-slate-700'
+                    }`;
+                    chip.innerText = sign;
+                }
+                container.appendChild(chip);
+            });
+        }
+
+        async function confirmSign() {
+            await fetch('/api/confirm_sign', { method: 'POST' });
+            fetchState();
+        }
+
+        async function addSpace() {
+            await fetch('/api/add_space', { method: 'POST' });
+            fetchState();
+        }
+
+        async function navigateCursor(direction) {
+            await fetch('/api/navigate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ direction })
+            });
+            fetchState();
+        }
+
+        async function deleteSign() {
+            await fetch('/api/delete_sign', { method: 'POST' });
+            fetchState();
+        }
+
+        async function clearAll() {
+            await fetch('/api/clear', { method: 'POST' });
+            fetchState();
+        }
+
+        async function generateSentence() {
+            const outputEl = document.getElementById('generatedSentence');
+            outputEl.innerText = "Synthesizing sentence with Gemini...";
+            outputEl.className = "text-blue-400 text-sm animate-pulse";
+
+            try {
+                const res = await fetch('/api/generate', { method: 'POST' });
+                const data = await res.json();
+                if (data.sentence) {
+                    outputEl.innerText = `"${data.sentence}"`;
+                    outputEl.className = "text-green-400 font-medium text-sm";
+                } else {
+                    outputEl.innerText = data.error || "Generation failed";
+                    outputEl.className = "text-red-400 text-sm";
+                }
+            } catch (err) {
+                outputEl.innerText = "Error connecting to backend server.";
+                outputEl.className = "text-red-400 text-sm";
+            }
+        }
+
+        // ---------------- Facial Tone / Emotion tab ----------------
+        let currentTab = 'sign';
+        let emotionEnabled = false;
+        let emotionLocal = { text: '', until: 0, error: false };
+        const TONE_COLORS = { neutral: 'text-green-400', happy: 'text-amber-300', sad: 'text-sky-400', angry: 'text-red-400' };
+
+        function showTab(name) {
+            currentTab = name;
+            document.getElementById('panelSign').style.display = name === 'sign' ? '' : 'none';
+            document.getElementById('panelEmotion').style.display = name === 'emotion' ? 'flex' : 'none';
+            const on = 'flex-1 py-2 text-center font-semibold text-sm border-b-2 border-blue-500 text-blue-400';
+            const off = 'flex-1 py-2 text-center font-semibold text-sm border-b-2 border-transparent text-slate-400 hover:text-slate-200';
+            document.getElementById('tabBtnSign').className = name === 'sign' ? on : off;
+            document.getElementById('tabBtnEmotion').className = name === 'emotion' ? on : off;
+            setDebug('tab: ' + name);
+            if (name === 'emotion' && !emotionEnabled) enableEmotion();
+        }
+
+        async function enableEmotion() {
+            emotionEnabled = true;
+            try {
+                await fetch('/api/grant_emotion_permission', { method: 'POST' });
+            } catch (err) {
+                emotionEnabled = false;
+                showEmotionMessage('Could not reach the server: ' + err, true);
+            }
+            fetchState();
+        }
+
+        function showEmotionMessage(text, isError) {
+            emotionLocal = { text: text, until: Date.now() + 6000, error: !!isError };
+            renderEmotionStatus(text, !!isError);
+        }
+
+        async function emotionPost(url, body) {
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body || {})
+                });
+                let data = {};
+                try { data = await res.json(); } catch (e) {}
+                if (!res.ok) showEmotionMessage(data.message || ('Request failed (HTTP ' + res.status + ')'), res.status !== 409);
+                return data;
+            } catch (err) {
+                showEmotionMessage('Could not reach the server: ' + err, true);
+                return {};
+            } finally {
+                fetchState();
+            }
+        }
+
+        async function calibrateNeutral() {
+            if (!emotionEnabled) await enableEmotion();
+            renderEmotionStatus('Relax your face into a neutral expression and look at the camera...', false);
+            await emotionPost('/api/calibrate_neutral');
+        }
+        async function detectTone() {
+            if (!emotionEnabled) await enableEmotion();
+            renderEmotionStatus('Make your expression and hold it...', false);
+            await emotionPost('/api/confirm_emotion', {});
+        }
+        async function setManualTone(tone) {
+            await emotionPost('/api/confirm_emotion', { emotion: tone });
+        }
+        async function resetCalibration() {
+            await emotionPost('/api/reset_calibration');
+        }
+
+        function renderEmotionStatus(text, isError) {
+            const el = document.getElementById('emotionStatus');
+            el.textContent = text || '';
+            el.className = 'text-xs min-h-[1rem] ' + (isError ? 'text-red-400' : 'text-slate-400');
+        }
+
+        function renderEmotion(data) {
+            if (data.locked_emotion === undefined) return;
+            const tone = String(data.locked_emotion || 'neutral').toLowerCase();
+
+            const badge = document.getElementById('calibBadge');
+            if (data.calibrated) {
+                badge.textContent = 'Calibrated';
+                badge.className = 'text-xs font-mono px-2 py-1 rounded border bg-green-500/10 text-green-400 border-green-500/30';
+            } else {
+                badge.textContent = 'Not Calibrated';
+                badge.className = 'text-xs font-mono px-2 py-1 rounded border bg-amber-500/10 text-amber-400 border-amber-500/30';
+            }
+
+            const locked = document.getElementById('lockedTone');
+            locked.textContent = tone.toUpperCase();
+            locked.className = 'bg-slate-900 border border-slate-700 rounded-lg py-3 text-center font-mono font-bold ' + (TONE_COLORS[tone] || 'text-green-400');
+
+            document.querySelectorAll('.tone-btn').forEach(b => {
+                const active = b.dataset.tone === tone;
+                b.className = 'tone-btn text-sm py-1.5 rounded transition border ' +
+                    (active ? 'bg-blue-600/30 border-blue-500 text-blue-200' : 'bg-slate-700/60 hover:bg-slate-600 border-slate-600 text-slate-200');
+            });
+
+            const busy = data.emotion_status === 'loading' || data.emotion_status === 'capturing';
+            document.getElementById('btnCalibrate').disabled = busy;
+            document.getElementById('btnDetect').disabled = busy;
+
+            if (Date.now() < emotionLocal.until && !busy) {
+                renderEmotionStatus(emotionLocal.text, emotionLocal.error);
+            } else {
+                renderEmotionStatus(data.emotion_message || '', data.emotion_status === 'error' || data.emotion_status === 'no_face');
+                if (busy) document.getElementById('emotionStatus').classList.add('animate-pulse');
+            }
+
+            const box = document.getElementById('emoSignals');
+            const sig = data.emotion_signals || {};
+            const names = Object.keys(sig);
+            if (names.length === 0) {
+                box.textContent = 'Press Detect Tone to see what the camera measured.';
+            } else {
+                box.innerHTML = '';
+                const ref = data.emotion_personalised ? 'vs your neutral face' : 'vs a typical neutral face (not calibrated)';
+                const head = document.createElement('div');
+                head.className = 'text-slate-500 mb-1';
+                head.textContent = 'Change ' + ref + ' (eye-distance units):';
+                box.appendChild(head);
+                names.forEach(n => {
+                    const v = sig[n];
+                    const row = document.createElement('div');
+                    row.className = 'flex justify-between';
+                    const a = document.createElement('span'); a.textContent = n;
+                    const b = document.createElement('span');
+                    b.textContent = (v >= 0 ? '+' : '') + v.toFixed(3);
+                    b.className = Math.abs(v) >= 0.04 ? 'text-blue-300' : 'text-slate-500';
+                    row.appendChild(a); row.appendChild(b);
+                    box.appendChild(row);
+                });
+                const probs = data.emotion_probs || {};
+                if (Object.keys(probs).length) {
+                    const p = document.createElement('div');
+                    p.className = 'text-slate-500 mt-2';
+                    p.textContent = 'Model: ' + Object.entries(probs).map(([k, v]) => k + ' ' + v + '%').join(' | ');
+                    box.appendChild(p);
+                }
+            }
+        }
+
+        // Global Keyboard Event Listener
+        window.addEventListener('keydown', (e) => {
+            if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+            if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+            const key = e.key.toLowerCase();
+            setDebug('key pressed: ' + e.key);
+
+            if (key === 'a') {
+                e.preventDefault();
+                if (alphaAutoScanKey) switchGroupById(alphaAutoScanKey);
+            } else if (key === 'w') {
+                e.preventDefault();
+                if (wordAutoScanKey) switchGroupById(wordAutoScanKey);
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                cycleGroup('next');
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                cycleGroup('prev');
+            } else if (e.key === 'ArrowLeft' || key === 'k') {
+                e.preventDefault();
+                navigateCursor('left');
+            } else if (e.key === 'ArrowRight' || key === 'l') {
+                e.preventDefault();
+                navigateCursor('right');
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                confirmSign();
+            } else if (e.code === 'Space') {
+                e.preventDefault();
+                addSpace();
+            } else if (e.key === 'Tab') {
+                e.preventDefault();
+                showTab(currentTab === 'sign' ? 'emotion' : 'sign');
+            } else if (e.key === 'Backspace' || e.key === 'Delete') {
+                e.preventDefault();
+                deleteSign();
+            }
+        });
+
+        document.getElementById('groupSelect').addEventListener('change', async (e) => {
+            switchGroupById(e.target.value);
+            e.target.blur();
+        });
+
+        // Initialize webcam and load group configs on startup
+        initClientWebcam();
+        loadGroups();
+        setInterval(fetchState, 200);
+    </script>
+</body>
+</html>
