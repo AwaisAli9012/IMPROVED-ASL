@@ -24,7 +24,7 @@ if (unitId === 'review') {
 if (!unit || unit.state === 'locked') {
   toast('Finish the previous unit first.');
   setTimeout(() => { location.href = '/learn'; }, 1200);
-  throw new Error('locked');
+  await new Promise(() => {}); // stop here; the redirect above takes over
 }
 $('unit-title').textContent = unit.title;
 document.title = `${unit.title} · SignBridge`;
@@ -236,4 +236,4 @@ async function main() {
   for (const [i, item] of items.entries()) { setProgress(i / (items.length + 1)); await learnItem(item); }
   await finish(await quiz(items));
 }
-main().catch((e) => { if (e.message !== 'locked') console.error(e); });
+main().catch((e) => console.error(e));
