@@ -10,3 +10,4 @@ web/static/models/
 web/static/vendor/
 node_modules/
 web/scrollcraft/builds/*/lab/
+web/static/signs/

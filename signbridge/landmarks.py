@@ -51,6 +51,45 @@ def frames_to_array(frames):
     return out
 
 
+def assign_hands(hands, pose):
+    """Detected hands -> (lh, rh), each (21, 3) or None. Un-mirrored image coords; pose is (7, 2) in POSE_IDX order or None.
+
+    A hand goes to the slot of the nearer pose wrist. A hand whose wrist is lower than one shoulder
+    width below the shoulders counts as resting (absent). web/static/js/vision.js must follow the same rule.
+    """
+    hands = [np.asarray(h, dtype=np.float32) for h in hands]
+    if pose is not None:
+        pose = np.asarray(pose, dtype=np.float32)
+        limit = pose[1:3, 1].mean() + np.linalg.norm(pose[1] - pose[2])
+        hands = [h for h in hands if h[0, 1] <= limit]
+    hands = hands[:2]
+    if not hands:
+        return None, None
+    if pose is not None:  # wrists: pose[5] left, pose[6] right
+        d = np.array([[np.linalg.norm(h[0, :2] - pose[w]) for w in (5, 6)] for h in hands])
+        if len(hands) == 1:
+            return (hands[0], None) if d[0, 0] < d[0, 1] else (None, hands[0])
+        return (hands[0], hands[1]) if d[0, 0] + d[1, 1] <= d[0, 1] + d[1, 0] else (hands[1], hands[0])
+    # no pose: the person's left hand is on the image right in an un-mirrored video
+    if len(hands) == 1:
+        return (hands[0], None) if hands[0][0, 0] > 0.5 else (None, hands[0])
+    hands.sort(key=lambda h: -h[0, 0])
+    return hands[0], hands[1]
+
+
+def assemble_frame(hands, pose, lips):
+    """Detector outputs -> one (N_POINTS, 2) frame, NaN where missing. lips is (40, 2) or None."""
+    out = np.full((N_POINTS, 2), np.nan, dtype=np.float32)
+    for block, hand in zip((LH, RH), assign_hands(hands, pose)):
+        if hand is not None:
+            out[block] = hand[:, :2]
+    if pose is not None:
+        out[POSE] = pose
+    if lips is not None:
+        out[LIPS] = lips
+    return out
+
+
 def canonicalize(seq):
     """Make the dominant hand (more frames with a hand; tie -> right) the right hand."""
     # shortcut: lip points are mirrored in x but not paired left/right, so left-handed clips have

@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 
-from signbridge.config import LH, N_POINTS, RH, T_MODEL, T_RAW, WORD_FEATURES
-from signbridge.landmarks import (augment_sequence, canonicalize, emotion_features, frames_to_array,
+from signbridge.config import LH, LIPS, N_POINTS, POSE, RH, T_MODEL, T_RAW, WORD_FEATURES
+from signbridge.landmarks import (assemble_frame, assign_hands, augment_sequence, canonicalize, emotion_features, frames_to_array,
                                   hand_features, mirror_hand, prepare_sequence, sequence_features, trim)
 
 _PAIRS = ((43, 44), (45, 46), (47, 48))
@@ -98,3 +98,38 @@ def test_frames_to_array():
         frames_to_array([{"rh": [[0.5, 0.5]] * 20}])
     with pytest.raises(ValueError):
         frames_to_array([])
+
+
+def _pose():
+    p = np.zeros((7, 2), np.float32)
+    p[1], p[2] = (0.6, 0.4), (0.4, 0.4)   # left shoulder is on the image right in an un-mirrored video
+    p[5], p[6] = (0.7, 0.6), (0.3, 0.6)   # left / right wrist
+    return p
+
+
+def _hand(x, y):
+    h = np.zeros((21, 3), np.float32)
+    h[:, 0], h[:, 1] = x, y
+    return h
+
+
+def test_assign_hands_by_nearest_wrist():
+    left, right = _hand(0.72, 0.6), _hand(0.28, 0.6)
+    lh, rh = assign_hands([right, left], _pose())
+    assert lh is left and rh is right
+    lh, rh = assign_hands([right], _pose())
+    assert lh is None and rh is right
+
+
+def test_assign_hands_rest_rule_and_no_pose():
+    resting = _hand(0.3, 1.5)  # far below the shoulders
+    assert assign_hands([resting], _pose()) == (None, None)
+    lh, rh = assign_hands([_hand(0.3, 0.5), _hand(0.7, 0.5)], None)
+    assert lh[0, 0] == pytest.approx(0.7) and rh[0, 0] == pytest.approx(0.3)
+
+
+def test_assemble_frame_layout():
+    frame = assemble_frame([_hand(0.3, 0.6)], _pose(), None)
+    assert frame.shape == (N_POINTS, 2)
+    assert np.isfinite(frame[RH]).all() and np.isnan(frame[LH]).all() and np.isnan(frame[LIPS]).all()
+    assert np.isfinite(frame[POSE]).all()

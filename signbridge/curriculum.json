@@ -1,0 +1,403 @@
+{
+ "units": [
+  {
+   "id": "start",
+   "title": "Getting started",
+   "kind": "intro",
+   "items": [],
+   "pages": [
+    {
+     "title": "Set up your camera",
+     "body": "Sit with light in front of you, not behind. Keep both shoulders and your hands in view. A plain wall behind you helps."
+    },
+    {
+     "title": "Your dominant hand leads",
+     "body": "Sign with the hand you write with. Left-handed signers are supported: SignBridge mirrors what it sees."
+    },
+    {
+     "title": "Rest between signs",
+     "body": "Lower your hands after each sign. That is how SignBridge knows a sign has ended and the next one can start."
+    },
+    {
+     "title": "Your face is grammar",
+     "body": "Raised eyebrows ask a yes or no question. Lowered eyebrows ask what, where or who. SignBridge reads both."
+    },
+    {
+     "title": "Spell what has no sign",
+     "body": "Fingerspelling covers names and any word without its own sign. Letters and numbers have their own lessons."
+    }
+   ]
+  },
+  {
+   "id": "abc1",
+   "title": "Alphabet: A to I",
+   "kind": "hand",
+   "items": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I"
+   ]
+  },
+  {
+   "id": "abc2",
+   "title": "Alphabet: J to R",
+   "kind": "hand",
+   "items": [
+    "J",
+    "K",
+    "L",
+    "M",
+    "N",
+    "O",
+    "P",
+    "Q",
+    "R"
+   ]
+  },
+  {
+   "id": "abc3",
+   "title": "Alphabet: S to Z",
+   "kind": "hand",
+   "items": [
+    "S",
+    "T",
+    "U",
+    "V",
+    "W",
+    "X",
+    "Y",
+    "Z"
+   ]
+  },
+  {
+   "id": "num",
+   "title": "Numbers 0 to 9",
+   "kind": "hand",
+   "items": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9"
+   ]
+  },
+  {
+   "id": "greetings",
+   "title": "Greetings and manners",
+   "kind": "word",
+   "items": [
+    "hello",
+    "bye",
+    "please",
+    "thankyou",
+    "sorry",
+    "yes",
+    "no"
+   ]
+  },
+  {
+   "id": "questions",
+   "title": "Questions",
+   "kind": "word",
+   "items": [
+    "why",
+    "where",
+    "who",
+    "what",
+    "how",
+    "when",
+    "which"
+   ]
+  },
+  {
+   "id": "pronouns",
+   "title": "Me, you and us",
+   "kind": "word",
+   "items": [
+    "me",
+    "my",
+    "you",
+    "he",
+    "we"
+   ]
+  },
+  {
+   "id": "people",
+   "title": "People and family",
+   "kind": "word",
+   "items": [
+    "mother",
+    "father",
+    "brother",
+    "sister",
+    "boy",
+    "girl",
+    "man",
+    "woman",
+    "child",
+    "friend",
+    "teacher",
+    "baby"
+   ]
+  },
+  {
+   "id": "feelings",
+   "title": "Feelings",
+   "kind": "word",
+   "items": [
+    "happy",
+    "sad",
+    "angry",
+    "sick",
+    "tired",
+    "love",
+    "hate",
+    "like"
+   ]
+  },
+  {
+   "id": "food",
+   "title": "Food and drink",
+   "kind": "word",
+   "items": [
+    "drink",
+    "water",
+    "milk",
+    "hungry",
+    "eat",
+    "apple",
+    "pizza",
+    "bread",
+    "coffee"
+   ]
+  },
+  {
+   "id": "moving",
+   "title": "Moving and doing",
+   "kind": "word",
+   "items": [
+    "go",
+    "come",
+    "give",
+    "see",
+    "hear",
+    "talk",
+    "read",
+    "write"
+   ]
+  },
+  {
+   "id": "making",
+   "title": "Making and having",
+   "kind": "word",
+   "items": [
+    "sleep",
+    "find",
+    "make",
+    "have",
+    "open",
+    "close",
+    "play",
+    "learn"
+   ]
+  },
+  {
+   "id": "wanting",
+   "title": "Wanting and thinking",
+   "kind": "word",
+   "items": [
+    "can",
+    "will",
+    "think",
+    "wait",
+    "help",
+    "finish",
+    "want",
+    "need",
+    "know"
+   ]
+  },
+  {
+   "id": "time",
+   "title": "Time",
+   "kind": "word",
+   "items": [
+    "now",
+    "later",
+    "tomorrow",
+    "yesterday",
+    "today",
+    "morning",
+    "night",
+    "time",
+    "before",
+    "after"
+   ]
+  },
+  {
+   "id": "home",
+   "title": "Home and places",
+   "kind": "word",
+   "items": [
+    "home",
+    "school",
+    "work",
+    "book",
+    "car",
+    "phone",
+    "computer",
+    "table"
+   ]
+  },
+  {
+   "id": "colours",
+   "title": "Colours and animals",
+   "kind": "word",
+   "items": [
+    "red",
+    "blue",
+    "green",
+    "yellow",
+    "black",
+    "white",
+    "dog",
+    "cat",
+    "bird"
+   ]
+  },
+  {
+   "id": "sentences",
+   "title": "Putting it together",
+   "kind": "sentence",
+   "items": [],
+   "sentences": [
+    {
+     "gloss": [
+      "me",
+      "want",
+      "water"
+     ],
+     "english": "I want water."
+    },
+    {
+     "gloss": [
+      "you",
+      "hungry"
+     ],
+     "english": "Are you hungry?"
+    },
+    {
+     "gloss": [
+      "where",
+      "school"
+     ],
+     "english": "Where is school?"
+    },
+    {
+     "gloss": [
+      "my",
+      "mother",
+      "happy"
+     ],
+     "english": "My mother is happy."
+    },
+    {
+     "gloss": [
+      "you",
+      "want",
+      "eat"
+     ],
+     "english": "Do you want to eat?"
+    },
+    {
+     "gloss": [
+      "what",
+      "you",
+      "need"
+     ],
+     "english": "What do you need?"
+    },
+    {
+     "gloss": [
+      "me",
+      "love",
+      "dog"
+     ],
+     "english": "I love dogs."
+    },
+    {
+     "gloss": [
+      "please",
+      "help",
+      "me"
+     ],
+     "english": "Please help me."
+    },
+    {
+     "gloss": [
+      "thankyou",
+      "friend"
+     ],
+     "english": "Thank you, friend."
+    },
+    {
+     "gloss": [
+      "tomorrow",
+      "me",
+      "school"
+     ],
+     "english": "I go to school tomorrow."
+    },
+    {
+     "gloss": [
+      "who",
+      "you",
+      "teacher"
+     ],
+     "english": "Who is your teacher?"
+    },
+    {
+     "gloss": [
+      "you",
+      "tired"
+     ],
+     "english": "Are you tired?"
+    },
+    {
+     "gloss": [
+      "me",
+      "sick",
+      "today"
+     ],
+     "english": "I am sick today."
+    },
+    {
+     "gloss": [
+      "yesterday",
+      "me",
+      "play"
+     ],
+     "english": "I played yesterday."
+    },
+    {
+     "gloss": [
+      "how",
+      "you"
+     ],
+     "english": "How are you?"
+    }
+   ]
+  }
+ ]
+}
