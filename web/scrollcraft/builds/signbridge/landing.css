@@ -1,0 +1,56 @@
+/* SignBridge landing. Tokens come from scrollcraft.css + the app's app.css, so the page and the product read as one.
+   Grammar: live surface. No scrims, no kinetic headlines, no marketing bar: the top strip is the product's own tab strip. */
+
+.chrome { position: fixed; inset: 0 0 auto; z-index: var(--sc-z-chrome); display: flex; align-items: center; gap: var(--sc-5);
+  height: 56px; padding-inline: var(--sc-gutter); background: var(--sc-canvas); border-bottom: 1px solid var(--sc-hairline); }
+.chrome__mark { font-family: var(--sc-font-display); font-weight: 700; font-size: var(--sc-t-lg); letter-spacing: var(--sc-track-snug); text-decoration: none; }
+.chrome nav { display: flex; gap: var(--sc-1); margin-inline: auto; }
+.chrome nav a { display: flex; align-items: center; min-height: 44px; padding: 0 var(--sc-3); border-radius: var(--sc-r-pill); color: var(--sc-ink-soft); font-weight: 500; text-decoration: none;
+  transition: color var(--sc-d-fast) var(--sc-ease-out), background-color var(--sc-d-fast) var(--sc-ease-out); }
+@media (hover: hover) and (pointer: fine) { .chrome nav a:hover { color: var(--sc-ink); background: var(--sc-hairline); } }
+.chrome__status { display: flex; align-items: center; gap: var(--sc-2); font-size: var(--sc-t-sm); color: var(--sc-ink-soft); }
+@media (max-width: 760px) {
+  .chrome { gap: var(--sc-3); }
+  .chrome__status { display: none; }
+  .chrome nav { margin-inline: 0 0; margin-left: auto; }
+  .chrome nav a { padding: 0 var(--sc-2); font-size: var(--sc-t-sm); }
+}
+
+.stage-center { display: grid; place-items: center; padding: 72px var(--sc-gutter) var(--sc-6); }
+.surface { width: min(100%, 34rem); padding: var(--sc-5); border-radius: var(--sc-r-lg); background: var(--sc-surface); box-shadow: var(--sc-e3), var(--sc-edge); }
+.surface > * + * { margin-top: var(--sc-4); }
+.surface--wide { width: min(100%, 62rem); }
+.surface__bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: var(--sc-2) var(--sc-4); }
+.spelled { display: flex; gap: 0.18em; font-family: var(--sc-font-mono); font-size: var(--sc-t-lg); letter-spacing: 0.12em; color: var(--sc-ink-soft); }
+.spelled [aria-current="true"] { color: var(--sc-accent); }
+.avatar--tall { aspect-ratio: 4 / 3; }
+.hint { color: var(--sc-ink-soft); font-size: var(--sc-t-sm); }
+
+/* act 2: four lines crossfade in one place */
+.readout { display: grid; width: min(100%, 44rem); margin: 0; padding: 0; list-style: none; }
+.readout > li { grid-area: 1 / 1; align-self: center; }
+.readout__line { max-width: 30ch; margin-top: var(--sc-3); font-family: var(--sc-font-display); font-size: var(--sc-t-xl); line-height: 1.2; letter-spacing: var(--sc-track-snug); text-wrap: balance; }
+.readout__line b { color: var(--sc-accent); font-weight: 600; }
+.figures { display: grid; grid-template-columns: repeat(3, minmax(0, auto)); justify-content: start; gap: var(--sc-6); margin: var(--sc-6) 0 0; }
+.figures dt { font-family: var(--sc-font-mono); font-size: var(--sc-t-xs); letter-spacing: var(--sc-track-wide); text-transform: uppercase; color: var(--sc-ink-soft); }
+.figures dd { margin: var(--sc-1) 0 0; font-family: var(--sc-font-display); font-size: var(--sc-t-3xl); font-weight: 600; line-height: 1; white-space: nowrap; }
+@media (max-width: 720px) { .figures { grid-template-columns: minmax(0, 1fr); gap: var(--sc-4); } .figures dd { font-size: var(--sc-t-2xl); } }
+
+/* act 3: the conversation, the peak */
+.talk { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--sc-5); align-items: start; }
+.talk .transcript { min-height: 22rem; max-height: 22rem; }
+@media (max-width: 860px) { .talk { grid-template-columns: minmax(0, 1fr); } .talk .transcript { min-height: 12rem; max-height: 14rem; } }
+
+/* act 4: a plain list of the real pages */
+.inside { padding-block: var(--sc-7) var(--sc-9); }
+.palette { max-width: 48rem; margin: 0 auto; padding: 0; list-style: none; }
+.palette a { display: grid; grid-template-columns: 11rem minmax(0, 1fr); align-items: baseline; gap: var(--sc-4); padding: var(--sc-5) var(--sc-3); border-bottom: 1px solid var(--sc-hairline); text-decoration: none;
+  transition: background-color var(--sc-d-fast) var(--sc-ease-out); }
+.palette__name { font-family: var(--sc-font-display); font-size: var(--sc-t-xl); font-weight: 600; letter-spacing: var(--sc-track-snug); }
+@media (hover: hover) and (pointer: fine) { .palette a:hover { background: var(--sc-surface); } .palette a:hover .palette__name { color: var(--sc-accent); } }
+@media (max-width: 640px) { .palette a { grid-template-columns: minmax(0, 1fr); gap: var(--sc-1); } }
+
+/* act 5: the close is an input */
+.surface--close { width: min(100%, 36rem); }
+.foot { position: absolute; inset: auto var(--sc-gutter) var(--sc-5); display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--sc-2) var(--sc-5); font-size: var(--sc-t-xs); color: var(--sc-ink-soft); }
+.foot a { color: var(--sc-ink); }

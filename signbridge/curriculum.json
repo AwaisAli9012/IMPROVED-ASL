@@ -77,7 +77,7 @@
   },
   {
    "id": "num",
-   "title": "Numbers 0 to 9",
+   "title": "Numbers: 0 to 4 and 6 to 9",
    "kind": "hand",
    "items": [
     "0",
@@ -85,7 +85,6 @@
     "2",
     "3",
     "4",
-    "5",
     "6",
     "7",
     "8",

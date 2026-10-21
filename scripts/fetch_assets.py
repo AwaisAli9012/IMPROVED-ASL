@@ -17,6 +17,7 @@ FILES = {
     MODELS / "hand_landmarker.task": f"{GCS}/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
     MODELS / "face_landmarker.task": f"{GCS}/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
     MODELS / "pose_landmarker_lite.task": f"{GCS}/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task",
+    WEB / "static" / "vendor" / "lucide.min.js": "https://unpkg.com/lucide@0.441.0/dist/umd/lucide.min.js",
     VENDOR / "vision_bundle.mjs": f"{CDN}/vision_bundle.mjs",
     **{VENDOR / "wasm" / n: f"{CDN}/wasm/{n}" for n in (
         "vision_wasm_internal.js", "vision_wasm_internal.wasm",

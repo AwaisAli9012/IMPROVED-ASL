@@ -16,7 +16,6 @@ CITIZEN_FILES = ["use.txt", "splits/train.csv", "splits/val.csv", "splits/test.c
 HF = "https://huggingface.co/datasets/{id}/resolve/main/{path}"
 HF_SOURCES = {
     "asl-letters": ("Marxulia/asl_sign_languages_alphabets_v03", ["data/train-00000-of-00001.parquet"]),
-    "asl-digits": ("Vedant3907/Numbers-Sign-Language-Dataset", ["data/train-00000-of-00001.parquet"]),
     "fer2013": ("Aaryan333/fer2013_train_publicTest_privateTest", [
         "data/train-00000-of-00001-5eab84e1c6a2fc27.parquet",
         "data/publicTest-00000-of-00001-f41bb7384b8aad6e.parquet",

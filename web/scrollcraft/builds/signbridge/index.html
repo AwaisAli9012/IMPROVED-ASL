@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SignBridge · sign language, both ways</title>
+<meta name="description" content="Sign to a camera and get a sentence and a voice. Type or speak and get signing back. Learn the whole language. All on your own computer.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23f2a93b'/><path d='M9 20c3-8 5-10 7-10s3 2 1 5l-3 5 6-1' fill='none' stroke='%231a1205' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="scrollcraft.css">
+<link rel="stylesheet" href="/static/css/app.css">
+<link rel="stylesheet" href="landing.css">
+</head>
+<body class="landing">
+<div class="sc-grain" aria-hidden="true"></div>
+
+<header class="chrome">
+  <a class="chrome__mark" href="/">SignBridge</a>
+  <nav aria-label="Product pages">
+    <a href="/app">Converse</a>
+    <a href="/learn">Learn</a>
+    <a href="/dictionary">Dictionary</a>
+    <a href="/metrics">Metrics</a>
+  </nav>
+  <span class="chrome__status"><i class="dot" data-state="on"></i>Runs on this computer</span>
+</header>
+
+<main id="top">
+
+  <!-- 1 · Your name, signed: the surface, already in a state -->
+  <section id="act-name" data-sc-act="pin" data-sc-span="2.4" data-sc-drift="#0d110f">
+    <div data-sc-stage class="stage-center">
+      <div class="surface">
+        <div class="surface__bar"><span class="label">Fingerspelling</span><span class="spelled" id="spelled" aria-live="polite"></span></div>
+        <div class="avatar avatar--tall"><canvas id="name-avatar" role="img" aria-label="Signing figure spelling the name you typed"></canvas></div>
+        <form class="composer" id="name-form">
+          <label class="sr-only" for="name-input">Your name</label>
+          <input class="field" id="name-input" value="Ada" maxlength="14" placeholder="Type your name" autocomplete="given-name" spellcheck="false">
+          <button class="btn btn--primary" type="submit">Sign it</button>
+        </form>
+        <p class="hint" id="name-hint">Type a name. Scroll to step through its letters.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 · How it reads you: the method and the measured numbers -->
+  <section id="act-reads" data-sc-act="pin" data-sc-span="3.4" data-sc-drift="#0d110f">
+    <div data-sc-stage class="stage-center">
+      <ol class="readout" id="readout">
+        <li data-sc-cue="0 0.30 0">
+          <span class="label">1 · Camera</span>
+          <p class="readout__line">Your video stays on this computer. Only points leave the browser, to a server running next to it.</p>
+        </li>
+        <li data-sc-cue="0.24 0.54">
+          <span class="label">2 · Points</span>
+          <p class="readout__line"><b class="num" id="n-points">89</b> points in every frame: both hands, your shoulders and arms, and your lips.</p>
+        </li>
+        <li data-sc-cue="0.48 0.78">
+          <span class="label">3 · Model</span>
+          <p class="readout__line">One network reads the movement of a whole sign, not a single frame. It knows <b class="num" id="n-words">100</b> words, the alphabet and the numbers.</p>
+        </li>
+        <li data-sc-cue="0.72 1" id="measured" hidden>
+          <span class="label">4 · Measured</span>
+          <p class="readout__line">On <b class="num" id="n-signers">11</b> signers it never saw while learning:</p>
+          <dl class="figures">
+            <div><dt>Word accuracy</dt><dd class="num"><span id="f-words" data-sc-count="0 0" data-sc-count-at="0.74 0.96">0</span>%</dd></div>
+            <div><dt>Letters, F1</dt><dd class="num"><span id="f-static" data-sc-count="0 0" data-sc-count-at="0.74 0.96">0</span>%</dd></div>
+            <div><dt>Answers in</dt><dd class="num"><span id="f-speed" data-sc-count="0 0" data-sc-count-at="0.74 0.96">0</span> ms</dd></div>
+          </dl>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 3 · The conversation: the peak. Scripted sample, real signing. -->
+  <section id="act-talk" data-sc-act="pin" data-sc-span="5.4" data-sc-drift="#101612">
+    <div data-sc-stage class="stage-center">
+      <div class="surface surface--wide">
+        <div class="surface__bar"><span class="label">Conversation</span><span class="label">Scripted sample. The app does this live.</span></div>
+        <div class="talk">
+          <div class="stack">
+            <div class="avatar"><canvas id="talk-avatar" role="img" aria-label="Signing figure replying"></canvas></div>
+            <p class="caption" id="talk-caption" aria-hidden="true"></p>
+          </div>
+          <div class="transcript" id="talk-log" aria-live="polite"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 · What is inside: a plain list of the real pages -->
+  <section id="act-inside" class="sc-section inside" data-sc-act="flow" data-sc-drift="#0d110f">
+    <div class="sc-wrap">
+      <ul class="palette" data-sc-in data-sc-stagger="60" aria-label="Inside SignBridge">
+        <li><a href="/app"><span class="palette__name">Converse</span><span class="muted">Sign to text and voice. Type or speak to get signing back.</span></a></li>
+        <li><a href="/learn"><span class="palette__name">Learn</span><span class="muted" id="inside-learn">A full course from camera setup to whole sentences.</span></a></li>
+        <li><a href="/dictionary"><span class="palette__name">Dictionary</span><span class="muted" id="inside-dict">Every sign, searchable, played by the signing figure.</span></a></li>
+        <li><a href="/metrics"><span class="palette__name">Metrics</span><span class="muted">Every accuracy number, measured on held-out signers, with the confusion matrix.</span></a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 5 · Open: an actual input, last on the page -->
+  <section id="act-open" data-sc-act="pin" data-sc-span="1.5" data-sc-drift="#0d110f">
+    <div data-sc-stage class="stage-center stage-close">
+      <form class="surface surface--close" id="open-form" data-sc-cue="0 1 0 0">
+        <label class="label" for="open-name">What should we call you?</label>
+        <div class="composer">
+          <input class="field" id="open-name" maxlength="40" placeholder="Your name" autocomplete="given-name" required>
+          <button class="btn btn--primary" type="submit">Open SignBridge</button>
+        </div>
+      </form>
+      <footer class="foot">
+        <span>A final-year project. Signing data: ASL Citizen, Microsoft Research License, non-commercial research use. Accuracy is measured on signers held out of training.</span>
+        <a href="/metrics">See the numbers</a>
+      </footer>
+    </div>
+  </section>
+
+</main>
+
+<script src="scrollcraft.js"></script>
+<script type="module" src="landing.js"></script>
+</body>
+</html>

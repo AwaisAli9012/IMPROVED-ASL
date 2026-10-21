@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% set active = 'learn' %}
+{% set script = 'learn.js' %}
+{% block title %}Learn · SignBridge{% endblock %}
+{% block main %}
+<section class="stack" aria-label="Your course">
+  <div class="hero-line">
+    <div class="stack">
+      <h1 id="hello">Learn sign language</h1>
+      <p class="muted" id="subtitle">From setting up your camera to signing full sentences.</p>
+    </div>
+    <div class="stats" id="stats"></div>
+  </div>
+  <div class="bar" role="progressbar" aria-label="Course progress" aria-valuemin="0" aria-valuemax="100" id="course-bar"><i></i></div>
+  <div class="row" id="actions"></div>
+  <ol class="path" id="path" aria-label="Units"></ol>
+</section>
+{% endblock %}

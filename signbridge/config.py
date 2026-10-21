@@ -27,7 +27,7 @@ T_MODEL = 32           # frames the word model sees
 WORD_FEATURES = 400    # 178 pos + 178 vel + 42 dominant-hand local + 2 presence
 
 LETTERS = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-DIGITS = list("0123456789")
+DIGITS = list("012346789")  # shortcut: no open dataset has a signed 5, add it when samples exist
 EMOTIONS = ["neutral", "happy", "sad", "angry", "surprised"]
 SEED = 42
 

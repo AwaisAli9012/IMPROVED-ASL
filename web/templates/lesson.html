@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% set active = 'learn' %}
+{% set script = 'lesson.js' %}
+{% block title %}Lesson · SignBridge{% endblock %}
+{% block main %}
+<div id="lesson-root" data-unit="{{ unit_id }}" class="stack">
+  <div class="row row--between">
+    <a class="btn btn--ghost btn--sm" href="/learn"><i data-lucide="arrow-left"></i>Course</a>
+    <ol class="steps" id="steps" aria-label="Lesson steps"></ol>
+  </div>
+  <h1 id="unit-title"></h1>
+  <div class="bar" id="unit-bar"><i></i></div>
+  <div class="lesson" id="lesson-grid">
+    <section class="stack" aria-label="Watch">
+      <div class="avatar"><canvas id="avatar" role="img" aria-label="Signing figure"></canvas></div>
+      <p class="caption" id="caption" aria-hidden="true"></p>
+      <div class="row row--between">
+        <div class="seg" id="speed" role="radiogroup" aria-label="Signing speed">
+          <button type="button" role="radio" aria-checked="false" data-speed="0.5">0.5×</button>
+          <button type="button" role="radio" aria-checked="true" data-speed="1">1×</button>
+        </div>
+        <label class="row" style="gap:var(--sc-2)"><input type="checkbox" id="mirror" checked> <span>Mirror me</span></label>
+      </div>
+    </section>
+    <section aria-label="Your turn">
+      <div class="stage" id="stage" aria-busy="false">
+        {% include "_camera.html" %}
+        <div class="stage__band">
+          <div class="cand">
+            <div class="cand__word" id="cand-word" aria-hidden="true"></div>
+            <div class="meter" id="cand-meter" aria-hidden="true"><i></i></div>
+          </div>
+        </div>
+        {% include "_camera_msg.html" %}
+      </div>
+    </section>
+  </div>
+  <div class="panel" id="panel" aria-live="polite"></div>
+</div>
+{% endblock %}

@@ -5,7 +5,7 @@ from functools import cache
 import joblib
 import numpy as np
 from dotenv import load_dotenv
-from flask import Flask, jsonify, redirect, render_template, request
+from flask import Flask, abort, jsonify, redirect, render_template, request, send_from_directory
 
 from . import config, learn, nlg
 from .landmarks import emotion_features, frames_to_array, hand_features, prepare_sequence, sequence_features
@@ -82,9 +82,22 @@ def top(p, labels, k):
 
 # ---- pages ----------------------------------------------------------------
 
+LANDING = config.WEB / "scrollcraft" / "builds" / "signbridge"
+LANDING_FILES = {"scrollcraft.js", "scrollcraft.css", "landing.css", "landing.js"}  # a whitelist: BRIEF.md stays private
+
+
 @app.get("/")
 def landing():
-    return redirect("/app")  # replaced by the scroll-craft landing page
+    if not (LANDING / "index.html").exists():
+        return redirect("/app")
+    return send_from_directory(LANDING, "index.html")
+
+
+@app.get("/<name>")
+def landing_file(name):
+    if name not in LANDING_FILES:
+        abort(404)
+    return send_from_directory(LANDING, name)
 
 
 @app.get("/app")
@@ -99,7 +112,7 @@ def learn_page():
 
 @app.get("/learn/<unit_id>")
 def lesson_page(unit_id):
-    if unit_id not in learn.UNITS:
+    if unit_id not in learn.UNITS and unit_id != "review":  # "review" is the spaced-repetition session
         return "unknown unit", 404
     return render_template("lesson.html", unit_id=unit_id)
 
@@ -206,6 +219,11 @@ def post_profile():
     return jsonify(learn.create_profile(body().get("name")))
 
 
+@app.get("/api/curriculum")
+def get_curriculum():
+    return jsonify(learn.CURRICULUM)
+
+
 @app.get("/api/learn/<int:profile_id>")
 def get_progress(profile_id):
     return jsonify(learn.curriculum_with_progress(profile_id))
@@ -231,6 +249,11 @@ def post_unit_pass():
     if not isinstance(score, (int, float)):
         raise ValueError("score must be a number")
     return jsonify(learn.record_unit_pass(data.get("profile_id"), data.get("unit_id"), score))
+
+
+@app.get("/reports/<path:name>")
+def report_file(name):
+    return send_from_directory(config.REPORTS, name)
 
 
 @app.get("/api/reports")

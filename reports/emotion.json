@@ -1,0 +1,122 @@
+{
+ "task": "emotion",
+ "model": "xgboost (52 face blendshapes)",
+ "trained_at": "2026-10-21T14:24:16",
+ "git_commit": "6045361",
+ "n_classes": 5,
+ "labels": [
+  "neutral",
+  "happy",
+  "sad",
+  "angry",
+  "surprised"
+ ],
+ "split": {
+  "n_train": 21754,
+  "n_val": 2726,
+  "n_test": 2704
+ },
+ "notes": "FER2013 official protocol: train, publicTest as validation, privateTest as test. Images are 48x48 grey and labels are noisy (human agreement is about 65%), so scores are lower than on high-resolution sets. Disgust and fear are not used.",
+ "accuracy": 0.6993343195266272,
+ "top3": 0.9563609467455622,
+ "top5": null,
+ "balanced_accuracy": 0.6824049681308787,
+ "precision_macro": 0.6822325716790588,
+ "recall_macro": 0.6824049681308787,
+ "f1_macro": 0.6821954289170779,
+ "precision_weighted": 0.7003878630968863,
+ "recall_weighted": 0.6993343195266272,
+ "f1_weighted": 0.6997478421985981,
+ "cohen_kappa": 0.615662446915101,
+ "mcc": 0.6157148127175237,
+ "ece_15bins": 0.009653311024403427,
+ "accept_threshold": 0.88,
+ "precision_at_threshold": 0.9537712895377128,
+ "coverage_at_threshold": 0.3039940828402367,
+ "latency_ms_p50": 0.7966700004544691,
+ "latency_ms_p95": 1.251750949086272,
+ "per_class": {
+  "neutral": {
+   "precision": 0.5910596026490066,
+   "recall": 0.6102564102564103,
+   "f1": 0.6005046257359126,
+   "support": 585
+  },
+  "happy": {
+   "precision": 0.8704156479217604,
+   "recall": 0.8547418967587035,
+   "f1": 0.8625075711689885,
+   "support": 833
+  },
+  "sad": {
+   "precision": 0.5429141716566867,
+   "recall": 0.5472837022132797,
+   "f1": 0.5450901803607214,
+   "support": 497
+  },
+  "angry": {
+   "precision": 0.6098191214470284,
+   "recall": 0.5841584158415841,
+   "f1": 0.5967130214917825,
+   "support": 404
+  },
+  "surprised": {
+   "precision": 0.7969543147208121,
+   "recall": 0.8155844155844156,
+   "f1": 0.8061617458279846,
+   "support": 385
+  }
+ },
+ "worst_confusions": [
+  [
+   "sad",
+   "neutral",
+   126
+  ],
+  [
+   "neutral",
+   "sad",
+   123
+  ],
+  [
+   "angry",
+   "sad",
+   67
+  ],
+  [
+   "angry",
+   "neutral",
+   64
+  ],
+  [
+   "sad",
+   "angry",
+   55
+  ],
+  [
+   "neutral",
+   "angry",
+   49
+  ],
+  [
+   "happy",
+   "neutral",
+   42
+  ],
+  [
+   "neutral",
+   "happy",
+   34
+  ],
+  [
+   "happy",
+   "angry",
+   31
+  ],
+  [
+   "sad",
+   "happy",
+   28
+  ]
+ ]
+}

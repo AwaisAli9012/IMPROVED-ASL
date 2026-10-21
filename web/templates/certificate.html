@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% set active = 'learn' %}
+{% set script = 'certificate.js' %}
+{% block title %}Certificate · SignBridge{% endblock %}
+{% block main %}
+<section class="cert" id="cert" hidden>
+  <p class="label">SignBridge</p>
+  <h1>Certificate of completion</h1>
+  <p class="muted">This certifies that</p>
+  <p class="big" id="cert-name"></p>
+  <p class="muted" id="cert-detail"></p>
+  <p class="muted num" id="cert-date"></p>
+  <div class="row center no-print"><button class="btn btn--primary" id="print" type="button"><i data-lucide="printer"></i>Print</button></div>
+</section>
+<section class="stack" id="cert-locked" hidden>
+  <h1>Not yet</h1>
+  <p class="muted">Pass every unit in the course to earn your certificate.</p>
+  <div class="row"><a class="btn btn--primary" href="/learn">Back to the course</a></div>
+</section>
+{% endblock %}

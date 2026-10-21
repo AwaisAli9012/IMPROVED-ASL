@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}SignBridge{% endblock %}</title>
+  <meta name="description" content="Two-way sign language conversation, a full ASL course and a sign dictionary, running on your own computer.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+  <link rel="icon" href="data:,">
+</head>
+<body data-page="{{ active }}">
+  <header class="topbar">
+    <a class="brand" href="/">SignBridge</a>
+    <nav class="tabs" aria-label="Main">
+      {% for key, label, name, href in [('converse', 'Converse', 'messages-square', '/app'), ('learn', 'Learn', 'graduation-cap', '/learn'), ('dictionary', 'Dictionary', 'book-open', '/dictionary'), ('metrics', 'Metrics', 'bar-chart-3', '/metrics')] %}
+      <a href="{{ href }}"{% if active == key %} aria-current="page"{% endif %}><i data-lucide="{{ name }}"></i>{{ label }}</a>
+      {% endfor %}
+    </nav>
+    <div class="topbar__right">
+      <span class="dot" id="camdot" role="img" aria-label="Camera off" data-state="off"></span>
+      <button class="btn btn--sm btn--ghost" id="profile-btn" type="button"><i data-lucide="user-round"></i><span id="profile-name">Guest</span></button>
+    </div>
+  </header>
+  <main class="page">{% block main %}{% endblock %}</main>
+  <div id="announce" class="sr-only" aria-live="polite"></div>
+  <div class="toasts" id="toasts" role="status"></div>
+  <dialog id="profile-dialog" aria-label="Choose a profile"></dialog>
+  <script src="{{ url_for('static', filename='vendor/lucide.min.js') }}"></script>
+  <script type="module" src="{{ url_for('static', filename='js/' + script) }}"></script>
+</body>
+</html>

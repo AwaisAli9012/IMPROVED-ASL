@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% set active = 'dictionary' %}
+{% set script = 'dictionary.js' %}
+{% block title %}Dictionary · SignBridge{% endblock %}
+{% block main %}
+<section class="stack" aria-label="Sign dictionary">
+  <div class="stack">
+    <h1>Dictionary</h1>
+    <p class="muted" id="count"></p>
+  </div>
+  <div class="row">
+    <input class="field" id="search" type="search" placeholder="Search a sign" aria-label="Search a sign" autocomplete="off" style="min-width:min(100%,18rem)">
+    <div class="row" id="filters" role="group" aria-label="Filter by topic"></div>
+  </div>
+  <div class="dict">
+    <ul class="dict__list panel" id="list" aria-label="Signs" style="padding:0"></ul>
+    <div class="stack" id="detail">
+      <div class="avatar"><canvas id="avatar" role="img" aria-label="Signing figure"></canvas></div>
+      <div class="row row--between">
+        <div class="big" id="name"></div>
+        <a class="btn" id="practise" href="/learn" hidden>Practise this</a>
+      </div>
+      <div class="row row--between">
+        <div class="seg" id="speed" role="radiogroup" aria-label="Signing speed">
+          <button type="button" role="radio" aria-checked="false" data-speed="0.5">0.5×</button>
+          <button type="button" role="radio" aria-checked="true" data-speed="1">1×</button>
+        </div>
+        <label class="row" style="gap:var(--sc-2)"><input type="checkbox" id="mirror" checked> <span>Mirror me</span></label>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

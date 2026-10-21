@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% set active = 'metrics' %}
+{% set script = 'metrics.js' %}
+{% block title %}Metrics · SignBridge{% endblock %}
+{% block main %}
+<section class="stack" aria-label="Model metrics">
+  <div class="stack">
+    <h1>How well does it work?</h1>
+    <p class="muted">Every number here is measured on held-out data the models never trained on, and read from the saved evaluation reports.</p>
+  </div>
+  <div class="stack" id="reports"></div>
+</section>
+{% endblock %}

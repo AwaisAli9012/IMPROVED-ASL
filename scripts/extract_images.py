@@ -1,4 +1,4 @@
-"""Landmarks from still images: hand landmarks for letters and digits (static), face blendshapes for emotion.
+"""Landmarks from still images: hand landmarks for letters (static; digits come from the ASL Citizen clips), face blendshapes for emotion.
 
 Run: .venv/bin/python -m scripts.extract_images --task static|emotion [--workers 4]
 Writes data/processed/static.npz or data/processed/emotion.npz.
@@ -19,7 +19,6 @@ from PIL import Image
 from signbridge.config import EMOTIONS, LETTERS, PROCESSED, RAW, WEB
 
 MODELS = WEB / "static" / "models"
-DIGIT_NAMES = ["1", "10", "2", "3", "4", "5", "6", "7", "8", "9"]  # label index -> name in the numbers dataset
 FER_NAMES = ["angry", "disgust", "fear", "happy", "sad", "surprised", "neutral"]
 FER_SPLIT = {"train": "train", "publicTest": "val", "privateTest": "test"}  # the standard FER2013 protocol
 FACE_MIN_SIDE = 192  # FER2013 is 48x48: upscale so the face detector can find it
@@ -93,14 +92,12 @@ def run(pool, fn, path, names, source, keep):
 
 def build_static(pool):
     hands, aspect, label, source, split = [], [], [], [], []
-    for name, folder, names, keep in (("letters", "asl-letters", LETTERS, set(LETTERS)),
-                                      ("digit-images", "asl-digits", DIGIT_NAMES, set(DIGIT_NAMES) - {"10"})):
-        for lab, (hand, asp) in run(pool, detect_hands, next((RAW / folder).glob("*.parquet")), names, name, keep):
-            hands.append(hand)
-            aspect.append(asp)
-            label.append(lab)
-            source.append(name)
-            split.append("")
+    for lab, (hand, asp) in run(pool, detect_hands, next((RAW / "asl-letters").glob("*.parquet")), LETTERS, "letters", set(LETTERS)):
+        hands.append(hand)
+        aspect.append(asp)
+        label.append(lab)
+        source.append("letters")
+        split.append("")
     video = PROCESSED / "digits_video.npz"
     if video.exists():
         d = np.load(video)

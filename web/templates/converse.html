@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% set active = 'converse' %}
+{% set script = 'converse.js' %}
+{% block title %}Converse · SignBridge{% endblock %}
+{% block main %}
+<div class="grid-2">
+  <section class="stack" aria-label="Your signing">
+    <div class="stage" id="stage" aria-busy="false">
+      {% include "_camera.html" %}
+      <div class="stage__top">
+        <div class="seg" id="mode" role="radiogroup" aria-label="What you are signing">
+          <button type="button" role="radio" aria-checked="true" data-mode="words">Words</button>
+          <button type="button" role="radio" aria-checked="false" data-mode="letters">ABC</button>
+          <button type="button" role="radio" aria-checked="false" data-mode="digits">123</button>
+        </div>
+        <div class="row">
+          <span class="tone" id="tone" title="Tone read from your face"><i data-lucide="meh" id="tone-icon"></i><span id="tone-label" class="num">Neutral</span></span>
+          <button class="btn btn--icon btn--sm" id="recalibrate" type="button" aria-label="Recalibrate neutral face"><i data-lucide="scan-face"></i></button>
+        </div>
+      </div>
+      <div class="stage__band">
+        <div class="cand">
+          <div class="cand__word" id="cand-word" aria-hidden="true"></div>
+          <div class="meter" id="cand-meter" aria-hidden="true"><i></i></div>
+        </div>
+      </div>
+      {% include "_camera_msg.html" %}
+    </div>
+    <div class="suggest" id="suggest" role="group" aria-label="Did you mean" hidden></div>
+    <div class="panel">
+      <div class="row row--between">
+        <h2>Your sentence</h2>
+        <span class="label" id="grammar" aria-live="polite"></span>
+      </div>
+      <div class="row" id="building" aria-label="Signs so far"></div>
+      <div class="row">
+        <button class="btn btn--primary" id="speak" type="button" disabled><i data-lucide="volume-2"></i>Speak sentence</button>
+        <button class="btn" id="undo" type="button" disabled><i data-lucide="undo-2"></i>Undo</button>
+        <button class="btn btn--ghost" id="clear" type="button" disabled><i data-lucide="trash-2"></i>Clear</button>
+        <button class="btn btn--ghost btn--icon" id="help" type="button" aria-label="Keyboard shortcuts"><i data-lucide="keyboard"></i></button>
+      </div>
+    </div>
+  </section>
+
+  <section class="stack" aria-label="Conversation">
+    <div class="avatar"><canvas id="avatar" role="img" aria-label="Signing figure"></canvas></div>
+    <p class="caption" id="caption" aria-hidden="true"></p>
+    <div class="row row--between">
+      <div class="seg" id="speed" role="radiogroup" aria-label="Signing speed">
+        <button type="button" role="radio" aria-checked="false" data-speed="0.5">0.5×</button>
+        <button type="button" role="radio" aria-checked="true" data-speed="1">1×</button>
+      </div>
+      <label class="row" style="gap:var(--sc-2)"><input type="checkbox" id="mirror" checked> <span>Mirror me</span></label>
+    </div>
+    <div class="panel">
+      <div class="row row--between">
+        <h2>Conversation</h2>
+        <button class="btn btn--ghost btn--sm" id="export" type="button"><i data-lucide="download"></i>Save</button>
+      </div>
+      <div class="transcript" id="transcript" aria-label="Messages"></div>
+      <form class="composer" id="composer">
+        <button class="btn btn--icon mic" id="mic" type="button" aria-pressed="false" aria-label="Speak a reply"><i data-lucide="mic"></i></button>
+        <input class="field" id="reply" name="reply" placeholder="Type a reply" maxlength="500" autocomplete="off" aria-label="Type a reply">
+        <button class="btn btn--primary btn--icon" type="submit" aria-label="Send reply"><i data-lucide="send"></i></button>
+      </form>
+    </div>
+  </section>
+</div>
+
+<dialog id="help-dialog" aria-label="Keyboard shortcuts">
+  <h2>Keyboard shortcuts</h2>
+  <ul class="stack" style="list-style:none;margin:0;padding:0">
+    <li><b class="num">W</b> <b class="num">A</b> <b class="num">N</b> Words, ABC, 123 modes</li>
+    <li><b class="num">Space</b> End the sign you are making now</li>
+    <li><b class="num">1 2 3</b> Pick a suggestion</li>
+    <li><b class="num">Enter</b> Speak the sentence</li>
+    <li><b class="num">Backspace</b> Remove the last sign</li>
+    <li><b class="num">Esc</b> Clear, or dismiss suggestions</li>
+  </ul>
+  <form method="dialog"><button class="btn btn--primary">Close</button></form>
+</dialog>
+{% endblock %}
