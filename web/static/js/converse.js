@@ -108,7 +108,7 @@ function addMessage(who, english, detail, toneName, tokens) {
 async function speakSentence() {
   if (!glosses.length) return;
   const toneName = tone.takeUtteranceTone();
-  const words = glosses.map((g) => g.display.startsWith('fs:') ? g.display : g.type === 'spell' ? g.label : g.display);
+  const words = glosses.map((g) => (g.type === 'spell' ? g.label : g.display));
   try {
     const { english } = await postJSON('/api/sentence', { glosses: words, tone: toneName, question: utteranceQuestion() });
     addMessage('you', english, `${glosses.map((g) => g.display).join(' ')} · ${TONE[toneName]?.[1] ?? 'Neutral'}`, toneName);

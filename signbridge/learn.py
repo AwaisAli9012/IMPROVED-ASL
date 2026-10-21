@@ -68,7 +68,7 @@ def _add_xp(db, profile_id, xp):
 
 
 def record_attempt(profile_id, item, correct):
-    if item not in ITEMS:
+    if not isinstance(item, str) or item not in ITEMS:
         raise ValueError("unknown item")
     with _db() as db:
         _profile(db, profile_id)
@@ -84,7 +84,7 @@ def record_attempt(profile_id, item, correct):
 
 def record_unit_pass(profile_id, unit_id, score):
     """Records a pass at score >= 0.8 (the intro posts 1). XP is awarded the first time only."""
-    if unit_id not in UNITS:
+    if not isinstance(unit_id, str) or unit_id not in UNITS:
         raise ValueError("unknown unit")
     if not 0 <= score <= 1:
         raise ValueError("score must be between 0 and 1")

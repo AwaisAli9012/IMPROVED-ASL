@@ -42,17 +42,28 @@ export class Vision {
   on(fn) { this.listeners.add(fn); return () => this.listeners.delete(fn); }
 
   async start() {
+    if (this.running || this.starting) return;
+    this.starting = true;
     const cfg = await config();
     this.cfg = cfg;
     try {
       this.stream = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 960 }, height: { ideal: 540 }, facingMode: 'user' }, audio: false });
     } catch (e) {
+      this.starting = false;
       setCameraState('error');
       throw e;
     }
-    this.video.srcObject = this.stream;
-    await this.video.play();
-    await this.#load();
+    try {
+      this.video.srcObject = this.stream;
+      await this.video.play();
+      await this.#load();
+    } catch (e) { // do not leave the camera on when the models fail to load
+      this.stream.getTracks().forEach((t) => t.stop());
+      this.starting = false;
+      setCameraState('error');
+      throw e;
+    }
+    this.starting = false;
     this.canvas.width = this.video.videoWidth;
     this.canvas.height = this.video.videoHeight;
     const css = getComputedStyle(document.documentElement);

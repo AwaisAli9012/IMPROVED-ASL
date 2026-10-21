@@ -1,5 +1,6 @@
 """Flask app: pages plus a small stateless JSON API. Run: .venv/bin/python -m signbridge.server"""
 import json
+import os
 from functools import cache
 
 import joblib
@@ -139,7 +140,6 @@ def api_config():
     names = ("POSE_IDX", "LIP_IDX", "LETTERS", "DIGITS", "EMOTIONS", "STATIC_STREAK", "SPELL_GAP_FRAMES", "SEG_START_FRAMES",
              "SEG_END_FRAMES", "SEG_MIN_FRAMES", "SEG_MAX_FRAMES", "BROW_RAISE_DELTA", "BROW_DOWN_DELTA",
              "EMOTION_INTERVAL_MS", "EMOTION_EMA")
-    import os
     return jsonify({n: getattr(config, n) for n in names} | {
         "thresholds": thresholds(), "gemini": bool(os.getenv("GEMINI_API_KEY")),
         "words": [{"label": w, "display": display(w)} for w in word_labels()]})
@@ -194,9 +194,9 @@ def make_sentence():
     if not isinstance(glosses, list) or not 1 <= len(glosses) <= MAX_GLOSSES or not all(isinstance(g, str) and 0 < len(g) <= 40 for g in glosses):
         raise ValueError(f"glosses must be 1 to {MAX_GLOSSES} short strings")
     tone, question = data.get("tone", "neutral"), data.get("question", "none")
-    if question not in nlg.END:
+    if not isinstance(question, str) or question not in nlg.END:
         raise ValueError("question must be none, yesno or wh")
-    return jsonify(nlg.gloss_to_english(glosses, tone if tone in nlg.TONE_STYLE else "neutral", question))
+    return jsonify(nlg.gloss_to_english(glosses, tone if isinstance(tone, str) and tone in nlg.TONE_STYLE else "neutral", question))
 
 
 @app.post("/api/gloss")

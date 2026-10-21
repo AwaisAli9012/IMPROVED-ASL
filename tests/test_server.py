@@ -30,6 +30,9 @@ def test_sentence_and_gloss_work_offline(client):
 @pytest.mark.parametrize("path,payload", [
     ("/api/sentence", {"glosses": []}),
     ("/api/sentence", {"glosses": ["a"], "question": "maybe"}),
+    ("/api/sentence", {"glosses": ["a"], "question": []}),
+    ("/api/learn/attempt", {"profile_id": 1, "item": [], "correct": True}),
+    ("/api/learn/unit_pass", {"profile_id": 1, "unit_id": {}, "score": 1}),
     ("/api/gloss", {"text": ""}),
     ("/api/predict/word", {"frames": []}),
     ("/api/predict/static", {"hand": [[0.5, 0.5, 0]] * 20, "aspect": 1, "mode": "letters"}),
