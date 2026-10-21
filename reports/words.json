@@ -1,0 +1,841 @@
+{
+ "task": "words",
+ "model": "WordNet x3",
+ "trained_at": "2026-10-21T16:01:35",
+ "git_commit": "1e0f529",
+ "n_classes": 100,
+ "labels": [
+  "hello",
+  "bye",
+  "please",
+  "thankyou",
+  "sorry",
+  "yes",
+  "no",
+  "why",
+  "where",
+  "who",
+  "what",
+  "how",
+  "when",
+  "which",
+  "me",
+  "my",
+  "you",
+  "he",
+  "we",
+  "mother",
+  "father",
+  "brother",
+  "sister",
+  "boy",
+  "girl",
+  "man",
+  "woman",
+  "child",
+  "friend",
+  "teacher",
+  "baby",
+  "happy",
+  "sad",
+  "angry",
+  "sick",
+  "tired",
+  "love",
+  "hate",
+  "like",
+  "drink",
+  "water",
+  "milk",
+  "hungry",
+  "eat",
+  "apple",
+  "pizza",
+  "bread",
+  "coffee",
+  "go",
+  "come",
+  "give",
+  "see",
+  "hear",
+  "talk",
+  "read",
+  "write",
+  "sleep",
+  "find",
+  "make",
+  "have",
+  "can",
+  "will",
+  "open",
+  "close",
+  "think",
+  "wait",
+  "help",
+  "finish",
+  "want",
+  "need",
+  "play",
+  "learn",
+  "know",
+  "now",
+  "later",
+  "tomorrow",
+  "yesterday",
+  "today",
+  "morning",
+  "night",
+  "time",
+  "before",
+  "after",
+  "home",
+  "school",
+  "work",
+  "book",
+  "car",
+  "phone",
+  "computer",
+  "table",
+  "red",
+  "blue",
+  "green",
+  "yellow",
+  "black",
+  "white",
+  "dog",
+  "cat",
+  "bird"
+ ],
+ "split": {
+  "train_signers": [
+   1,
+   2,
+   4,
+   7,
+   8,
+   10,
+   11,
+   14,
+   16,
+   20,
+   23,
+   24,
+   25,
+   27,
+   28,
+   29,
+   30,
+   31,
+   32,
+   33,
+   34,
+   36,
+   37,
+   38,
+   40,
+   41,
+   43,
+   45,
+   46,
+   50,
+   51,
+   52
+  ],
+  "val_signers": [
+   5,
+   12,
+   21,
+   26,
+   39
+  ],
+  "test_signers": [
+   6,
+   9,
+   15,
+   17,
+   18,
+   22,
+   35,
+   42,
+   47,
+   48,
+   49
+  ],
+  "n_train": 1488,
+  "n_val": 380,
+  "n_test": 1246
+ },
+ "notes": "Test signers never appear in training or validation. Threshold chosen on validation signers. Source: ASL Citizen (webcam clips), landmarks extracted with MediaPipe.",
+ "accuracy": 0.8972712680577849,
+ "top3": 0.9662921348314607,
+ "top5": 0.9759229534510433,
+ "balanced_accuracy": 0.8984993535875888,
+ "precision_macro": 0.9075955078633097,
+ "recall_macro": 0.8984993535875888,
+ "f1_macro": 0.8973563879821971,
+ "precision_weighted": 0.9076899230232,
+ "recall_weighted": 0.8972712680577849,
+ "f1_weighted": 0.8968924785251547,
+ "cohen_kappa": 0.8962232844320611,
+ "mcc": 0.896342270990283,
+ "ece_15bins": 0.15757711018834794,
+ "accept_threshold": 0.3,
+ "precision_at_threshold": 0.929004329004329,
+ "coverage_at_threshold": 0.9269662921348315,
+ "latency_ms_p50": 7.225164999908884,
+ "latency_ms_p95": 7.626408399664796,
+ "per_class": {
+  "hello": {
+   "precision": 1.0,
+   "recall": 0.9285714285714286,
+   "f1": 0.9629629629629629,
+   "support": 14
+  },
+  "bye": {
+   "precision": 0.9230769230769231,
+   "recall": 1.0,
+   "f1": 0.96,
+   "support": 12
+  },
+  "please": {
+   "precision": 0.9230769230769231,
+   "recall": 0.9230769230769231,
+   "f1": 0.9230769230769231,
+   "support": 13
+  },
+  "thankyou": {
+   "precision": 1.0,
+   "recall": 0.9166666666666666,
+   "f1": 0.9565217391304348,
+   "support": 12
+  },
+  "sorry": {
+   "precision": 0.9166666666666666,
+   "recall": 0.9166666666666666,
+   "f1": 0.9166666666666666,
+   "support": 12
+  },
+  "yes": {
+   "precision": 0.9090909090909091,
+   "recall": 1.0,
+   "f1": 0.9523809523809523,
+   "support": 10
+  },
+  "no": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 11
+  },
+  "why": {
+   "precision": 1.0,
+   "recall": 0.9285714285714286,
+   "f1": 0.9629629629629629,
+   "support": 14
+  },
+  "where": {
+   "precision": 0.7222222222222222,
+   "recall": 1.0,
+   "f1": 0.8387096774193549,
+   "support": 13
+  },
+  "who": {
+   "precision": 0.8333333333333334,
+   "recall": 0.7142857142857143,
+   "f1": 0.7692307692307693,
+   "support": 14
+  },
+  "what": {
+   "precision": 0.5833333333333334,
+   "recall": 0.5384615384615384,
+   "f1": 0.56,
+   "support": 13
+  },
+  "how": {
+   "precision": 1.0,
+   "recall": 0.9090909090909091,
+   "f1": 0.9523809523809523,
+   "support": 11
+  },
+  "when": {
+   "precision": 0.9,
+   "recall": 0.6923076923076923,
+   "f1": 0.782608695652174,
+   "support": 13
+  },
+  "which": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 14
+  },
+  "me": {
+   "precision": 0.8571428571428571,
+   "recall": 0.9230769230769231,
+   "f1": 0.8888888888888888,
+   "support": 13
+  },
+  "my": {
+   "precision": 0.75,
+   "recall": 0.9230769230769231,
+   "f1": 0.8275862068965517,
+   "support": 13
+  },
+  "you": {
+   "precision": 0.8333333333333334,
+   "recall": 0.8333333333333334,
+   "f1": 0.8333333333333334,
+   "support": 12
+  },
+  "he": {
+   "precision": 0.8333333333333334,
+   "recall": 0.8333333333333334,
+   "f1": 0.8333333333333334,
+   "support": 12
+  },
+  "we": {
+   "precision": 0.9230769230769231,
+   "recall": 1.0,
+   "f1": 0.96,
+   "support": 12
+  },
+  "mother": {
+   "precision": 0.8571428571428571,
+   "recall": 0.8,
+   "f1": 0.8275862068965517,
+   "support": 15
+  },
+  "father": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 12
+  },
+  "brother": {
+   "precision": 0.9166666666666666,
+   "recall": 0.8461538461538461,
+   "f1": 0.88,
+   "support": 13
+  },
+  "sister": {
+   "precision": 0.8181818181818182,
+   "recall": 0.75,
+   "f1": 0.782608695652174,
+   "support": 12
+  },
+  "boy": {
+   "precision": 0.8571428571428571,
+   "recall": 1.0,
+   "f1": 0.9230769230769231,
+   "support": 12
+  },
+  "girl": {
+   "precision": 0.8461538461538461,
+   "recall": 1.0,
+   "f1": 0.9166666666666666,
+   "support": 11
+  },
+  "man": {
+   "precision": 0.9166666666666666,
+   "recall": 0.9166666666666666,
+   "f1": 0.9166666666666666,
+   "support": 12
+  },
+  "woman": {
+   "precision": 0.75,
+   "recall": 0.6428571428571429,
+   "f1": 0.6923076923076923,
+   "support": 14
+  },
+  "child": {
+   "precision": 1.0,
+   "recall": 0.9,
+   "f1": 0.9473684210526315,
+   "support": 10
+  },
+  "friend": {
+   "precision": 0.8461538461538461,
+   "recall": 1.0,
+   "f1": 0.9166666666666666,
+   "support": 11
+  },
+  "teacher": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 13
+  },
+  "baby": {
+   "precision": 1.0,
+   "recall": 0.8181818181818182,
+   "f1": 0.9,
+   "support": 11
+  },
+  "happy": {
+   "precision": 0.9166666666666666,
+   "recall": 0.9166666666666666,
+   "f1": 0.9166666666666666,
+   "support": 12
+  },
+  "sad": {
+   "precision": 1.0,
+   "recall": 0.9166666666666666,
+   "f1": 0.9565217391304348,
+   "support": 12
+  },
+  "angry": {
+   "precision": 1.0,
+   "recall": 0.9333333333333333,
+   "f1": 0.9655172413793104,
+   "support": 15
+  },
+  "sick": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 13
+  },
+  "tired": {
+   "precision": 1.0,
+   "recall": 0.9230769230769231,
+   "f1": 0.96,
+   "support": 13
+  },
+  "love": {
+   "precision": 0.7333333333333333,
+   "recall": 0.9166666666666666,
+   "f1": 0.8148148148148148,
+   "support": 12
+  },
+  "hate": {
+   "precision": 0.9166666666666666,
+   "recall": 1.0,
+   "f1": 0.9565217391304348,
+   "support": 11
+  },
+  "like": {
+   "precision": 1.0,
+   "recall": 0.9166666666666666,
+   "f1": 0.9565217391304348,
+   "support": 12
+  },
+  "drink": {
+   "precision": 1.0,
+   "recall": 0.9230769230769231,
+   "f1": 0.96,
+   "support": 13
+  },
+  "water": {
+   "precision": 1.0,
+   "recall": 0.9166666666666666,
+   "f1": 0.9565217391304348,
+   "support": 12
+  },
+  "milk": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 12
+  },
+  "hungry": {
+   "precision": 0.9,
+   "recall": 0.75,
+   "f1": 0.8181818181818182,
+   "support": 12
+  },
+  "eat": {
+   "precision": 0.8888888888888888,
+   "recall": 0.9411764705882353,
+   "f1": 0.9142857142857143,
+   "support": 17
+  },
+  "apple": {
+   "precision": 1.0,
+   "recall": 0.9090909090909091,
+   "f1": 0.9523809523809523,
+   "support": 11
+  },
+  "pizza": {
+   "precision": 0.9230769230769231,
+   "recall": 1.0,
+   "f1": 0.96,
+   "support": 12
+  },
+  "bread": {
+   "precision": 0.9230769230769231,
+   "recall": 0.9230769230769231,
+   "f1": 0.9230769230769231,
+   "support": 13
+  },
+  "coffee": {
+   "precision": 0.8461538461538461,
+   "recall": 1.0,
+   "f1": 0.9166666666666666,
+   "support": 11
+  },
+  "go": {
+   "precision": 0.8461538461538461,
+   "recall": 0.8461538461538461,
+   "f1": 0.8461538461538461,
+   "support": 13
+  },
+  "come": {
+   "precision": 1.0,
+   "recall": 0.6666666666666666,
+   "f1": 0.8,
+   "support": 12
+  },
+  "give": {
+   "precision": 1.0,
+   "recall": 0.9090909090909091,
+   "f1": 0.9523809523809523,
+   "support": 11
+  },
+  "see": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 13
+  },
+  "hear": {
+   "precision": 0.8461538461538461,
+   "recall": 0.9166666666666666,
+   "f1": 0.88,
+   "support": 12
+  },
+  "talk": {
+   "precision": 0.7142857142857143,
+   "recall": 0.7692307692307693,
+   "f1": 0.7407407407407407,
+   "support": 13
+  },
+  "read": {
+   "precision": 1.0,
+   "recall": 0.5384615384615384,
+   "f1": 0.7,
+   "support": 13
+  },
+  "write": {
+   "precision": 0.5555555555555556,
+   "recall": 0.8333333333333334,
+   "f1": 0.6666666666666666,
+   "support": 12
+  },
+  "sleep": {
+   "precision": 0.9090909090909091,
+   "recall": 0.8333333333333334,
+   "f1": 0.8695652173913043,
+   "support": 12
+  },
+  "find": {
+   "precision": 1.0,
+   "recall": 0.9230769230769231,
+   "f1": 0.96,
+   "support": 13
+  },
+  "make": {
+   "precision": 0.8333333333333334,
+   "recall": 0.7692307692307693,
+   "f1": 0.8,
+   "support": 13
+  },
+  "have": {
+   "precision": 0.9230769230769231,
+   "recall": 1.0,
+   "f1": 0.96,
+   "support": 12
+  },
+  "can": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 12
+  },
+  "will": {
+   "precision": 0.9166666666666666,
+   "recall": 0.9166666666666666,
+   "f1": 0.9166666666666666,
+   "support": 12
+  },
+  "open": {
+   "precision": 0.9230769230769231,
+   "recall": 1.0,
+   "f1": 0.96,
+   "support": 12
+  },
+  "close": {
+   "precision": 0.9166666666666666,
+   "recall": 1.0,
+   "f1": 0.9565217391304348,
+   "support": 11
+  },
+  "think": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 12
+  },
+  "wait": {
+   "precision": 0.6666666666666666,
+   "recall": 0.9230769230769231,
+   "f1": 0.7741935483870968,
+   "support": 13
+  },
+  "help": {
+   "precision": 0.9090909090909091,
+   "recall": 0.7692307692307693,
+   "f1": 0.8333333333333334,
+   "support": 13
+  },
+  "finish": {
+   "precision": 1.0,
+   "recall": 0.9285714285714286,
+   "f1": 0.9629629629629629,
+   "support": 14
+  },
+  "want": {
+   "precision": 0.9,
+   "recall": 0.75,
+   "f1": 0.8181818181818182,
+   "support": 12
+  },
+  "need": {
+   "precision": 1.0,
+   "recall": 0.75,
+   "f1": 0.8571428571428571,
+   "support": 12
+  },
+  "play": {
+   "precision": 0.9230769230769231,
+   "recall": 0.8571428571428571,
+   "f1": 0.8888888888888888,
+   "support": 14
+  },
+  "learn": {
+   "precision": 1.0,
+   "recall": 0.5,
+   "f1": 0.6666666666666666,
+   "support": 12
+  },
+  "know": {
+   "precision": 0.9285714285714286,
+   "recall": 1.0,
+   "f1": 0.9629629629629629,
+   "support": 13
+  },
+  "now": {
+   "precision": 0.8181818181818182,
+   "recall": 0.75,
+   "f1": 0.782608695652174,
+   "support": 12
+  },
+  "later": {
+   "precision": 0.9230769230769231,
+   "recall": 1.0,
+   "f1": 0.96,
+   "support": 12
+  },
+  "tomorrow": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 10
+  },
+  "yesterday": {
+   "precision": 1.0,
+   "recall": 0.9090909090909091,
+   "f1": 0.9523809523809523,
+   "support": 11
+  },
+  "today": {
+   "precision": 0.6666666666666666,
+   "recall": 0.7272727272727273,
+   "f1": 0.6956521739130435,
+   "support": 11
+  },
+  "morning": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 14
+  },
+  "night": {
+   "precision": 0.9411764705882353,
+   "recall": 0.9411764705882353,
+   "f1": 0.9411764705882353,
+   "support": 17
+  },
+  "time": {
+   "precision": 1.0,
+   "recall": 0.75,
+   "f1": 0.8571428571428571,
+   "support": 12
+  },
+  "before": {
+   "precision": 0.7142857142857143,
+   "recall": 0.9090909090909091,
+   "f1": 0.8,
+   "support": 11
+  },
+  "after": {
+   "precision": 0.8181818181818182,
+   "recall": 0.6428571428571429,
+   "f1": 0.72,
+   "support": 14
+  },
+  "home": {
+   "precision": 1.0,
+   "recall": 0.9230769230769231,
+   "f1": 0.96,
+   "support": 13
+  },
+  "school": {
+   "precision": 0.5555555555555556,
+   "recall": 0.9090909090909091,
+   "f1": 0.6896551724137931,
+   "support": 11
+  },
+  "work": {
+   "precision": 0.8333333333333334,
+   "recall": 1.0,
+   "f1": 0.9090909090909091,
+   "support": 15
+  },
+  "book": {
+   "precision": 0.7857142857142857,
+   "recall": 0.9166666666666666,
+   "f1": 0.8461538461538461,
+   "support": 12
+  },
+  "car": {
+   "precision": 0.9166666666666666,
+   "recall": 1.0,
+   "f1": 0.9565217391304348,
+   "support": 11
+  },
+  "phone": {
+   "precision": 0.9230769230769231,
+   "recall": 1.0,
+   "f1": 0.96,
+   "support": 12
+  },
+  "computer": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 11
+  },
+  "table": {
+   "precision": 0.7857142857142857,
+   "recall": 1.0,
+   "f1": 0.88,
+   "support": 11
+  },
+  "red": {
+   "precision": 0.9285714285714286,
+   "recall": 0.9285714285714286,
+   "f1": 0.9285714285714286,
+   "support": 14
+  },
+  "blue": {
+   "precision": 1.0,
+   "recall": 0.9230769230769231,
+   "f1": 0.96,
+   "support": 13
+  },
+  "green": {
+   "precision": 0.9333333333333333,
+   "recall": 1.0,
+   "f1": 0.9655172413793104,
+   "support": 14
+  },
+  "yellow": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 12
+  },
+  "black": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 12
+  },
+  "white": {
+   "precision": 0.8461538461538461,
+   "recall": 1.0,
+   "f1": 0.9166666666666666,
+   "support": 11
+  },
+  "dog": {
+   "precision": 0.8947368421052632,
+   "recall": 1.0,
+   "f1": 0.9444444444444444,
+   "support": 17
+  },
+  "cat": {
+   "precision": 1.0,
+   "recall": 0.8333333333333334,
+   "f1": 0.9090909090909091,
+   "support": 12
+  },
+  "bird": {
+   "precision": 1.0,
+   "recall": 0.8461538461538461,
+   "f1": 0.9166666666666666,
+   "support": 13
+  }
+ },
+ "worst_confusions": [
+  [
+   "after",
+   "table",
+   3
+  ],
+  [
+   "need",
+   "where",
+   3
+  ],
+  [
+   "want",
+   "wait",
+   3
+  ],
+  [
+   "read",
+   "write",
+   3
+  ],
+  [
+   "what",
+   "write",
+   3
+  ],
+  [
+   "time",
+   "work",
+   2
+  ],
+  [
+   "today",
+   "now",
+   2
+  ],
+  [
+   "now",
+   "today",
+   2
+  ],
+  [
+   "learn",
+   "school",
+   2
+  ],
+  [
+   "learn",
+   "write",
+   2
+  ]
+ ]
+}

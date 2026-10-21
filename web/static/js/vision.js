@@ -47,7 +47,7 @@ export class Vision {
     const cfg = await config();
     this.cfg = cfg;
     try {
-      this.stream = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 960 }, height: { ideal: 540 }, facingMode: 'user' }, audio: false });
+      this.stream = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 640 }, height: { ideal: 360 }, facingMode: 'user' }, audio: false });
     } catch (e) {
       this.starting = false;
       setCameraState('error');
@@ -85,8 +85,12 @@ export class Vision {
     const fileset = await FilesetResolver.forVisionTasks(`${BASE}/wasm`);
     const make = async (Cls, model, opts) => {
       const options = (delegate) => ({ baseOptions: { modelAssetPath: `/static/models/${model}`, delegate }, runningMode: 'VIDEO', ...opts });
-      try { return await Cls.createFromOptions(fileset, options('GPU')); } // shortcut: falls back to CPU when WebGL is unavailable
-      catch { return Cls.createFromOptions(fileset, options('CPU')); }
+      // CPU (WASM SIMD) by default: it is predictable, while the GPU delegate can silently land on software WebGL and run slower.
+      // Add ?gpu=1 to the address to try the GPU on a machine that has one.
+      if (new URLSearchParams(location.search).get('gpu') === '1') {
+        try { return await Cls.createFromOptions(fileset, options('GPU')); } catch { /* fall through to CPU */ }
+      }
+      return Cls.createFromOptions(fileset, options('CPU'));
     };
     [this.handLm, this.poseLm, this.faceLm] = await Promise.all([
       make(HandLandmarker, 'hand_landmarker.task', { numHands: 2 }),

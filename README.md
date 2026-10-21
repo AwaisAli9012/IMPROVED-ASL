@@ -51,6 +51,11 @@ No accounts or API keys are needed. About two hours on a 28-core CPU, plus downl
 Measured on data the models never trained on. The word model is tested on signers who appear in neither training nor validation.
 
 <!-- metrics:start -->
+| Task | Test set | Accuracy | Macro F1 | Precision | Recall | Top 3 | Answers in (p95) |
+|---|---|---|---|---|---|---|---|
+| Words | 1246 clips, 11 unseen signers | 89.7% | 89.7% | 90.8% | 89.8% | 96.6% | 7.6 ms |
+| Letters and numbers | 2391 samples | 97.2% | 96.7% | 96.8% | 96.7% | 99.0% | 0.3 ms |
+| Tone from the face | 2704 samples | 69.9% | 68.2% | 68.2% | 68.2% | 95.6% | 1.3 ms |
 <!-- metrics:end -->
 
 Read the notes on each task in the Metrics page before quoting a number. In particular, letters come from a dataset with no signer information and are split at random per image, so that score is optimistic. Emotion is measured on FER2013, which is low resolution and has noisy labels.
@@ -65,6 +70,8 @@ Browser camera -> MediaPipe in the browser (hands, pose, face)
    glosses + tone + question form -> POST /api/sentence -> Gemini or offline rules -> English -> browser voice
 Reply: typed or spoken English -> POST /api/gloss -> sign tokens -> signing figure
 ```
+
+Hand, body and face detection runs on the CPU in the browser at about 20 frames per second (measured in Chrome at 640x360). Add `?gpu=1` to the address to try the GPU on a machine that has one: on a machine without a real GPU it silently falls back to slow software rendering, which is why CPU is the default.
 
 Only landmark numbers leave the browser, and only to the server running on the same computer. The server keeps no state, so each request carries everything it needs. Constants live in `signbridge/config.py` and the browser reads them from `/api/config`. Feature code lives in `signbridge/landmarks.py` and is shared by training and live use.
 

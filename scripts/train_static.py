@@ -1,4 +1,4 @@
-"""Train the letter and digit classifier on hand landmarks. Picks the best of XGBoost, ExtraTrees, MLP and their soft vote by validation macro-F1.
+"""Train the letter and digit classifier on hand landmarks. Picks the best of ExtraTrees, MLP and their soft vote by validation macro-F1.
 
 Run: .venv/bin/python -m scripts.train_static
 Writes artifacts/static.joblib.
@@ -12,7 +12,6 @@ from sklearn.metrics import f1_score
 from sklearn.neural_network import MLPClassifier
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
-from xgboost import XGBClassifier
 
 from signbridge.config import ARTIFACTS, DIGITS, LETTERS, PROCESSED, SEED
 from signbridge.landmarks import hand_features, mirror_hand
@@ -54,9 +53,8 @@ def main():
     X_train, y_train = np.concatenate([d["X"][tr], mirrored]), np.concatenate([d["y"][tr]] * 2)  # mirror: left-handed signers
     print(f"train {len(X_train)} (with mirrored copies)  val {va.sum()}  test {(d['split'] == 'test').sum()}", flush=True)
     candidates = {
-        "xgboost": XGBClassifier(n_estimators=600, max_depth=6, learning_rate=0.08, subsample=0.8, colsample_bytree=0.8,
-                                 tree_method="hist", n_jobs=24, random_state=SEED),
-        "extra_trees": ExtraTreesClassifier(n_estimators=500, n_jobs=24, random_state=SEED),
+        # min_samples_leaf keeps the saved model small: unpruned trees came to 450 MB. XGBoost was dropped: 27 min to train and the lowest score.
+        "extra_trees": ExtraTreesClassifier(n_estimators=200, min_samples_leaf=3, n_jobs=24, random_state=SEED),
         "mlp": make_pipeline(StandardScaler(), MLPClassifier(hidden_layer_sizes=(256, 128), early_stopping=True,
                                                               max_iter=400, random_state=SEED)),
     }

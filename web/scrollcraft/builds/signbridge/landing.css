@@ -70,9 +70,9 @@
 .readout > li { grid-area: 1 / 1; align-self: center; }
 .readout__line { max-width: 30ch; margin-top: var(--sc-3); font-family: var(--sc-font-display); font-size: var(--sc-t-xl); line-height: 1.2; letter-spacing: var(--sc-track-snug); text-wrap: balance; }
 .readout__line b { color: var(--sc-accent); font-weight: 600; }
-.figures { display: grid; grid-template-columns: repeat(3, minmax(0, auto)); justify-content: start; gap: var(--sc-6); margin: var(--sc-6) 0 0; }
+.figures { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sc-4); margin: var(--sc-6) 0 0; }
 .figures dt { font-family: var(--sc-font-mono); font-size: var(--sc-t-xs); letter-spacing: var(--sc-track-wide); text-transform: uppercase; color: var(--sc-ink-soft); }
-.figures dd { margin: var(--sc-1) 0 0; font-family: var(--sc-font-display); font-size: var(--sc-t-3xl); font-weight: 600; line-height: 1; white-space: nowrap; }
+.figures dd { margin: var(--sc-1) 0 0; font-family: var(--sc-font-display); font-size: var(--sc-t-2xl); font-weight: 600; line-height: 1; white-space: nowrap; }
 @media (max-width: 720px) { .figures { grid-template-columns: minmax(0, 1fr); gap: var(--sc-4); } .figures dd { font-size: var(--sc-t-2xl); } }
 .rail { display: flex; gap: var(--sc-3); width: min(100%, 44rem); margin: var(--sc-6) 0 0; padding: 0; list-style: none; }
 .rail li { flex: 1; height: 4px; border-radius: 4px; background: var(--sc-hairline-strong); transform-origin: left; transition: background-color var(--sc-d-base) var(--sc-ease-out), transform var(--sc-d-base) var(--sc-ease-out); }

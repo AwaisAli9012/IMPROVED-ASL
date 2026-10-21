@@ -119,8 +119,8 @@ function drawPoints(progress) {
   const n = demo.frames.length;
   const frame = demo.frames[Math.min(n - 1, Math.floor(clamp((progress - 0.12) / 0.8) * (n - 1)))];
   const gather = ease(clamp(progress / 0.3));
-  const u = Math.min(W * 0.2, H * 0.17);
-  const at = ([x, y]) => [W / 2 + x * u, H * 0.42 + y * u];
+  const u = Math.min(W * 0.26, H * 0.22);
+  const at = ([x, y]) => [W / 2 + x * u, H * 0.4 + y * u];
   const groups = [['pose', COLOR.ink, 3.4], ['lh', COLOR.soft, 2.6], ['rh', COLOR.accent, 2.6], ['lips', COLOR.accent, 1.8]];
   const place = {};
   let count = 0, seed = 0;
