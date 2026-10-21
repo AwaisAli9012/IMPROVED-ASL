@@ -154,8 +154,8 @@ const SCRIPT = [
   { who: 'them', en: 'Yes, I want to eat.', tokens: () => ['yes', 'me', 'want', 'eat'].map(sign) },
   { who: 'you', glosses: ['me', 'go', 'home'], grammar: '', tone: 'Neutral', en: 'I am going home.' },
   { who: 'them', en: 'See you tomorrow.', tokens: () => ['see', 'you', 'tomorrow'].map(sign) },
-  { who: 'you', glosses: ['what', 'you', 'name'], grammar: 'What question', tone: 'Neutral', en: 'What is your name?' },
-  { who: 'them', en: () => `My name is ${title(name)}.`, tokens: () => [sign('my'), sign('name'), { type: 'spell', text: name }] },
+  { who: 'you', glosses: ['who', 'you'], grammar: 'What question', tone: 'Neutral', en: 'Who are you?' },
+  { who: 'them', en: () => `I am ${title(name)}.`, tokens: () => [sign('me'), { type: 'spell', text: name }] },
 ];
 const AT = [0.16, 0.30, 0.44, 0.58, 0.72, 0.85]; // the first 16% is a held surface, by design
 let shown = 0;

@@ -63,3 +63,7 @@ If you want to see what a filled-in table looks like, and which shapes tend to
 collide, read `EXAMPLES.md` in the scroll-craft repository. Treat it as
 illustration only: those rows are somebody else's builds and they do **not**
 constrain yours.
+
+| Build | Grammar | Nav | Hero device | Act sequence | Close | Signature move |
+|---|---|---|---|---|---|---|
+| signbridge | live surface | the product's own tab strip (app chrome) | the surface already in a state: a name being fingerspelled | pin, pin, pin, flow, pin (5 acts, 13.8vh, peak is the 5.6vh conversation) | an actual input: name field that creates a profile and opens the app | your name, signed: the visitor's name drives the real signing figure, steps with the wheel, and returns in the conversation |
