@@ -1,34 +1,12 @@
-# Security & Credentials
-service_account.json
-*.json
-
-# Virtual Environment & Caches
 .venv/
 __pycache__/
 *.pyc
-
-# Heavy Models & Weights
-*.pth
-*.pkl
-*.task
-*.onnx
-Models/
-models/
-
-# Dataset Files & Arrays
-Dataset/
-data/
-*.npy
-*.npz
-keypoints_extracted/
-emotion_keypoints_extracted/
-
-# Log files
-*.log
-# Environment Variables & Secrets
+.pytest_cache/
 .env
-*.env
-
-# Additional Keras/Model Directories
-Emotion_Models/
-*.keras
+data/
+logs/
+graphify-out/cache/
+web/static/models/
+web/static/vendor/
+node_modules/
+web/scrollcraft/builds/*/lab/
