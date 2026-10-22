@@ -2,6 +2,7 @@
 import json
 import os
 from functools import cache
+from pathlib import Path
 
 import joblib
 import numpy as np
@@ -133,6 +134,31 @@ def certificate_page():
     return render_template("certificate.html")
 
 
+@app.get("/progress")
+def progress_page():
+    return render_template("progress.html")
+
+
+@app.get("/settings")
+def settings_page():
+    return render_template("settings.html")
+
+
+@app.get("/about")
+def about_page():
+    return render_template("about.html")
+
+
+@app.get("/phrasebook")
+def phrasebook_page():
+    return render_template("phrasebook.html")
+
+
+@app.get("/captions")
+def captions_page():
+    return render_template("captions.html")
+
+
 # ---- recognition and language API -------------------------------------------
 
 @app.get("/api/config")
@@ -219,9 +245,32 @@ def post_profile():
     return jsonify(learn.create_profile(body().get("name")))
 
 
+@app.get("/api/health")
+def health():
+    a = config.ARTIFACTS
+    models = {"words": (a / "words.pt").exists(), "static": (a / "static.joblib").exists(), "emotion": (a / "emotion.joblib").exists()}
+    return jsonify(status="ok" if all(models.values()) else "degraded", models=models, words=len(word_labels()), gemini=bool(os.getenv("GEMINI_API_KEY")))
+
+
+@app.get("/api/phrases")
+def phrases():
+    return jsonify(json.loads((Path(__file__).parent / "phrases.json").read_text()))
+
+
+@app.get("/api/progress/<int:profile_id>")
+def get_progress_report(profile_id):
+    return jsonify(learn.progress_report(profile_id))
+
+
 @app.get("/api/curriculum")
 def get_curriculum():
     return jsonify(learn.CURRICULUM)
+
+
+@app.delete("/api/profiles/<int:profile_id>")
+def remove_profile(profile_id):
+    learn.delete_profile(profile_id)
+    return jsonify(deleted=True)
 
 
 @app.get("/api/learn/<int:profile_id>")

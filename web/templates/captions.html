@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% set active = 'converse' %}
+{% set script = 'captions.js' %}
+{% block title %}Live captions · SignBridge{% endblock %}
+{% block main %}
+<section class="stack" aria-label="Live captions">
+  <div class="row row--between">
+    <div class="stack"><h1>Live captions</h1><p class="muted">Turns what people say into large text as they speak. Everything stays in this browser tab.</p></div>
+    <div class="row">
+      <button class="btn btn--primary" id="mic" type="button" aria-pressed="false"><i data-lucide="mic"></i><span id="mic-label">Start listening</span></button>
+      <button class="btn btn--icon" id="smaller" type="button" aria-label="Smaller text"><i data-lucide="minus"></i></button>
+      <button class="btn btn--icon" id="larger" type="button" aria-label="Larger text"><i data-lucide="plus"></i></button>
+      <label class="row" style="gap:var(--sc-2)"><input type="checkbox" id="sign"> <span>Sign each sentence</span></label>
+      <button class="btn" id="save" type="button"><i data-lucide="download"></i>Save</button>
+      <button class="btn btn--ghost" id="clear" type="button"><i data-lucide="trash-2"></i>Clear</button>
+    </div>
+  </div>
+  <p class="muted" id="unsupported" hidden>Live captions need speech recognition, which works in Chrome and Edge.</p>
+  <div class="captions" id="captions" aria-live="polite" aria-label="Captions"></div>
+  <div class="panel" id="sign-box" hidden><div class="avatar"><canvas id="avatar" role="img" aria-label="Signing figure"></canvas></div><p class="caption" id="caption" aria-hidden="true"></p></div>
+</section>
+{% endblock %}

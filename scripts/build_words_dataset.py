@@ -1,7 +1,8 @@
 """Stream the ASL Citizen clips for the chosen words (and digit signs), extract landmarks, delete each clip.
 
 Writes artifacts/vocab_words.json, data/processed/words.npz and data/processed/digits_video.npz.
-Run: .venv/bin/python -m scripts.build_words_dataset [--limit N] [--workers N]
+Run: .venv/bin/python -m scripts.build_words_dataset [--limit N] [--workers N] [--append]
+--append keeps the words already in words.npz and processes only the new ones.
 """
 import argparse
 import collections
@@ -19,7 +20,7 @@ from scripts.remote_zip import open_remote_zip, read_member
 from signbridge.config import ARTIFACTS, PROCESSED, RAW
 from signbridge.landmarks import prepare_sequence
 
-N_WORDS = 100
+N_WORDS = 280  # cap; the first 100 are the core set and keep their label order
 DIGIT_GLOSSES = {"ZERO": "0", "ONE": "1", "TWO": "2", "THREE": "3", "FOUR": "4",
                  "SIX": "6", "SEVEN": "7", "EIGHT": "8", "NINE": "9"}  # ASL Citizen has no FIVE
 DIGIT_FRAMES = 10  # still frames kept per digit clip
@@ -29,7 +30,19 @@ mother father brother sister boy girl man woman child friend teacher baby  happy
 drink water milk hungry eat apple pizza bread coffee
 go come give see hear talk read write sleep find make have can will open close think wait help finish want need play learn know
 now later tomorrow yesterday today morning night time before after  home school work book car phone computer table
-red blue green yellow black white  dog cat bird  understand name again more good bad hot cold""".split()
+red blue green yellow black white  dog cat bird  understand name again more good bad hot cold
+walk run sit stand drive buy sell pay cook clean wash study teach answer ask call meet visit travel arrive leave start stop bring take put show tell remember try practice enjoy
+grandmother grandfather husband wife son daughter cousin parents family
+egg cheese soup salad banana fruit vegetable meat candy juice tea sandwich hamburger
+head eyes nose mouth face heart stomach body  medicine hospital pain hurt cough
+church restaurant bank park city country office kitchen bathroom bedroom door window street
+money key clothes shirt shoes hat bag ball game movie music gift
+week month year hour minute birthday monday tuesday wednesday thursday friday saturday sunday
+big small long fast slow new old young ugly easy important dirty full empty different
+sun moon star rain snow wind weather tree flower fire ice  bus train airplane boat
+excited lonely bored  english deaf hearing interpreter sign language
+because with without maybe never always welcome excuse congratulations  ready late early busy free true
+north south east west left right up down  nurse student boss  cup plate fork spoon knife bottle  pencil paper dance sing swim fly fight kiss hug warm pig duck spring summer winter""".split()
 
 
 
@@ -91,6 +104,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--limit", type=int)
     ap.add_argument("--workers", type=int, default=12)
+    ap.add_argument("--append", action="store_true")
     args = ap.parse_args()
 
     rows = read_rows()
@@ -98,7 +112,9 @@ def main():
     chosen = resolve(PRIORITY, counts)
     labels = list(chosen)[:N_WORDS]
     print("unresolved words:", [w for w in PRIORITY if w not in chosen])
-    assert len(labels) == N_WORDS, f"only {len(labels)} words resolved"
+    assert len(labels) >= 100, f"only {len(labels)} words resolved"
+    old = json.loads((ARTIFACTS / "vocab_words.json").read_text())["labels"] if args.append else []
+    assert labels[:len(old)] == old, "--append needs the existing words to keep their order"
     ARTIFACTS.mkdir(exist_ok=True)
     (ARTIFACTS / "vocab_words.json").write_text(json.dumps({"labels": labels, "glosses": {w: chosen[w] for w in labels}}, indent=1))
 
@@ -109,7 +125,9 @@ def main():
         g = r["Gloss"]
         if g in gloss_to_word:
             kind, label = "word", gloss_to_word[g]
-        elif g in DIGIT_GLOSSES:
+            if label < len(old):
+                continue  # already extracted
+        elif g in DIGIT_GLOSSES and not args.append:
             kind, label = "digit", DIGIT_GLOSSES[g]
         else:
             continue
@@ -136,10 +154,13 @@ def main():
                 print(f"{n}/{len(tasks)}  {time.time() - t0:.0f}s  errors {dict(errors)}", flush=True)
 
     PROCESSED.mkdir(parents=True, exist_ok=True)
-    np.savez_compressed(
-        PROCESSED / "words.npz", X=np.stack([w["seq"] for w in words]), y=np.array([w["label"] for w in words], dtype=np.int16),
-        participant=np.array([w["participant"] for w in words], dtype=np.int32),
-        split=np.array([w["split"] for w in words]), video=np.array([w["video"] for w in words]))
+    new = dict(X=np.stack([w["seq"] for w in words]), y=np.array([w["label"] for w in words], dtype=np.int16),
+               participant=np.array([w["participant"] for w in words], dtype=np.int32),
+               split=np.array([w["split"] for w in words]), video=np.array([w["video"] for w in words]))
+    if args.append:
+        prev = np.load(PROCESSED / "words.npz")
+        new = {k: np.concatenate([prev[k], new[k]]) for k in new}
+    np.savez_compressed(PROCESSED / "words.npz", **new)
     if digits:
         np.savez_compressed(
             PROCESSED / "digits_video.npz", hands=np.concatenate([d["hands"] for d in digits]),

@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS profiles (id INTEGER PRIMARY KEY, name TEXT UNIQUE NO
   streak INTEGER DEFAULT 0, last_active TEXT, created_at TEXT DEFAULT CURRENT_TIMESTAMP);
 CREATE TABLE IF NOT EXISTS progress (profile_id INTEGER, item TEXT, box INTEGER DEFAULT 1, correct INTEGER DEFAULT 0,
   attempts INTEGER DEFAULT 0, due_at TEXT, PRIMARY KEY (profile_id, item));
+CREATE TABLE IF NOT EXISTS attempt_log (profile_id INTEGER, item TEXT, correct INTEGER, at TEXT);
 CREATE TABLE IF NOT EXISTS unit_pass (profile_id INTEGER, unit_id TEXT, score REAL, passed_at TEXT, PRIMARY KEY (profile_id, unit_id));
 """
 
@@ -78,6 +79,7 @@ def record_attempt(profile_id, item, correct):
         db.execute("INSERT INTO progress (profile_id, item, box, correct, attempts, due_at) VALUES (?, ?, ?, ?, 1, ?) "
                    "ON CONFLICT(profile_id, item) DO UPDATE SET box = ?, correct = correct + ?, attempts = attempts + 1, due_at = ?",
                    (profile_id, item, box, int(correct), due, box, int(correct), due))
+        db.execute("INSERT INTO attempt_log VALUES (?, ?, ?, ?)", (profile_id, item, int(correct), datetime.now().isoformat(timespec="seconds")))
         _add_xp(db, profile_id, XP_CORRECT if correct else XP_WRONG)
         return {"item": item, "box": box, "mastered": box >= MASTERED_BOX, "xp": _profile(db, profile_id)["xp"]}
 
@@ -121,3 +123,60 @@ def curriculum_with_progress(profile_id):
         prev_passed = u["id"] in passed
     return {"profile": {"id": p["id"], "name": p["name"], "xp": p["xp"], "streak": p["streak"]}, "units": units,
             "due": len(due_items(profile_id)), "complete": all(u["state"] == "passed" for u in units)}
+
+
+def _longest_run(days):
+    """Longest run of consecutive calendar days in a set of ISO date strings."""
+    best = run = 0
+    prev = None
+    for d in sorted(days):
+        d = date.fromisoformat(d)
+        run = run + 1 if prev and d - prev == timedelta(days=1) else 1
+        best, prev = max(best, run), d
+    return best
+
+
+def progress_report(profile_id):
+    """Everything the progress page shows: per-sign mastery, accuracy, the last 14 days, weak signs and badges."""
+    with _db() as db:
+        p = _profile(db, profile_id)
+        prog = {r["item"]: dict(r) for r in db.execute("SELECT item, box, correct, attempts FROM progress WHERE profile_id = ?", (profile_id,))}
+        scores = {r["unit_id"]: r["score"] for r in db.execute("SELECT unit_id, score FROM unit_pass WHERE profile_id = ?", (profile_id,))}
+        per_day = {r["day"]: r["n"] for r in db.execute("SELECT substr(at, 1, 10) AS day, COUNT(*) AS n FROM attempt_log WHERE profile_id = ? GROUP BY day", (profile_id,))}
+    items = [{"item": i, "display": display(i), "unit": u["id"], **{k: prog.get(i, {}).get(k, 0) for k in ("box", "correct", "attempts")}}
+             for u in CURRICULUM for i in u["items"]]
+    attempts, correct = sum(i["attempts"] for i in items), sum(i["correct"] for i in items)
+    today = date.today()
+    activity = [{"day": (today - timedelta(days=d)).isoformat(), "n": per_day.get((today - timedelta(days=d)).isoformat(), 0)} for d in range(13, -1, -1)]
+    weak = sorted((i for i in items if i["attempts"] >= 2 and i["correct"] < i["attempts"]), key=lambda i: (i["correct"] / i["attempts"], -i["attempts"]))[:8]
+    seen_right = sum(1 for i in items if i["correct"] > 0)
+    mastered = sum(1 for i in items if i["box"] >= MASTERED_BOX)
+    longest = _longest_run(per_day)
+    passed = set(scores)
+    badges = [
+        ("first_sign", "First sign", "Sign one item correctly", correct >= 1),
+        ("ten_signs", "Ten signs", "Get ten different signs right", seen_right >= 10),
+        ("fifty_correct", "Fifty correct", "Fifty correct signs in total", correct >= 50),
+        ("ten_mastered", "Ten mastered", "Master ten signs", mastered >= 10),
+        ("alphabet", "Alphabet", "Pass all three alphabet units", {"abc1", "abc2", "abc3"} <= passed),
+        ("numbers", "Numbers", "Pass the numbers unit", "num" in passed),
+        ("streak3", "Three days", "Practise three days in a row", longest >= 3),
+        ("streak7", "One week", "Practise seven days in a row", longest >= 7),
+        ("perfect", "Perfect quiz", "Score 100% on a unit quiz", any(v >= 1.0 for k, v in scores.items() if UNITS[k]["kind"] in ("hand", "word"))),
+        ("course", "Course complete", "Pass every unit", all(u["id"] in passed for u in CURRICULUM)),
+    ]
+    return {"profile": {"id": p["id"], "name": p["name"], "xp": p["xp"], "streak": p["streak"], "longest_streak": longest},
+            "totals": {"signs": len(items), "seen": seen_right, "mastered": mastered, "attempts": attempts, "correct": correct,
+                       "accuracy": correct / attempts if attempts else None},
+            "units": [{"id": u["id"], "title": u["title"], "items": [i for i in items if i["unit"] == u["id"]]} for u in CURRICULUM if u["items"]],
+            "activity": activity, "weak": weak,
+            "badges": [{"id": b, "title": t, "detail": d, "earned": e} for b, t, d, e in badges]}
+
+
+def delete_profile(profile_id):
+    """Remove a profile and everything stored about it."""
+    with _db() as db:
+        _profile(db, profile_id)
+        for table in ("progress", "unit_pass", "attempt_log"):
+            db.execute(f"DELETE FROM {table} WHERE profile_id = ?", (profile_id,))
+        db.execute("DELETE FROM profiles WHERE id = ?", (profile_id,))

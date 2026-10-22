@@ -1,6 +1,6 @@
 // Camera plus in-browser MediaPipe (hands, pose, face). Emits one "frame" per video frame in the same
 // layout signbridge/landmarks.py expects: {lh, rh, pose, lips}. Detectors get the un-mirrored video; mirroring is CSS only.
-import { config, setCameraState } from './api.js';
+import { config, getPrefs, setCameraState } from './api.js';
 
 const BASE = '/static/vendor/tasks-vision';
 export const HAND_BONES = [[0, 1], [1, 2], [2, 3], [3, 4], [0, 5], [5, 6], [6, 7], [7, 8], [5, 9], [9, 10], [10, 11], [11, 12],
@@ -47,7 +47,13 @@ export class Vision {
     const cfg = await config();
     this.cfg = cfg;
     try {
-      this.stream = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 640 }, height: { ideal: 360 }, facingMode: 'user' }, audio: false });
+      const size = { width: { ideal: 640 }, height: { ideal: 360 } }, chosen = getPrefs().camera;
+      try { // the camera picked in Settings, falling back to the default one if it is unplugged
+        this.stream = await navigator.mediaDevices.getUserMedia({ video: chosen ? { ...size, deviceId: { exact: chosen } } : { ...size, facingMode: 'user' }, audio: false });
+      } catch (e) {
+        if (!chosen || e.name !== 'OverconstrainedError') throw e;
+        this.stream = await navigator.mediaDevices.getUserMedia({ video: { ...size, facingMode: 'user' }, audio: false });
+      }
     } catch (e) {
       this.starting = false;
       setCameraState('error');

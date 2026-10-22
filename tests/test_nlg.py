@@ -37,3 +37,8 @@ def test_clean_rejects_model_inventions():
     tokens = nlg._clean([{"type": "sign", "label": "Hello"}, {"type": "sign", "label": "banana!"},
                          {"type": "spell", "text": "a-b 1"}, {"type": "wat"}, {"type": "spell", "text": "--"}], vocab)
     assert tokens == [{"type": "sign", "label": "hello"}, {"type": "spell", "text": "BANANA"}, {"type": "spell", "text": "AB1"}]
+
+
+def test_synonyms_and_endings_map_to_signs():
+    labels = [t["label"] for t in nlg.english_to_gloss("goodbye friends, thanks")["tokens"] if t["type"] == "sign"]
+    assert labels == ["bye", "friend", "thankyou"]

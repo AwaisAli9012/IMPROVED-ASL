@@ -6,9 +6,7 @@
 <title>SignBridge · sign language, both ways</title>
 <meta name="description" content="Sign to a camera and get a sentence and a voice. Type or speak and get signing back. Learn the whole language. All on your own computer.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23f2a93b'/><path d='M9 20c3-8 5-10 7-10s3 2 1 5l-3 5 6-1' fill='none' stroke='%231a1205' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/></svg>">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/fonts.css">
 <link rel="stylesheet" href="scrollcraft.css">
 <link rel="stylesheet" href="/static/css/app.css">
 <link rel="stylesheet" href="landing.css">
@@ -98,9 +96,20 @@
             <div class="avatar" id="talk-frame"><canvas id="talk-avatar" role="img" aria-label="Signing figure replying"></canvas></div>
             <p class="caption" id="talk-caption" aria-hidden="true"></p>
           </div>
-          <div class="transcript" id="talk-log" aria-live="polite"></div>
+          <div class="transcript" id="talk-log" aria-live="polite" data-lenis-prevent></div>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- 3b · The range: every topic as a column, tap a word to see it signed -->
+  <section id="act-range" data-sc-act="pan" data-sc-span="3.8" data-sc-drift="#0d110f">
+    <div data-sc-stage class="stage-center range">
+      <div class="range__fig">
+        <div class="avatar"><canvas id="range-avatar" role="img" aria-label="Signing figure showing the chosen word"></canvas></div>
+        <p class="caption" id="range-caption" aria-live="polite"></p>
+      </div>
+      <div class="rail" data-sc-pan="0.04" id="range-rail"></div>
     </div>
   </section>
 
@@ -136,6 +145,7 @@
 
 </main>
 
+<script src="/static/vendor/lenis.min.js"></script>
 <script src="scrollcraft.js"></script>
 <script type="module" src="landing.js"></script>
 </body>

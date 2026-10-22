@@ -276,6 +276,298 @@
    ]
   },
   {
+   "id": "ext_moving",
+   "title": "Actions: getting about",
+   "kind": "word",
+   "items": [
+    "walk",
+    "run",
+    "sit",
+    "stand",
+    "drive",
+    "travel",
+    "arrive",
+    "leave",
+    "start",
+    "stop",
+    "bring"
+   ]
+  },
+  {
+   "id": "ext_daily",
+   "title": "Actions: daily life",
+   "kind": "word",
+   "items": [
+    "cook",
+    "clean",
+    "wash",
+    "buy",
+    "sell",
+    "pay",
+    "study",
+    "teach",
+    "answer",
+    "ask",
+    "call"
+   ]
+  },
+  {
+   "id": "ext_sharing",
+   "title": "Actions: with others",
+   "kind": "word",
+   "items": [
+    "meet",
+    "visit",
+    "take",
+    "put",
+    "show",
+    "tell",
+    "remember",
+    "try",
+    "practice",
+    "enjoy"
+   ]
+  },
+  {
+   "id": "ext_family",
+   "title": "Family and relationships",
+   "kind": "word",
+   "items": [
+    "grandmother",
+    "grandfather",
+    "husband",
+    "wife",
+    "son",
+    "daughter",
+    "cousin",
+    "parents",
+    "family"
+   ]
+  },
+  {
+   "id": "ext_food",
+   "title": "Food and cooking",
+   "kind": "word",
+   "items": [
+    "egg",
+    "cheese",
+    "soup",
+    "salad",
+    "banana",
+    "fruit",
+    "vegetable",
+    "meat",
+    "candy",
+    "juice",
+    "tea",
+    "sandwich",
+    "hamburger"
+   ]
+  },
+  {
+   "id": "ext_body",
+   "title": "The body",
+   "kind": "word",
+   "items": [
+    "head",
+    "eyes",
+    "nose",
+    "mouth",
+    "face",
+    "heart",
+    "stomach",
+    "body"
+   ]
+  },
+  {
+   "id": "ext_health",
+   "title": "Health",
+   "kind": "word",
+   "items": [
+    "medicine",
+    "hospital",
+    "pain",
+    "hurt",
+    "cough",
+    "nurse"
+   ]
+  },
+  {
+   "id": "ext_places",
+   "title": "Places",
+   "kind": "word",
+   "items": [
+    "church",
+    "restaurant",
+    "bank",
+    "park",
+    "city",
+    "country",
+    "office",
+    "kitchen",
+    "bathroom",
+    "bedroom",
+    "door",
+    "window",
+    "street"
+   ]
+  },
+  {
+   "id": "ext_things",
+   "title": "Everyday things",
+   "kind": "word",
+   "items": [
+    "money",
+    "key",
+    "clothes",
+    "shirt",
+    "shoes",
+    "hat",
+    "bag",
+    "ball",
+    "game",
+    "movie",
+    "music",
+    "gift"
+   ]
+  },
+  {
+   "id": "ext_calendar",
+   "title": "Time and calendar",
+   "kind": "word",
+   "items": [
+    "week",
+    "month",
+    "year",
+    "hour",
+    "minute",
+    "birthday",
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+    "sunday"
+   ]
+  },
+  {
+   "id": "ext_describe",
+   "title": "Describing things",
+   "kind": "word",
+   "items": [
+    "big",
+    "small",
+    "long",
+    "fast",
+    "slow",
+    "new",
+    "old",
+    "young",
+    "ugly",
+    "easy",
+    "important",
+    "dirty",
+    "full",
+    "empty",
+    "different",
+    "excited",
+    "lonely",
+    "bored"
+   ]
+  },
+  {
+   "id": "ext_nature",
+   "title": "Weather and nature",
+   "kind": "word",
+   "items": [
+    "sun",
+    "moon",
+    "star",
+    "rain",
+    "snow",
+    "wind",
+    "weather",
+    "tree",
+    "flower",
+    "fire",
+    "ice"
+   ]
+  },
+  {
+   "id": "ext_travel",
+   "title": "Getting around",
+   "kind": "word",
+   "items": [
+    "bus",
+    "train",
+    "airplane",
+    "boat",
+    "north",
+    "south",
+    "east",
+    "west",
+    "left",
+    "right",
+    "up",
+    "down"
+   ]
+  },
+  {
+   "id": "ext_language",
+   "title": "Language and Deaf culture",
+   "kind": "word",
+   "items": [
+    "english",
+    "deaf",
+    "hearing",
+    "interpreter",
+    "sign",
+    "language",
+    "student",
+    "boss"
+   ]
+  },
+  {
+   "id": "ext_connect",
+   "title": "Connecting words",
+   "kind": "word",
+   "items": [
+    "because",
+    "with",
+    "without",
+    "maybe",
+    "never",
+    "always",
+    "welcome",
+    "excuse",
+    "congratulations",
+    "ready",
+    "late",
+    "early",
+    "busy",
+    "free",
+    "true"
+   ]
+  },
+  {
+   "id": "more",
+   "title": "More words",
+   "kind": "word",
+   "items": [
+    "understand",
+    "name",
+    "again",
+    "more",
+    "good",
+    "bad",
+    "hot",
+    "cold",
+    "cup",
+    "plate"
+   ]
+  },
+  {
    "id": "sentences",
    "title": "Putting it together",
    "kind": "sentence",
@@ -395,6 +687,141 @@
       "you"
      ],
      "english": "How are you?"
+    },
+    {
+     "gloss": [
+      "tomorrow",
+      "me",
+      "visit",
+      "grandmother"
+     ],
+     "english": "I will visit my grandmother tomorrow.",
+     "extra": true
+    },
+    {
+     "gloss": [
+      "you",
+      "want",
+      "eat",
+      "egg"
+     ],
+     "english": "Do you want to eat an egg?",
+     "extra": true
+    },
+    {
+     "gloss": [
+      "where",
+      "bathroom"
+     ],
+     "english": "Where is the bathroom?",
+     "extra": true
+    },
+    {
+     "gloss": [
+      "me",
+      "need",
+      "medicine"
+     ],
+     "english": "I need medicine.",
+     "extra": true
+    },
+    {
+     "gloss": [
+      "yesterday",
+      "me",
+      "buy",
+      "shirt"
+     ],
+     "english": "I bought a shirt yesterday.",
+     "extra": true
+    },
+    {
+     "gloss": [
+      "you",
+      "study",
+      "english"
+     ],
+     "english": "Do you study English?",
+     "extra": true
+    },
+    {
+     "gloss": [
+      "birthday",
+      "tomorrow"
+     ],
+     "english": "My birthday is tomorrow.",
+     "extra": true
+    },
+    {
+     "gloss": [
+      "me",
+      "drive",
+      "car",
+      "work"
+     ],
+     "english": "I drive to work.",
+     "extra": true
+    },
+    {
+     "gloss": [
+      "weather",
+      "what"
+     ],
+     "english": "What is the weather?",
+     "extra": true
+    },
+    {
+     "gloss": [
+      "me",
+      "love",
+      "music"
+     ],
+     "english": "I love music.",
+     "extra": true
+    },
+    {
+     "gloss": [
+      "rain",
+      "tomorrow"
+     ],
+     "english": "It will rain tomorrow.",
+     "extra": true
+    },
+    {
+     "gloss": [
+      "you",
+      "friend",
+      "deaf"
+     ],
+     "english": "Is your friend deaf?",
+     "extra": true
+    },
+    {
+     "gloss": [
+      "me",
+      "hospital",
+      "go"
+     ],
+     "english": "I am going to the hospital.",
+     "extra": true
+    },
+    {
+     "gloss": [
+      "money",
+      "me",
+      "need"
+     ],
+     "english": "I need money.",
+     "extra": true
+    },
+    {
+     "gloss": [
+      "door",
+      "open",
+      "please"
+     ],
+     "english": "Please open the door.",
+     "extra": true
     }
    ]
   }

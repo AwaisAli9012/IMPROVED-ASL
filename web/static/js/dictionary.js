@@ -1,6 +1,6 @@
 // Dictionary: every supported sign, searchable and filterable, played by the signing figure.
 import { el, getJSON, initShell, refreshIcons } from './api.js';
-import { Avatar } from './avatar.js';
+import { Avatar, syncAvatarControls } from './avatar.js';
 
 initShell();
 const [units, cfg] = await Promise.all([getJSON('/api/curriculum'), getJSON('/api/config')]);
@@ -10,6 +10,7 @@ const entries = units.flatMap((u) => (u.kind === 'hand' || u.kind === 'word' ? u
 const topics = ['All', ...new Set(entries.map((e) => e.topic))];
 
 const avatar = new Avatar(document.getElementById('avatar'));
+syncAvatarControls(avatar);
 let topic = 'All', selected = null;
 
 function renderList() {

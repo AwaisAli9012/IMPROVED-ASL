@@ -1,6 +1,7 @@
 import pytest
 
 from signbridge import config
+from signbridge.vocab import word_labels
 from signbridge.server import app
 
 pytestmark = pytest.mark.skipif(not (config.ARTIFACTS / "vocab_words.json").exists(), reason="vocab not built yet")
@@ -17,7 +18,7 @@ def test_config_has_everything_the_browser_needs(client):
     cfg = client.get("/api/config").get_json()
     for key in ("POSE_IDX", "LIP_IDX", "thresholds", "words", "SEG_END_FRAMES", "LETTERS", "gemini"):
         assert key in cfg
-    assert len(cfg["words"]) == 100 and cfg["gemini"] is False
+    assert len(cfg["words"]) == len(word_labels()) >= 100 and cfg["gemini"] is False
 
 
 def test_sentence_and_gloss_work_offline(client):

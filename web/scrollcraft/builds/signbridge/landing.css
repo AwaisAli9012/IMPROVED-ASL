@@ -32,7 +32,8 @@
 
 /* ------------------------------------------------------------ stage, depth -- */
 .stage-center { display: grid; grid-template-columns: minmax(0, 1fr); place-items: center; padding: 72px var(--sc-gutter) var(--sc-6); }
-.stage-center > :not(.ring):not(.constellation):not(.foot) { position: relative; z-index: 1; }
+.stage-center > :not(.ring):not(.constellation):not(.foot):not(.range__fig) { position: relative; z-index: 1; }
+html { scroll-behavior: auto; } /* Lenis handles easing */
 .ring { position: absolute; border: 1px solid var(--sc-hairline); border-radius: 50%; pointer-events: none; }
 .ring--a { width: 54rem; height: 54rem; inset: auto auto -26rem -18rem; }
 .ring--b { width: 40rem; height: 40rem; inset: -14rem -10rem auto auto; border-color: var(--sc-hairline-strong); }
@@ -97,6 +98,18 @@
 .wave { display: none; align-items: flex-end; gap: 3px; height: 16px; }
 .is-new .wave { display: inline-flex; }
 .wave i { width: 3px; height: 100%; border-radius: 2px; background: var(--sc-accent); transform-origin: bottom; animation: bar 0.7s ease-in-out 4 both; animation-delay: calc(0.85s + var(--i) * 70ms); }
+
+/* ---------------------------------------------------------- act 3b: the range -- */
+.range { align-content: stretch; }
+.range__fig { position: absolute; top: 76px; left: 50%; z-index: 2; width: min(36rem, 88vw); transform: translateX(-50%); }
+.range__fig .avatar { aspect-ratio: 16 / 9; }
+.range .rail { align-self: end; display: flex; flex-wrap: nowrap; gap: var(--sc-8); width: max-content; padding: 0 var(--sc-gutter) var(--sc-7); }
+.topic { flex: none; display: grid; gap: var(--sc-3); align-content: start; width: min(19rem, 78vw); }
+.topic h3 { font-family: var(--sc-font-display); font-size: var(--sc-t-lg); font-weight: 600; }
+.topic--lead { width: min(24rem, 80vw); align-content: end; }
+.topic__words { display: flex; flex-wrap: wrap; gap: var(--sc-2); }
+.topic .chip { min-height: 36px; font-size: var(--sc-t-sm); }
+@media (max-height: 760px) { .range__fig { width: min(22rem, 70vw); } }
 
 /* -------------------------------------------------- act 4: the real pages -- */
 .inside { padding-block: var(--sc-7) var(--sc-9); }

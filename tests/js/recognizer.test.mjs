@@ -59,3 +59,11 @@ test('a letter latches after a steady streak and the word is spelled once the ha
   for (let i = 0; i < 26; i++) rec.push(noHand);
   assert.deepEqual(glosses.map((g) => g.label), ['fs:A']);
 });
+
+test('el() writes boolean aria and data attributes as "true" and "false"', async () => {
+  const attrs = {};
+  globalThis.document = { createElement: () => ({ setAttribute: (k, v) => { attrs[k] = v; }, addEventListener() {}, append() {}, className: '' }) };
+  const { el } = await import('../../web/static/js/api.js');
+  el('div', { 'aria-selected': true, 'data-earned': false, hidden: true, disabled: false });
+  assert.deepEqual(attrs, { 'aria-selected': 'true', 'data-earned': 'false', hidden: '' });
+});

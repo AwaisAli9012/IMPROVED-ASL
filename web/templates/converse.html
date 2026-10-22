@@ -15,8 +15,15 @@
         </div>
         <div class="row">
           <span class="tone" id="tone" title="Tone read from your face"><i data-lucide="meh" id="tone-icon"></i><span id="tone-label" class="num">Neutral</span></span>
+          <button class="btn btn--icon btn--sm" id="inspect" type="button" aria-label="Model inspector" aria-pressed="false" title="Model inspector (I)"><i data-lucide="gauge"></i></button>
           <button class="btn btn--icon btn--sm" id="recalibrate" type="button" aria-label="Recalibrate neutral face"><i data-lucide="scan-face"></i></button>
         </div>
+      </div>
+      <div class="inspector" id="inspector" hidden aria-live="off">
+        <div class="inspector__row"><span>Camera</span><b class="num" id="i-fps">0 fps</b></div>
+        <div class="inspector__row"><span>Last answer</span><b class="num" id="i-ms">none yet</b></div>
+        <div class="inspector__row"><span>Frames in sign</span><b class="num" id="i-frames">none yet</b></div>
+        <div id="i-top"></div>
       </div>
       <div class="stage__band">
         <div class="cand">
@@ -76,6 +83,7 @@
     <li><b class="num">Enter</b> Speak the sentence</li>
     <li><b class="num">Backspace</b> Remove the last sign</li>
     <li><b class="num">Esc</b> Clear, or dismiss suggestions</li>
+    <li><b class="num">I</b> Show or hide the model inspector</li>
   </ul>
   <form method="dialog"><button class="btn btn--primary">Close</button></form>
 </dialog>

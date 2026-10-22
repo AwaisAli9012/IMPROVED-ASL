@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% set active = 'settings' %}
+{% set script = 'settings.js' %}
+{% block title %}Settings · SignBridge{% endblock %}
+{% block main %}
+<section class="stack" aria-label="Settings">
+  <div class="stack"><h1>Settings</h1><p class="muted">Saved on this computer. Nothing here is sent anywhere.</p></div>
+  <div class="panel">
+    <h2>Appearance</h2>
+    <div class="field-row"><span id="theme-label" class="label">Theme</span><div class="choice" id="theme" role="radiogroup" aria-labelledby="theme-label">
+      <button class="chip chip--plain" type="button" role="radio" data-value="dark">Dark</button>
+      <button class="chip chip--plain" type="button" role="radio" data-value="light">Light</button>
+      <button class="chip chip--plain" type="button" role="radio" data-value="contrast">High contrast</button></div></div>
+    <div class="field-row"><span id="size-label" class="label">Text size</span><div class="choice" id="textSize" role="radiogroup" aria-labelledby="size-label">
+      <button class="chip chip--plain" type="button" role="radio" data-value="s">Small</button>
+      <button class="chip chip--plain" type="button" role="radio" data-value="m">Medium</button>
+      <button class="chip chip--plain" type="button" role="radio" data-value="l">Large</button>
+      <button class="chip chip--plain" type="button" role="radio" data-value="xl">Extra large</button></div></div>
+    <label class="row"><input type="checkbox" id="reduceMotion"> <span>Reduce motion (turns off animations and transitions)</span></label>
+  </div>
+  <div class="panel">
+    <h2>Voice</h2>
+    <div class="field-row"><label for="voice">Spoken voice</label><select class="field" id="voice"></select></div>
+    <div class="field-row"><label for="rate">Speaking speed <span class="num muted" id="rate-out"></span></label><input type="range" id="rate" min="0.6" max="1.4" step="0.1"></div>
+    <div class="row"><button class="btn" id="voice-test" type="button"><i data-lucide="volume-2"></i>Test voice</button></div>
+    <p class="muted" id="voice-note" hidden>This browser has no speech output.</p>
+  </div>
+  <div class="panel">
+    <h2>Camera</h2>
+    <div class="field-row"><label for="camera">Camera to use</label><select class="field" id="camera"><option value="">Default camera</option></select></div>
+    <div class="row"><button class="btn" id="camera-list" type="button"><i data-lucide="camera"></i>Show my cameras</button></div>
+    <p class="muted" id="camera-note">Camera names appear after you allow access once. The video never leaves this computer.</p>
+  </div>
+  <div class="panel">
+    <h2>Signing figure</h2>
+    <div class="field-row"><span id="speed-label" class="label">Default speed</span><div class="choice" id="avatarSpeed" role="radiogroup" aria-labelledby="speed-label">
+      <button class="chip chip--plain" type="button" role="radio" data-value="0.5">Slow (0.5×)</button>
+      <button class="chip chip--plain" type="button" role="radio" data-value="1">Normal (1×)</button></div></div>
+    <label class="row"><input type="checkbox" id="mirror"> <span>Mirror me by default (shows signs as you would make them)</span></label>
+  </div>
+  <div class="panel">
+    <h2>Your data</h2>
+    <p class="muted">Progress is stored in a small database on the computer running SignBridge.</p>
+    <div class="row">
+      <button class="btn" id="export-data" type="button"><i data-lucide="download"></i>Download my progress</button>
+      <button class="btn" id="reset-prefs" type="button"><i data-lucide="rotate-ccw"></i>Reset settings</button>
+      <button class="btn" id="delete-profile" type="button"><i data-lucide="trash-2"></i>Delete my profile and progress</button>
+    </div>
+  </div>
+</section>
+{% endblock %}

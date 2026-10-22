@@ -1,0 +1,52 @@
+[
+ {
+  "title": "Greetings",
+  "items": [
+   "Hello",
+   "Good morning",
+   "Thank you",
+   "Please",
+   "Sorry",
+   "Nice to meet you",
+   "See you tomorrow",
+   "Goodbye"
+  ]
+ },
+ {
+  "title": "Needs",
+  "items": [
+   "I need help",
+   "I am hungry",
+   "I am thirsty",
+   "I want water",
+   "I need the bathroom",
+   "I am tired",
+   "I am sick",
+   "I want to go home"
+  ]
+ },
+ {
+  "title": "Questions",
+  "items": [
+   "What is your name",
+   "How are you",
+   "Who are you",
+   "Do you understand",
+   "Can you help me",
+   "What time is it",
+   "Where is the bathroom",
+   "Where is the hospital"
+  ]
+ },
+ {
+  "title": "Emergency",
+  "items": [
+   "I need a doctor",
+   "Please help me",
+   "It hurts",
+   "I am sick",
+   "Call the doctor",
+   "I need medicine"
+  ]
+ }
+]

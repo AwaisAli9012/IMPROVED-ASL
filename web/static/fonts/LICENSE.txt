@@ -1,0 +1,2 @@
+Archivo (Omnibus-Type), Geist and Geist Mono (Vercel) are licensed under the SIL Open Font License 1.1 (https://openfontlicense.org).
+Files are the Latin subsets as packaged by Fontsource (https://fontsource.org).

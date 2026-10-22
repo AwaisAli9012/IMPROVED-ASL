@@ -15,5 +15,5 @@ def test_wordnet_output_shape():
 @pytest.mark.skipif(not (ARTIFACTS / "vocab_words.json").exists(), reason="vocab not built yet")
 def test_every_word_has_a_display_name():
     labels = word_labels()
-    assert len(labels) == len(set(labels)) == 100
+    assert len(labels) == len(set(labels)) >= 100
     assert all(display(w).strip() for w in labels)

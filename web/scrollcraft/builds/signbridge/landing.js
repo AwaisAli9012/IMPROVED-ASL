@@ -33,7 +33,47 @@ if (words && letters) {
 } else {
   $('readout').children[2].setAttribute('data-sc-cue', '0.48 1'); // no report yet: the last cue holds through the act
 }
+// ---- the range: one column per topic, built from the real curriculum before the engine measures the rail ------
+const topics = (units ?? []).filter((u) => u.kind === 'word');
+if (topics.length && cfg) {
+  const shown = Object.fromEntries(cfg.words.map((w) => [w.label, w.display]));
+  const rangeAvatar = new Avatar($('range-avatar'));
+  const chips = new Map();
+  const choose = (label) => {
+    chips.forEach((b, l) => b.setAttribute('aria-pressed', String(l === label)));
+    rangeAvatar.play([sign(label)], { loop: true, onWord: (w) => { $('range-caption').textContent = w; } });
+  };
+  const node = (tag, className, text) => Object.assign(document.createElement(tag), { className, textContent: text ?? '' });
+  const lead = node('div', 'topic topic--lead');
+  lead.append(node('span', 'label', 'The vocabulary'), node('p', 'readout__line', `${cfg.words.length} words in ${topics.length} topics. Tap one to see it signed.`));
+  const columns = topics.map((t) => {
+    const col = node('div', 'topic'), words = node('div', 'topic__words');
+    t.items.forEach((label) => {
+      const b = node('button', 'chip chip--plain', shown[label] ?? label);
+      b.type = 'button';
+      b.addEventListener('click', () => choose(label));
+      chips.set(label, b);
+      words.append(b);
+    });
+    col.append(node('h3', '', t.title), words);
+    return col;
+  });
+  const closing = node('div', 'topic topic--lead');
+  closing.append(node('p', 'readout__line', 'Anything else is spelled out letter by letter.'));
+  $('range-rail').replaceChildren(lead, ...columns, closing);
+  choose(topics[0].items[0]);
+} else {
+  $('act-range').remove(); // no curriculum: the page reads fine without this act
+}
+
 ScrollCraft.mount(document.body);
+
+// ---- smooth, inertial scrolling for a mouse or trackpad; touch and reduced motion keep native scrolling -----------
+if (!reduce && window.Lenis && matchMedia('(hover: hover) and (pointer: fine)').matches) {
+  const lenis = new Lenis({ lerp: 0.09, wheelMultiplier: 0.85 });
+  const raf = (t) => { lenis.raf(t); requestAnimationFrame(raf); };
+  requestAnimationFrame(raf);
+}
 
 // ---- act 1 backdrop: a constellation of points that reacts to the pointer -----------------------------
 function constellation(canvas) {
@@ -117,7 +157,8 @@ function drawPoints(progress) {
   const W = (pointsCanvas.width = pointsCanvas.clientWidth * r), H = (pointsCanvas.height = pointsCanvas.clientHeight * r);
   ctx.clearRect(0, 0, W, H);
   const n = demo.frames.length;
-  const frame = demo.frames[Math.min(n - 1, Math.floor(clamp((progress - 0.12) / 0.8) * (n - 1)))];
+  const idx = Math.min(n - 1, Math.floor(clamp((progress - 0.12) / 0.8) * (n - 1)));
+  const frame = demo.frames[idx];
   const gather = ease(clamp(progress / 0.3));
   const u = Math.min(W * 0.26, H * 0.22);
   const at = ([x, y]) => [W / 2 + x * u, H * 0.4 + y * u];
@@ -136,6 +177,14 @@ function drawPoints(progress) {
     ctx.fillStyle = color;
     for (const [x, y] of place[key]) { ctx.beginPath(); ctx.arc(x, y, size * r, 0, 7); ctx.fill(); }
   }
+  if (gather > 0.9) { // a fading trail behind the signing hand shows its path
+    for (let k = 1; k <= 4; k++) {
+      ctx.globalAlpha = 0.34 / k;
+      ctx.fillStyle = COLOR.accent;
+      for (const pt of demo.frames[Math.max(0, idx - k * 2)].rh ?? []) { const [x, y] = at(pt); ctx.beginPath(); ctx.arc(x, y, 1.8 * r, 0, 7); ctx.fill(); }
+    }
+    ctx.globalAlpha = 1;
+  }
   const lines = clamp((gather - 0.75) / 0.25); // bones fade in once the points have arrived
   ctx.globalAlpha = lines * 0.8;
   ctx.lineWidth = 1.6 * r;
@@ -144,7 +193,7 @@ function drawPoints(progress) {
   for (const [key, color] of [['lh', COLOR.soft], ['rh', COLOR.accent]]) if (place[key]) for (const [a, b] of HAND_BONES) seg(place[key], a, b, color);
   if (place.pose) for (const [a, b] of [[1, 2], [1, 3], [3, 5], [2, 4], [4, 6]]) seg(place.pose, a, b, COLOR.ink);
   ctx.globalAlpha = 1;
-  $('points-caption').textContent = gather < 1 ? `${count} points finding their place` : `${count} points, frame ${Math.min(n, Math.floor(clamp((progress - 0.12) / 0.8) * (n - 1)) + 1)} of ${n}`;
+  $('points-caption').textContent = gather < 1 ? `${count} points finding their place` : `${count} points, frame ${idx + 1} of ${n}`;
 }
 
 // ---- act 3: the conversation (scripted sample, real signing) --------------------------------------------

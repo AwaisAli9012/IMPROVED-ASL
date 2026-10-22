@@ -1,6 +1,7 @@
 // A 2D signing figure drawn from recorded landmark animations (/static/signs/<label>.json).
 // Word clips are in shoulder-width units centred on the shoulders; letter and digit clips are a single hand
 // centred on the wrist. Spelled words play as a run of letter close-ups.
+import { getPrefs } from './api.js';
 import { HAND_BONES } from './vision.js';
 
 const BLOCKS = ['lh', 'rh', 'pose', 'lips'];
@@ -45,14 +46,32 @@ function lerpFrame(a, b, t) {
 export class Avatar {
   constructor(canvas) {
     this.canvas = canvas;
-    this.mirror = true; // shows signs as you would make them, like a mirror
-    this.speed = 1;
+    const prefs = getPrefs();
+    this.mirror = prefs.mirror; // true shows signs as you would make them, like a mirror
+    this.speed = prefs.avatarSpeed;
     this.token = 0;
+    this.busy = false; // true while a sign is playing
+    this.visible = true;
     const css = getComputedStyle(document.documentElement);
     this.colors = { main: css.getPropertyValue('--sc-accent').trim(), soft: css.getPropertyValue('--sc-ink-soft').trim(), ink: css.getPropertyValue('--sc-ink').trim() };
     new ResizeObserver(() => { this.#fit(); this.#drawRest(); }).observe(canvas);
+    new IntersectionObserver(([e]) => { this.visible = e.isIntersecting; }).observe(canvas);
     this.#fit();
     this.#drawRest();
+    this.#idle();
+  }
+
+  /** A slow breathing sway while nothing is signing, so the figure never looks frozen. */
+  #idle() {
+    const calm = () => matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.dataset.motion === 'reduced';
+    const tick = (now) => {
+      if (!this.busy && this.visible && !calm()) {
+        const s = Math.sin(now / 1100);
+        this.#draw({ ...REST, pose: REST.pose.map(([x, y], i) => [x + (i === 0 ? s * 0.012 : 0), y + s * (i === 0 ? 0.02 : 0.01)]) }, false);
+      }
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
   }
 
   setMirror(on) { this.mirror = on; }
@@ -65,6 +84,7 @@ export class Avatar {
     const clips = await clipsFor(tokens);
     if (id !== this.token || !clips.length) return false;
     const plan = this.#plan(clips);
+    this.busy = true;
     return new Promise((resolve) => {
       let t0 = null, lastIdx = -1;
       const tick = (now) => {
@@ -72,7 +92,7 @@ export class Avatar {
         t0 ??= now;
         let t = now - t0;
         if (t >= plan.total) {
-          if (!loop) { this.#drawRest(); return resolve(true); }
+          if (!loop) { this.busy = false; this.#drawRest(); return resolve(true); }
           t0 = now; t = 0; lastIdx = -1;
         }
         const seg = plan.segs.find((s) => t < s.t0 + s.dur) ?? plan.segs.at(-1);
@@ -87,11 +107,12 @@ export class Avatar {
     });
   }
 
-  stop() { this.token++; this.#drawRest(); }
+  stop() { this.token++; this.busy = false; this.#drawRest(); }
 
   /** Freeze on the first frame of one sign (used to step through a fingerspelled name). */
   async show(label) {
     const id = ++this.token;
+    this.busy = true;
     const sign = await loadSign(label);
     if (sign && id === this.token) this.#draw(sign.frames[0], sign.kind === 'hand');
   }
@@ -172,4 +193,11 @@ export class Avatar {
     drawHand(frame.lh, P, this.colors.soft, Math.max(2, u * 0.02));
     drawHand(frame.rh, P, this.colors.main, Math.max(2, u * 0.022));
   }
+}
+
+/** Make a page's speed buttons (#speed) and mirror box (#mirror) show the avatar's saved defaults. */
+export function syncAvatarControls(avatar) {
+  const box = document.getElementById('mirror');
+  if (box) box.checked = avatar.mirror;
+  document.querySelectorAll('#speed button').forEach((b) => b.setAttribute('aria-checked', +b.dataset.speed === avatar.speed));
 }

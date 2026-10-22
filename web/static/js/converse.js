@@ -1,7 +1,7 @@
 // Converse page: you sign, SignBridge reads, builds an English sentence and speaks it; the other person
 // types or speaks, and a signing figure answers.
-import { announce, config, el, icon, initShell, postJSON, refreshIcons, toast } from './api.js';
-import { Avatar } from './avatar.js';
+import { announce, config, download, el, fill, getPrefs, icon, initShell, listen, postJSON, refreshIcons, speak, toast } from './api.js';
+import { Avatar, syncAvatarControls } from './avatar.js';
 import { needsOnboarding, runOnboarding } from './onboarding.js';
 import { Recognizer, ToneTracker } from './recognizer.js';
 import { Vision, wireCamera } from './vision.js';
@@ -10,12 +10,12 @@ initShell();
 const $ = (id) => document.getElementById(id);
 const WH = new Set(['what', 'where', 'who', 'why', 'how', 'when', 'which']);
 const TONE = { neutral: ['meh', 'Neutral'], happy: ['smile', 'Happy'], sad: ['frown', 'Sad'], angry: ['angry', 'Angry'], surprised: ['sparkles', 'Surprised'] };
-const VOICE = { neutral: [1, 1], happy: [1.08, 1.15], sad: [0.88, 0.9], angry: [1.05, 0.85], surprised: [1.1, 1.25] }; // [rate, pitch]
 const QUESTION = { yesno: 'Question (yes/no)', wh: 'Question (what, where, who)' };
 
 const cfg = await config();
 const vision = new Vision($('video'), $('overlay'));
 const avatar = new Avatar($('avatar'));
+syncAvatarControls(avatar);
 const glosses = [];       // {type, label, display, question}
 const transcript = [];    // for the export
 let suggestTimer;
@@ -57,11 +57,13 @@ function showSuggestions(top, question) {
 }
 
 // ---- recognition --------------------------------------------------------------------------------
+let last = null; // the latest prediction, shown by the inspector
 const recognizer = new Recognizer(cfg, {
   onGloss: addGloss,
   onSuggest: showSuggestions,
   onChar: (c) => announce(c),
   onBusy: (busy) => $('stage').setAttribute('aria-busy', busy),
+  onResult: (r) => { last = r; },
   onError: (e) => { if (e.status === 503) toast('The sign model is not trained yet.', 'error'); },
   onCandidate: (c) => {
     $('cand-word').textContent = c?.display ?? '';
@@ -84,15 +86,25 @@ function setMode(mode) {
 }
 $('mode').addEventListener('click', (e) => e.target.dataset.mode && setMode(e.target.dataset.mode));
 
-// ---- speaking -----------------------------------------------------------------------------------
-function speak(text, toneName = 'neutral') {
-  if (!('speechSynthesis' in window)) return;
-  const [rate, pitch] = VOICE[toneName] ?? VOICE.neutral;
-  const u = Object.assign(new SpeechSynthesisUtterance(text), { lang: 'en-US', rate, pitch });
-  speechSynthesis.cancel();
-  speechSynthesis.speak(u);
+// ---- model inspector ---------------------------------------------------------------------------
+function paintInspector() {
+  if ($('inspector').hidden) return;
+  $('i-fps').textContent = `${vision.fps.toFixed(0)} fps`;
+  if (!last) return;
+  $('i-ms').textContent = `${last.ms.toFixed(0)} ms`;
+  $('i-frames').textContent = last.frames ? `${last.frames}` : 'one frame';
+  fill($('i-top'), ...last.top.map((t) => el('div', { class: 'inspector__bar' }, el('span', {}, t.display),
+    el('i', { class: 'meter', style: `--p:${t.prob}` }, el('i')), el('b', { class: 'num' }, `${Math.round(t.prob * 100)}%`))));
 }
+function toggleInspector() {
+  $('inspector').hidden = !$('inspector').hidden;
+  $('inspect').setAttribute('aria-pressed', String(!$('inspector').hidden));
+  paintInspector();
+}
+$('inspect').addEventListener('click', toggleInspector);
+setInterval(paintInspector, 400);
 
+// ---- speaking -----------------------------------------------------------------------------------
 function addMessage(who, english, detail, toneName, tokens) {
   transcript.push({ who, english, detail });
   const meta = el('div', { class: 'msg__meta' }, detail,
@@ -137,26 +149,18 @@ async function reply(text) {
 }
 $('composer').addEventListener('submit', (e) => { e.preventDefault(); const t = $('reply').value; $('reply').value = ''; reply(t); });
 
-const Recog = window.SpeechRecognition ?? window.webkitSpeechRecognition;
-if (!Recog) {
+let rec = null;
+if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
   $('mic').disabled = true;
   $('mic').title = 'Speech input needs Chrome or Edge';
-} else {
-  let rec = null;
-  $('mic').addEventListener('click', () => {
-    if (rec) return rec.stop();
-    rec = Object.assign(new Recog(), { lang: 'en-US', interimResults: true });
-    rec.onstart = () => $('mic').setAttribute('aria-pressed', 'true');
-    rec.onresult = (e) => {
-      const text = [...e.results].map((r) => r[0].transcript).join(' ');
-      $('reply').value = text;
-      if (e.results[e.results.length - 1].isFinal) { $('reply').value = ''; reply(text); }
-    };
-    rec.onerror = (e) => e.error !== 'no-speech' && e.error !== 'aborted' && toast(`Microphone: ${e.error}`, 'error');
-    rec.onend = () => { rec = null; $('mic').setAttribute('aria-pressed', 'false'); };
-    rec.start();
-  });
 }
+$('mic').addEventListener('click', () => {
+  if (rec) return rec.stop();
+  rec = listen({
+    onState: (on) => { $('mic').setAttribute('aria-pressed', on); if (!on) rec = null; },
+    onResult: ({ finals, interim }) => { $('reply').value = interim; finals.forEach((f) => { $('reply').value = ''; reply(f); }); },
+  });
+});
 
 $('speed').addEventListener('click', (e) => {
   if (!e.target.dataset.speed) return;
@@ -167,10 +171,7 @@ $('mirror').addEventListener('change', (e) => avatar.setMirror(e.target.checked)
 
 $('export').addEventListener('click', () => {
   if (!transcript.length) return toast('Nothing to save yet.');
-  const text = transcript.map((m) => `${m.who === 'you' ? 'Signer' : 'Reply'}: ${m.english}  (${m.detail})`).join('\n');
-  const a = el('a', { href: URL.createObjectURL(new Blob([text], { type: 'text/plain' })), download: 'signbridge-conversation.txt' });
-  a.click();
-  URL.revokeObjectURL(a.href);
+  download('signbridge-conversation.txt', transcript.map((m) => `${m.who === 'you' ? 'Signer' : 'Reply'}: ${m.english}  (${m.detail})`).join('\n'));
 });
 
 // ---- keyboard -------------------------------------------------------------------------------------
@@ -179,7 +180,8 @@ document.addEventListener('keydown', (e) => {
   if (e.target.matches('input, textarea, select') || e.metaKey || e.ctrlKey || e.altKey || document.querySelector('dialog[open]:not(#onboard)')) return;
   const k = e.key;
   const top = $('suggest')._top;
-  if (k === 'w' || k === 'W') setMode('words');
+  if (k === 'i' || k === 'I') toggleInspector();
+  else if (k === 'w' || k === 'W') setMode('words');
   else if (k === 'a' || k === 'A') setMode('letters');
   else if (k === 'n' || k === 'N') setMode('digits');
   else if (k === ' ') { e.preventDefault(); recognizer.endSegment(); }

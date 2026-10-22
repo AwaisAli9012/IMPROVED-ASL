@@ -1,7 +1,7 @@
 // Lesson engine. Units run as: watch the avatar, try it on camera, repeat for each item, then a six question quiz.
 // Intro units are pages; the sentence unit asks for whole sentences; "review" practises items that are due.
 import { announce, config, el, fill, getJSON, icon, initShell, postJSON, refreshIcons, toast } from './api.js';
-import { Avatar } from './avatar.js';
+import { Avatar, syncAvatarControls } from './avatar.js';
 import { Recognizer } from './recognizer.js';
 import { Vision, wireCamera } from './vision.js';
 
@@ -31,6 +31,7 @@ document.title = `${unit.title} · SignBridge`;
 
 // ---- shared parts --------------------------------------------------------------------------------
 const avatar = new Avatar($('avatar'));
+syncAvatarControls(avatar);
 const vision = new Vision($('video'), $('overlay'));
 let waiting = null; // set while a try is open: receives recognizer events
 const recognizer = new Recognizer(cfg, {

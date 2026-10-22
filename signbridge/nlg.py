@@ -20,6 +20,8 @@ END = {"none": ".", "yesno": "?", "wh": "?"}
 STOPWORDS = {"a", "an", "the", "is", "are", "am", "was", "were", "be", "to", "of", "do", "does", "did"}
 TO_GLOSS = {"i": "me", "me": "me", "my": "my", "mine": "my"}
 BIGRAMS = {("thank", "you"): "thankyou"}
+SYNONYMS = {"goodbye": "bye", "hi": "hello", "hey": "hello", "thanks": "thankyou", "mom": "mother", "mum": "mother", "dad": "father",
+            "grandma": "grandmother", "grandpa": "grandfather", "toilet": "bathroom", "restroom": "bathroom", "ill": "sick", "yeah": "yes"}
 _client, _lock = None, threading.Lock()
 
 
@@ -73,6 +75,15 @@ def _clean(tokens, vocab):
     return [t for t in out if t["type"] == "sign" or t["text"]]
 
 
+def _lookup(w, vocab):
+    """Map a spoken word to a vocabulary label: synonyms first, then plural and verb endings."""
+    w = SYNONYMS.get(w, w)
+    for stem in (w, w[:-1] if w.endswith("s") else "", w[:-2] if w.endswith(("es", "ed")) else "", w[:-3] if w.endswith("ing") else ""):
+        if stem in vocab:
+            return stem
+    return w
+
+
 def english_to_gloss(text):
     """-> {"tokens": [{"type": "sign", "label"} | {"type": "spell", "text"}], "source"}."""
     vocab = set(word_labels())
@@ -94,6 +105,6 @@ def english_to_gloss(text):
         i += 2 if pair in BIGRAMS else 1
         if w in STOPWORDS:
             continue
-        w = TO_GLOSS.get(w, w)
+        w = _lookup(TO_GLOSS.get(w, w), vocab)
         tokens.append({"type": "sign", "label": w} if w in vocab else _spell(w))
     return {"tokens": [t for t in tokens if t["type"] == "sign" or t["text"]], "source": "offline"}

@@ -330,3 +330,73 @@ dialog > * + * { margin-top: var(--sc-4); }
 @media (prefers-reduced-motion: reduce) {
   .page > *, .panel, .unit, .msg, .chip, .toast, .kpi { animation: none; }
 }
+
+/* ------------------------------------------------------------------- themes --
+   Tokens only: the layout never changes. Camera and signing panels stay dark in every theme. */
+:root[data-theme="light"] {
+  --sc-canvas: #f4f2ec; --sc-surface: #ffffff; --sc-ink: #17211b; --sc-ink-soft: #4f5c54;
+  --sc-accent: #e39a1e; --sc-accent-ink: #1a1205; --sc-shadow-color: 150 20% 20%;
+  --ok: #1e7a45; --warn: #a86400; --bad: #b3372a;
+}
+:root[data-theme="light"] .stage, :root[data-theme="light"] .avatar { color: #eef1ea; }
+:root[data-theme="contrast"] {
+  --sc-canvas: #000000; --sc-surface: #0b0b0b; --sc-ink: #ffffff; --sc-ink-soft: #e0e0e0;
+  --sc-accent: #ffd23f; --sc-accent-ink: #000000; --sc-hairline: #8a8a8a; --sc-hairline-strong: #c4c4c4;
+}
+:root[data-theme="contrast"] :focus-visible { outline-width: 3px; }
+:root[data-motion="reduced"] *, :root[data-motion="reduced"] *::before, :root[data-motion="reduced"] *::after { animation: none !important; transition: none !important; }
+
+/* ------------------------------------------------------------ small additions -- */
+.sitefoot { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--sc-2) var(--sc-5); padding: var(--sc-6) var(--sc-gutter) var(--sc-8); color: var(--sc-ink-soft); font-size: var(--sc-t-sm); }
+.sitefoot a { color: inherit; }
+.field-row { display: grid; gap: var(--sc-2); }
+.field-row > label { font-weight: 600; }
+.panel select, .panel input[type="range"] { width: 100%; min-height: 44px; }
+select.field { appearance: none; padding-right: var(--sc-6); }
+.choice { display: flex; flex-wrap: wrap; gap: var(--sc-2); }
+.chip--plain[aria-pressed="true"], .choice [aria-checked="true"] { background: var(--sc-accent); color: var(--sc-accent-ink); border-color: transparent; }
+
+/* ------------------------------------------------- progress, phrases, captions -- */
+.activity { display: flex; align-items: flex-end; gap: var(--sc-2); height: 9rem; }
+.activity__col { flex: 1; display: grid; grid-template-rows: 1fr auto; justify-items: center; gap: var(--sc-1); height: 100%; }
+.activity__col i { align-self: end; width: 100%; min-height: 3px; height: 100%; border-radius: var(--sc-r-sm); background: var(--sc-accent); transform-origin: bottom; transform: scaleY(var(--h, 0)); transition: transform var(--sc-d-slow) var(--sc-ease-out); }
+.badges { display: grid; grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr)); gap: var(--sc-3); margin: 0; padding: 0; list-style: none; }
+.badge { display: grid; gap: var(--sc-1); justify-items: start; padding: var(--sc-4); border: 1px solid var(--sc-hairline-strong); border-radius: var(--sc-r-md); }
+.badge svg { width: 22px; height: 22px; }
+.badge span { font-size: var(--sc-t-sm); }
+.badge[data-earned="false"] { opacity: 0.55; }
+.badge[data-earned="true"] { border-color: var(--sc-accent); }
+.badge[data-earned="true"] svg { color: var(--sc-accent); }
+.cells { display: flex; flex-wrap: wrap; gap: 4px; }
+.cell { display: inline-grid; place-items: center; width: 2.6rem; height: 2.2rem; border-radius: var(--sc-r-sm); font-size: var(--sc-t-xs); text-decoration: none; color: var(--sc-ink);
+  background: color-mix(in oklab, var(--sc-accent) calc(var(--b) * 20%), var(--sc-surface)); border: 1px solid var(--sc-hairline); }
+.cell[style*="--b:4"], .cell[style*="--b:5"] { color: var(--sc-accent-ink); }
+.legend .cell { width: 1.2rem; height: 1.2rem; }
+@media (hover: hover) and (pointer: fine) { .cell--link:hover { outline: 2px solid var(--sc-ink); outline-offset: 1px; } }
+.phrase { display: inline-flex; align-items: center; }
+.phrase__x { display: grid; place-items: center; width: 28px; height: 28px; margin-left: -6px; border: 0; border-radius: 50%; background: transparent; color: var(--sc-ink-soft); cursor: pointer; }
+.phrase__x svg { width: 14px; height: 14px; }
+.captions { --cap: 2.2rem; display: grid; gap: var(--sc-4); min-height: 40vh; padding: var(--sc-5); border-radius: var(--sc-r-md); background: var(--sc-surface); box-shadow: var(--sc-e1), var(--sc-edge); align-content: start; }
+.captions__line { margin: 0; font-family: var(--sc-font-display); font-size: var(--cap); font-weight: 500; line-height: 1.2; letter-spacing: var(--sc-track-snug); }
+.captions__line .label { font-size: var(--sc-t-xs); vertical-align: middle; }
+.captions__line--live { color: var(--sc-ink-soft); }
+
+.inspector { position: absolute; inset: auto auto 7.2rem var(--sc-3); width: min(17rem, calc(100% - 2 * var(--sc-3))); padding: var(--sc-3); border: 1px solid var(--sc-hairline-strong); border-radius: var(--sc-r-md);
+  background: rgb(7 10 8 / 0.86); color: #eef1ea; font-family: var(--sc-font-mono); font-size: var(--sc-t-xs); }
+.inspector__row, .inspector__bar { display: grid; align-items: center; gap: var(--sc-2); }
+.inspector__row { grid-template-columns: 1fr auto; }
+.inspector__bar { grid-template-columns: 5.5rem 1fr 2.6rem; margin-top: var(--sc-1); }
+.inspector__bar span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.inspector__bar .meter { margin: 0; }
+.inspector__bar b { text-align: right; font-weight: 500; }
+.inspector #i-top { margin-top: var(--sc-2); }
+
+/* ---------------------------------------------------------------------- about -- */
+.about { max-width: 52rem; }
+.about ul { padding-left: var(--sc-5); margin: 0; }
+.about li { color: var(--sc-ink); }
+.flow { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--sc-3); margin: 0; padding: 0; list-style: none; counter-reset: step; }
+.flow li { position: relative; display: grid; gap: var(--sc-1); align-content: start; padding: var(--sc-4); border: 1px solid var(--sc-hairline-strong); border-radius: var(--sc-r-md); counter-increment: step; }
+.flow li::before { content: counter(step); font-family: var(--sc-font-mono); font-size: var(--sc-t-xs); color: var(--sc-accent); }
+.flow span { color: var(--sc-ink-soft); font-size: var(--sc-t-sm); }
+@media (max-width: 860px) { .flow { grid-template-columns: minmax(0, 1fr); } }

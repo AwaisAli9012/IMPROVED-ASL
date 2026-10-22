@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% set active = 'phrasebook' %}
+{% set script = 'phrasebook.js' %}
+{% block title %}Phrases · SignBridge{% endblock %}
+{% block main %}
+<section class="stack" aria-label="Phrasebook">
+  <div class="stack"><h1>Phrases</h1><p class="muted">Tap a phrase to see it signed and hear it spoken. Useful when you need something quickly.</p></div>
+  <div class="dict">
+    <div class="stack">
+      <input class="field" id="search" type="search" placeholder="Search phrases" aria-label="Search phrases" autocomplete="off">
+      <div id="groups" class="stack"></div>
+      <form class="composer" id="add" aria-label="Add your own phrase">
+        <input class="field" id="own" placeholder="Add your own phrase" maxlength="80" aria-label="Your own phrase">
+        <button class="btn" type="submit"><i data-lucide="plus"></i>Add</button>
+      </form>
+    </div>
+    <div class="stack">
+      <div class="avatar"><canvas id="avatar" role="img" aria-label="Signing figure"></canvas></div>
+      <p class="caption" id="caption" aria-live="polite"></p>
+      <div class="row row--between">
+        <div class="seg" id="speed" role="radiogroup" aria-label="Signing speed">
+          <button type="button" role="radio" aria-checked="false" data-speed="0.5">0.5×</button>
+          <button type="button" role="radio" aria-checked="true" data-speed="1">1×</button>
+        </div>
+        <label class="row" style="gap:var(--sc-2)"><input type="checkbox" id="mirror"> <span>Mirror me</span></label>
+        <label class="row" style="gap:var(--sc-2)"><input type="checkbox" id="aloud" checked> <span>Speak aloud</span></label>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

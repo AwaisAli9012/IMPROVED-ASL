@@ -31,7 +31,7 @@ const RAISE = ['browInnerUp', 'browOuterUpLeft', 'browOuterUpRight'];
 const DOWN = ['browDownLeft', 'browDownRight'];
 
 export class Recognizer {
-  /** handlers: onGloss, onSuggest(top3, question), onCandidate({display, prob, accept} | null), onBusy(bool), onChar(c, chars), onError(e) */
+  /** handlers: onGloss, onSuggest(top3, question), onCandidate({display, prob, accept} | null), onBusy(bool), onChar(c, chars), onResult(prediction details), onError(e) */
   constructor(cfg, handlers) {
     this.cfg = cfg;
     this.h = handlers;
@@ -98,7 +98,9 @@ export class Recognizer {
     this.h.onBusy?.(++this.pending > 0);
     this.chain = this.chain.then(async () => { // one request at a time keeps results in signing order
       try {
+        const t0 = performance.now();
         const r = await postJSON('/api/predict/word', { frames: seg }, { quiet: true });
+        this.h.onResult?.({ kind: 'word', top: r.top, accept: r.accept, ms: performance.now() - t0, frames: seg.length });
         if (r.accept) this.h.onGloss({ type: 'sign', label: r.top[0].label, display: r.top[0].display, question });
         else this.h.onSuggest?.(r.top.slice(0, 3), question);
       } catch (e) { this.h.onError?.(e); } finally { this.h.onBusy?.(--this.pending > 0); }
@@ -121,8 +123,10 @@ export class Recognizer {
     this.noHand = 0;
     if (this.inflight) return; // at most one request in flight
     this.inflight = true;
+    const t0 = performance.now();
     postJSON('/api/predict/static', { hand, aspect, mode: this.mode }, { quiet: true }).then((r) => {
       const t = r.top[0];
+      this.h.onResult?.({ kind: 'static', top: r.top, accept: r.accept, ms: performance.now() - t0 });
       this.h.onCandidate?.({ display: t.display, prob: t.prob, accept: r.accept });
       this.streak = r.accept ? (t.label === this.top ? this.streak + 1 : 1) : 0;
       this.top = r.accept ? t.label : null;
