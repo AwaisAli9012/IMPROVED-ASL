@@ -55,7 +55,7 @@ if (topics.length && cfg) {
       chips.set(label, b);
       words.append(b);
     });
-    col.append(node('h3', '', t.title), words);
+    col.append(node('h2', '', t.title), words);
     return col;
   });
   const closing = node('div', 'topic topic--lead');

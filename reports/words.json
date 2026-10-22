@@ -1,9 +1,9 @@
 {
  "task": "words",
  "model": "WordNet x3",
- "trained_at": "2026-10-21T16:01:35",
- "git_commit": "1e0f529",
- "n_classes": 100,
+ "trained_at": "2026-10-22T18:48:57",
+ "git_commit": "29d6997",
+ "n_classes": 280,
  "labels": [
   "hello",
   "bye",
@@ -104,12 +104,193 @@
   "white",
   "dog",
   "cat",
-  "bird"
+  "bird",
+  "understand",
+  "name",
+  "again",
+  "more",
+  "good",
+  "bad",
+  "hot",
+  "cold",
+  "walk",
+  "run",
+  "sit",
+  "stand",
+  "drive",
+  "buy",
+  "sell",
+  "pay",
+  "cook",
+  "clean",
+  "wash",
+  "study",
+  "teach",
+  "answer",
+  "ask",
+  "call",
+  "meet",
+  "visit",
+  "travel",
+  "arrive",
+  "leave",
+  "start",
+  "stop",
+  "bring",
+  "take",
+  "put",
+  "show",
+  "tell",
+  "remember",
+  "try",
+  "practice",
+  "enjoy",
+  "grandmother",
+  "grandfather",
+  "husband",
+  "wife",
+  "son",
+  "daughter",
+  "cousin",
+  "parents",
+  "family",
+  "egg",
+  "cheese",
+  "soup",
+  "salad",
+  "banana",
+  "fruit",
+  "vegetable",
+  "meat",
+  "candy",
+  "juice",
+  "tea",
+  "sandwich",
+  "hamburger",
+  "head",
+  "eyes",
+  "nose",
+  "mouth",
+  "face",
+  "heart",
+  "stomach",
+  "body",
+  "medicine",
+  "hospital",
+  "pain",
+  "hurt",
+  "cough",
+  "church",
+  "restaurant",
+  "bank",
+  "park",
+  "city",
+  "country",
+  "office",
+  "kitchen",
+  "bathroom",
+  "bedroom",
+  "door",
+  "window",
+  "street",
+  "money",
+  "key",
+  "clothes",
+  "shirt",
+  "shoes",
+  "hat",
+  "bag",
+  "ball",
+  "game",
+  "movie",
+  "music",
+  "gift",
+  "week",
+  "month",
+  "year",
+  "hour",
+  "minute",
+  "birthday",
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+  "sunday",
+  "big",
+  "small",
+  "long",
+  "fast",
+  "slow",
+  "new",
+  "old",
+  "young",
+  "ugly",
+  "easy",
+  "important",
+  "dirty",
+  "full",
+  "empty",
+  "different",
+  "sun",
+  "moon",
+  "star",
+  "rain",
+  "snow",
+  "wind",
+  "weather",
+  "tree",
+  "flower",
+  "fire",
+  "ice",
+  "bus",
+  "train",
+  "airplane",
+  "boat",
+  "excited",
+  "lonely",
+  "bored",
+  "english",
+  "deaf",
+  "hearing",
+  "interpreter",
+  "sign",
+  "language",
+  "because",
+  "with",
+  "without",
+  "maybe",
+  "never",
+  "always",
+  "welcome",
+  "excuse",
+  "congratulations",
+  "ready",
+  "late",
+  "early",
+  "busy",
+  "free",
+  "true",
+  "north",
+  "south",
+  "east",
+  "west",
+  "left",
+  "right",
+  "up",
+  "down",
+  "nurse",
+  "student",
+  "boss",
+  "cup",
+  "plate"
  ],
  "split": {
   "train_signers": [
    1,
    2,
+   3,
    4,
    7,
    8,
@@ -135,6 +316,7 @@
    40,
    41,
    43,
+   44,
    45,
    46,
    50,
@@ -161,29 +343,29 @@
    48,
    49
   ],
-  "n_train": 1488,
-  "n_val": 380,
-  "n_test": 1246
+  "n_train": 4126,
+  "n_val": 1044,
+  "n_test": 3476
  },
  "notes": "Test signers never appear in training or validation. Threshold chosen on validation signers. Source: ASL Citizen (webcam clips), landmarks extracted with MediaPipe.",
- "accuracy": 0.8972712680577849,
- "top3": 0.9662921348314607,
- "top5": 0.9759229534510433,
- "balanced_accuracy": 0.8984993535875888,
- "precision_macro": 0.9075955078633097,
- "recall_macro": 0.8984993535875888,
- "f1_macro": 0.8973563879821971,
- "precision_weighted": 0.9076899230232,
- "recall_weighted": 0.8972712680577849,
- "f1_weighted": 0.8968924785251547,
- "cohen_kappa": 0.8962232844320611,
- "mcc": 0.896342270990283,
- "ece_15bins": 0.15757711018834794,
- "accept_threshold": 0.3,
- "precision_at_threshold": 0.929004329004329,
- "coverage_at_threshold": 0.9269662921348315,
- "latency_ms_p50": 7.225164999908884,
- "latency_ms_p95": 7.626408399664796,
+ "accuracy": 0.8607594936708861,
+ "top3": 0.9467779056386652,
+ "top5": 0.9623130034522439,
+ "balanced_accuracy": 0.8613997871876024,
+ "precision_macro": 0.8767026946099259,
+ "recall_macro": 0.8613997871876024,
+ "f1_macro": 0.861569866821488,
+ "precision_weighted": 0.8773744522048504,
+ "recall_weighted": 0.8607594936708861,
+ "f1_weighted": 0.861599892756146,
+ "cohen_kappa": 0.8602561181514858,
+ "mcc": 0.860319434372423,
+ "ece_15bins": 0.16656812864073883,
+ "accept_threshold": 0.38,
+ "precision_at_threshold": 0.9402155022592978,
+ "coverage_at_threshold": 0.8276754890678941,
+ "latency_ms_p50": 3.3617364988458576,
+ "latency_ms_p95": 3.4352293483607355,
  "per_class": {
   "hello": {
    "precision": 1.0,
@@ -198,57 +380,57 @@
    "support": 12
   },
   "please": {
-   "precision": 0.9230769230769231,
-   "recall": 0.9230769230769231,
-   "f1": 0.9230769230769231,
+   "precision": 0.7333333333333333,
+   "recall": 0.8461538461538461,
+   "f1": 0.7857142857142857,
    "support": 13
   },
   "thankyou": {
+   "precision": 0.5833333333333334,
+   "recall": 0.5833333333333334,
+   "f1": 0.5833333333333334,
+   "support": 12
+  },
+  "sorry": {
    "precision": 1.0,
    "recall": 0.9166666666666666,
    "f1": 0.9565217391304348,
    "support": 12
   },
-  "sorry": {
-   "precision": 0.9166666666666666,
-   "recall": 0.9166666666666666,
-   "f1": 0.9166666666666666,
-   "support": 12
-  },
   "yes": {
-   "precision": 0.9090909090909091,
-   "recall": 1.0,
-   "f1": 0.9523809523809523,
+   "precision": 0.75,
+   "recall": 0.9,
+   "f1": 0.8181818181818182,
    "support": 10
   },
   "no": {
-   "precision": 1.0,
+   "precision": 0.9166666666666666,
    "recall": 1.0,
-   "f1": 1.0,
+   "f1": 0.9565217391304348,
    "support": 11
   },
   "why": {
-   "precision": 1.0,
+   "precision": 0.9285714285714286,
    "recall": 0.9285714285714286,
-   "f1": 0.9629629629629629,
+   "f1": 0.9285714285714286,
    "support": 14
   },
   "where": {
-   "precision": 0.7222222222222222,
-   "recall": 1.0,
-   "f1": 0.8387096774193549,
+   "precision": 0.7142857142857143,
+   "recall": 0.7692307692307693,
+   "f1": 0.7407407407407407,
    "support": 13
   },
   "who": {
-   "precision": 0.8333333333333334,
+   "precision": 0.7692307692307693,
    "recall": 0.7142857142857143,
-   "f1": 0.7692307692307693,
+   "f1": 0.7407407407407407,
    "support": 14
   },
   "what": {
-   "precision": 0.5833333333333334,
+   "precision": 0.6363636363636364,
    "recall": 0.5384615384615384,
-   "f1": 0.56,
+   "f1": 0.5833333333333334,
    "support": 13
   },
   "how": {
@@ -258,9 +440,9 @@
    "support": 11
   },
   "when": {
-   "precision": 0.9,
-   "recall": 0.6923076923076923,
-   "f1": 0.782608695652174,
+   "precision": 1.0,
+   "recall": 0.6153846153846154,
+   "f1": 0.7619047619047619,
    "support": 13
   },
   "which": {
@@ -270,27 +452,27 @@
    "support": 14
   },
   "me": {
-   "precision": 0.8571428571428571,
-   "recall": 0.9230769230769231,
-   "f1": 0.8888888888888888,
+   "precision": 0.9285714285714286,
+   "recall": 1.0,
+   "f1": 0.9629629629629629,
    "support": 13
   },
   "my": {
-   "precision": 0.75,
-   "recall": 0.9230769230769231,
-   "f1": 0.8275862068965517,
+   "precision": 0.6,
+   "recall": 0.6923076923076923,
+   "f1": 0.6428571428571429,
    "support": 13
   },
   "you": {
-   "precision": 0.8333333333333334,
-   "recall": 0.8333333333333334,
-   "f1": 0.8333333333333334,
+   "precision": 0.8181818181818182,
+   "recall": 0.75,
+   "f1": 0.782608695652174,
    "support": 12
   },
   "he": {
-   "precision": 0.8333333333333334,
+   "precision": 1.0,
    "recall": 0.8333333333333334,
-   "f1": 0.8333333333333334,
+   "f1": 0.9090909090909091,
    "support": 12
   },
   "we": {
@@ -300,15 +482,15 @@
    "support": 12
   },
   "mother": {
-   "precision": 0.8571428571428571,
+   "precision": 0.9230769230769231,
    "recall": 0.8,
-   "f1": 0.8275862068965517,
+   "f1": 0.8571428571428571,
    "support": 15
   },
   "father": {
-   "precision": 1.0,
-   "recall": 1.0,
-   "f1": 1.0,
+   "precision": 0.9166666666666666,
+   "recall": 0.9166666666666666,
+   "f1": 0.9166666666666666,
    "support": 12
   },
   "brother": {
@@ -318,33 +500,33 @@
    "support": 13
   },
   "sister": {
-   "precision": 0.8181818181818182,
+   "precision": 0.6923076923076923,
    "recall": 0.75,
-   "f1": 0.782608695652174,
+   "f1": 0.72,
    "support": 12
   },
   "boy": {
-   "precision": 0.8571428571428571,
-   "recall": 1.0,
-   "f1": 0.9230769230769231,
+   "precision": 0.8461538461538461,
+   "recall": 0.9166666666666666,
+   "f1": 0.88,
    "support": 12
   },
   "girl": {
-   "precision": 0.8461538461538461,
+   "precision": 0.6470588235294118,
    "recall": 1.0,
-   "f1": 0.9166666666666666,
+   "f1": 0.7857142857142857,
    "support": 11
   },
   "man": {
-   "precision": 0.9166666666666666,
+   "precision": 1.0,
    "recall": 0.9166666666666666,
-   "f1": 0.9166666666666666,
+   "f1": 0.9565217391304348,
    "support": 12
   },
   "woman": {
-   "precision": 0.75,
+   "precision": 0.8181818181818182,
    "recall": 0.6428571428571429,
-   "f1": 0.6923076923076923,
+   "f1": 0.72,
    "support": 14
   },
   "child": {
@@ -354,33 +536,33 @@
    "support": 10
   },
   "friend": {
-   "precision": 0.8461538461538461,
+   "precision": 0.9166666666666666,
    "recall": 1.0,
-   "f1": 0.9166666666666666,
+   "f1": 0.9565217391304348,
    "support": 11
   },
   "teacher": {
    "precision": 1.0,
-   "recall": 1.0,
-   "f1": 1.0,
+   "recall": 0.8461538461538461,
+   "f1": 0.9166666666666666,
    "support": 13
   },
   "baby": {
    "precision": 1.0,
-   "recall": 0.8181818181818182,
-   "f1": 0.9,
+   "recall": 0.7272727272727273,
+   "f1": 0.8421052631578947,
    "support": 11
   },
   "happy": {
-   "precision": 0.9166666666666666,
-   "recall": 0.9166666666666666,
-   "f1": 0.9166666666666666,
+   "precision": 1.0,
+   "recall": 0.8333333333333334,
+   "f1": 0.9090909090909091,
    "support": 12
   },
   "sad": {
-   "precision": 1.0,
+   "precision": 0.8461538461538461,
    "recall": 0.9166666666666666,
-   "f1": 0.9565217391304348,
+   "f1": 0.88,
    "support": 12
   },
   "angry": {
@@ -390,9 +572,9 @@
    "support": 15
   },
   "sick": {
-   "precision": 1.0,
+   "precision": 0.9285714285714286,
    "recall": 1.0,
-   "f1": 1.0,
+   "f1": 0.9629629629629629,
    "support": 13
   },
   "tired": {
@@ -402,15 +584,15 @@
    "support": 13
   },
   "love": {
-   "precision": 0.7333333333333333,
+   "precision": 0.6111111111111112,
    "recall": 0.9166666666666666,
-   "f1": 0.8148148148148148,
+   "f1": 0.7333333333333333,
    "support": 12
   },
   "hate": {
-   "precision": 0.9166666666666666,
+   "precision": 0.7857142857142857,
    "recall": 1.0,
-   "f1": 0.9565217391304348,
+   "f1": 0.88,
    "support": 11
   },
   "like": {
@@ -426,75 +608,75 @@
    "support": 13
   },
   "water": {
-   "precision": 1.0,
+   "precision": 0.8461538461538461,
    "recall": 0.9166666666666666,
-   "f1": 0.9565217391304348,
+   "f1": 0.88,
    "support": 12
   },
   "milk": {
-   "precision": 1.0,
-   "recall": 1.0,
-   "f1": 1.0,
+   "precision": 0.9166666666666666,
+   "recall": 0.9166666666666666,
+   "f1": 0.9166666666666666,
    "support": 12
   },
   "hungry": {
-   "precision": 0.9,
+   "precision": 0.8181818181818182,
    "recall": 0.75,
-   "f1": 0.8181818181818182,
+   "f1": 0.782608695652174,
    "support": 12
   },
   "eat": {
-   "precision": 0.8888888888888888,
-   "recall": 0.9411764705882353,
-   "f1": 0.9142857142857143,
+   "precision": 1.0,
+   "recall": 0.8823529411764706,
+   "f1": 0.9375,
    "support": 17
   },
   "apple": {
-   "precision": 1.0,
+   "precision": 0.7142857142857143,
    "recall": 0.9090909090909091,
-   "f1": 0.9523809523809523,
+   "f1": 0.8,
    "support": 11
   },
   "pizza": {
-   "precision": 0.9230769230769231,
-   "recall": 1.0,
-   "f1": 0.96,
+   "precision": 1.0,
+   "recall": 0.8333333333333334,
+   "f1": 0.9090909090909091,
    "support": 12
   },
   "bread": {
-   "precision": 0.9230769230769231,
-   "recall": 0.9230769230769231,
-   "f1": 0.9230769230769231,
+   "precision": 0.8666666666666667,
+   "recall": 1.0,
+   "f1": 0.9285714285714286,
    "support": 13
   },
   "coffee": {
-   "precision": 0.8461538461538461,
+   "precision": 0.6470588235294118,
    "recall": 1.0,
-   "f1": 0.9166666666666666,
+   "f1": 0.7857142857142857,
    "support": 11
   },
   "go": {
-   "precision": 0.8461538461538461,
-   "recall": 0.8461538461538461,
-   "f1": 0.8461538461538461,
+   "precision": 0.7142857142857143,
+   "recall": 0.7692307692307693,
+   "f1": 0.7407407407407407,
    "support": 13
   },
   "come": {
-   "precision": 1.0,
+   "precision": 0.8,
    "recall": 0.6666666666666666,
-   "f1": 0.8,
+   "f1": 0.7272727272727273,
    "support": 12
   },
   "give": {
    "precision": 1.0,
-   "recall": 0.9090909090909091,
-   "f1": 0.9523809523809523,
+   "recall": 0.7272727272727273,
+   "f1": 0.8421052631578947,
    "support": 11
   },
   "see": {
    "precision": 1.0,
-   "recall": 1.0,
-   "f1": 1.0,
+   "recall": 0.9230769230769231,
+   "f1": 0.96,
    "support": 13
   },
   "hear": {
@@ -504,87 +686,87 @@
    "support": 12
   },
   "talk": {
-   "precision": 0.7142857142857143,
+   "precision": 0.6666666666666666,
    "recall": 0.7692307692307693,
-   "f1": 0.7407407407407407,
+   "f1": 0.7142857142857143,
    "support": 13
   },
   "read": {
-   "precision": 1.0,
-   "recall": 0.5384615384615384,
-   "f1": 0.7,
+   "precision": 0.5625,
+   "recall": 0.6923076923076923,
+   "f1": 0.6206896551724138,
    "support": 13
   },
   "write": {
-   "precision": 0.5555555555555556,
-   "recall": 0.8333333333333334,
-   "f1": 0.6666666666666666,
+   "precision": 0.5625,
+   "recall": 0.75,
+   "f1": 0.6428571428571429,
    "support": 12
   },
   "sleep": {
-   "precision": 0.9090909090909091,
-   "recall": 0.8333333333333334,
-   "f1": 0.8695652173913043,
-   "support": 12
-  },
-  "find": {
-   "precision": 1.0,
-   "recall": 0.9230769230769231,
-   "f1": 0.96,
-   "support": 13
-  },
-  "make": {
-   "precision": 0.8333333333333334,
-   "recall": 0.7692307692307693,
-   "f1": 0.8,
-   "support": 13
-  },
-  "have": {
-   "precision": 0.9230769230769231,
-   "recall": 1.0,
-   "f1": 0.96,
-   "support": 12
-  },
-  "can": {
-   "precision": 1.0,
-   "recall": 1.0,
-   "f1": 1.0,
-   "support": 12
-  },
-  "will": {
    "precision": 0.9166666666666666,
    "recall": 0.9166666666666666,
    "f1": 0.9166666666666666,
    "support": 12
   },
-  "open": {
+  "find": {
+   "precision": 1.0,
+   "recall": 0.7692307692307693,
+   "f1": 0.8695652173913043,
+   "support": 13
+  },
+  "make": {
+   "precision": 1.0,
+   "recall": 0.8461538461538461,
+   "f1": 0.9166666666666666,
+   "support": 13
+  },
+  "have": {
+   "precision": 1.0,
+   "recall": 0.9166666666666666,
+   "f1": 0.9565217391304348,
+   "support": 12
+  },
+  "can": {
    "precision": 0.9230769230769231,
    "recall": 1.0,
    "f1": 0.96,
    "support": 12
   },
+  "will": {
+   "precision": 1.0,
+   "recall": 0.8333333333333334,
+   "f1": 0.9090909090909091,
+   "support": 12
+  },
+  "open": {
+   "precision": 0.9090909090909091,
+   "recall": 0.8333333333333334,
+   "f1": 0.8695652173913043,
+   "support": 12
+  },
   "close": {
-   "precision": 0.9166666666666666,
-   "recall": 1.0,
-   "f1": 0.9565217391304348,
+   "precision": 1.0,
+   "recall": 0.8181818181818182,
+   "f1": 0.9,
    "support": 11
   },
   "think": {
-   "precision": 1.0,
+   "precision": 0.8571428571428571,
    "recall": 1.0,
-   "f1": 1.0,
+   "f1": 0.9230769230769231,
    "support": 12
   },
   "wait": {
-   "precision": 0.6666666666666666,
-   "recall": 0.9230769230769231,
-   "f1": 0.7741935483870968,
+   "precision": 0.6875,
+   "recall": 0.8461538461538461,
+   "f1": 0.7586206896551724,
    "support": 13
   },
   "help": {
-   "precision": 0.9090909090909091,
-   "recall": 0.7692307692307693,
-   "f1": 0.8333333333333334,
+   "precision": 0.7857142857142857,
+   "recall": 0.8461538461538461,
+   "f1": 0.8148148148148148,
    "support": 13
   },
   "finish": {
@@ -613,32 +795,32 @@
   },
   "learn": {
    "precision": 1.0,
-   "recall": 0.5,
-   "f1": 0.6666666666666666,
+   "recall": 0.5833333333333334,
+   "f1": 0.7368421052631579,
    "support": 12
   },
   "know": {
-   "precision": 0.9285714285714286,
+   "precision": 0.8125,
    "recall": 1.0,
-   "f1": 0.9629629629629629,
+   "f1": 0.896551724137931,
    "support": 13
   },
   "now": {
-   "precision": 0.8181818181818182,
+   "precision": 0.75,
    "recall": 0.75,
-   "f1": 0.782608695652174,
+   "f1": 0.75,
    "support": 12
   },
   "later": {
-   "precision": 0.9230769230769231,
-   "recall": 1.0,
-   "f1": 0.96,
-   "support": 12
-  },
-  "tomorrow": {
    "precision": 1.0,
    "recall": 1.0,
    "f1": 1.0,
+   "support": 12
+  },
+  "tomorrow": {
+   "precision": 0.9090909090909091,
+   "recall": 1.0,
+   "f1": 0.9523809523809523,
    "support": 10
   },
   "yesterday": {
@@ -648,57 +830,57 @@
    "support": 11
   },
   "today": {
-   "precision": 0.6666666666666666,
-   "recall": 0.7272727272727273,
-   "f1": 0.6956521739130435,
+   "precision": 0.6428571428571429,
+   "recall": 0.8181818181818182,
+   "f1": 0.72,
    "support": 11
   },
   "morning": {
    "precision": 1.0,
-   "recall": 1.0,
-   "f1": 1.0,
+   "recall": 0.7857142857142857,
+   "f1": 0.88,
    "support": 14
   },
   "night": {
-   "precision": 0.9411764705882353,
-   "recall": 0.9411764705882353,
-   "f1": 0.9411764705882353,
+   "precision": 0.9230769230769231,
+   "recall": 0.7058823529411765,
+   "f1": 0.8,
    "support": 17
   },
   "time": {
-   "precision": 1.0,
+   "precision": 0.75,
    "recall": 0.75,
-   "f1": 0.8571428571428571,
+   "f1": 0.75,
    "support": 12
   },
   "before": {
-   "precision": 0.7142857142857143,
-   "recall": 0.9090909090909091,
-   "f1": 0.8,
+   "precision": 0.7,
+   "recall": 0.6363636363636364,
+   "f1": 0.6666666666666666,
    "support": 11
   },
   "after": {
-   "precision": 0.8181818181818182,
-   "recall": 0.6428571428571429,
-   "f1": 0.72,
+   "precision": 1.0,
+   "recall": 0.7857142857142857,
+   "f1": 0.88,
    "support": 14
   },
   "home": {
    "precision": 1.0,
-   "recall": 0.9230769230769231,
-   "f1": 0.96,
+   "recall": 0.8461538461538461,
+   "f1": 0.9166666666666666,
    "support": 13
   },
   "school": {
-   "precision": 0.5555555555555556,
-   "recall": 0.9090909090909091,
-   "f1": 0.6896551724137931,
+   "precision": 0.42857142857142855,
+   "recall": 0.5454545454545454,
+   "f1": 0.48,
    "support": 11
   },
   "work": {
-   "precision": 0.8333333333333334,
+   "precision": 1.0,
    "recall": 1.0,
-   "f1": 0.9090909090909091,
+   "f1": 1.0,
    "support": 15
   },
   "book": {
@@ -708,45 +890,45 @@
    "support": 12
   },
   "car": {
+   "precision": 0.8461538461538461,
+   "recall": 1.0,
+   "f1": 0.9166666666666666,
+   "support": 11
+  },
+  "phone": {
+   "precision": 0.9166666666666666,
+   "recall": 0.9166666666666666,
+   "f1": 0.9166666666666666,
+   "support": 12
+  },
+  "computer": {
+   "precision": 0.9090909090909091,
+   "recall": 0.9090909090909091,
+   "f1": 0.9090909090909091,
+   "support": 11
+  },
+  "table": {
    "precision": 0.9166666666666666,
    "recall": 1.0,
    "f1": 0.9565217391304348,
    "support": 11
   },
-  "phone": {
-   "precision": 0.9230769230769231,
-   "recall": 1.0,
-   "f1": 0.96,
-   "support": 12
-  },
-  "computer": {
-   "precision": 1.0,
-   "recall": 1.0,
-   "f1": 1.0,
-   "support": 11
-  },
-  "table": {
-   "precision": 0.7857142857142857,
-   "recall": 1.0,
-   "f1": 0.88,
-   "support": 11
-  },
   "red": {
-   "precision": 0.9285714285714286,
+   "precision": 0.7647058823529411,
    "recall": 0.9285714285714286,
-   "f1": 0.9285714285714286,
+   "f1": 0.8387096774193549,
    "support": 14
   },
   "blue": {
-   "precision": 1.0,
+   "precision": 0.9230769230769231,
    "recall": 0.9230769230769231,
-   "f1": 0.96,
+   "f1": 0.9230769230769231,
    "support": 13
   },
   "green": {
-   "precision": 0.9333333333333333,
+   "precision": 1.0,
    "recall": 1.0,
-   "f1": 0.9655172413793104,
+   "f1": 1.0,
    "support": 14
   },
   "yellow": {
@@ -756,9 +938,9 @@
    "support": 12
   },
   "black": {
-   "precision": 1.0,
-   "recall": 1.0,
-   "f1": 1.0,
+   "precision": 0.9,
+   "recall": 0.75,
+   "f1": 0.8181818181818182,
    "support": 12
   },
   "white": {
@@ -768,9 +950,9 @@
    "support": 11
   },
   "dog": {
-   "precision": 0.8947368421052632,
-   "recall": 1.0,
-   "f1": 0.9444444444444444,
+   "precision": 1.0,
+   "recall": 0.9411764705882353,
+   "f1": 0.9696969696969697,
    "support": 17
   },
   "cat": {
@@ -784,58 +966,1138 @@
    "recall": 0.8461538461538461,
    "f1": 0.9166666666666666,
    "support": 13
+  },
+  "understand": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 14
+  },
+  "name": {
+   "precision": 1.0,
+   "recall": 0.5714285714285714,
+   "f1": 0.7272727272727273,
+   "support": 14
+  },
+  "again": {
+   "precision": 0.5384615384615384,
+   "recall": 0.5833333333333334,
+   "f1": 0.56,
+   "support": 12
+  },
+  "more": {
+   "precision": 0.8571428571428571,
+   "recall": 1.0,
+   "f1": 0.9230769230769231,
+   "support": 12
+  },
+  "good": {
+   "precision": 0.6,
+   "recall": 0.75,
+   "f1": 0.6666666666666666,
+   "support": 12
+  },
+  "bad": {
+   "precision": 0.6470588235294118,
+   "recall": 0.8461538461538461,
+   "f1": 0.7333333333333333,
+   "support": 13
+  },
+  "hot": {
+   "precision": 1.0,
+   "recall": 0.7272727272727273,
+   "f1": 0.8421052631578947,
+   "support": 11
+  },
+  "cold": {
+   "precision": 0.8571428571428571,
+   "recall": 1.0,
+   "f1": 0.9230769230769231,
+   "support": 12
+  },
+  "walk": {
+   "precision": 1.0,
+   "recall": 0.8461538461538461,
+   "f1": 0.9166666666666666,
+   "support": 13
+  },
+  "run": {
+   "precision": 0.8,
+   "recall": 1.0,
+   "f1": 0.8888888888888888,
+   "support": 12
+  },
+  "sit": {
+   "precision": 0.8,
+   "recall": 0.8571428571428571,
+   "f1": 0.8275862068965517,
+   "support": 14
+  },
+  "stand": {
+   "precision": 0.8666666666666667,
+   "recall": 1.0,
+   "f1": 0.9285714285714286,
+   "support": 13
+  },
+  "drive": {
+   "precision": 0.9166666666666666,
+   "recall": 0.9166666666666666,
+   "f1": 0.9166666666666666,
+   "support": 12
+  },
+  "buy": {
+   "precision": 0.35294117647058826,
+   "recall": 0.5454545454545454,
+   "f1": 0.42857142857142855,
+   "support": 11
+  },
+  "sell": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 11
+  },
+  "pay": {
+   "precision": 0.8571428571428571,
+   "recall": 0.5,
+   "f1": 0.631578947368421,
+   "support": 12
+  },
+  "cook": {
+   "precision": 0.8,
+   "recall": 0.3076923076923077,
+   "f1": 0.4444444444444444,
+   "support": 13
+  },
+  "clean": {
+   "precision": 0.7857142857142857,
+   "recall": 0.9166666666666666,
+   "f1": 0.8461538461538461,
+   "support": 12
+  },
+  "wash": {
+   "precision": 0.9166666666666666,
+   "recall": 0.9166666666666666,
+   "f1": 0.9166666666666666,
+   "support": 12
+  },
+  "study": {
+   "precision": 0.7272727272727273,
+   "recall": 0.6666666666666666,
+   "f1": 0.6956521739130435,
+   "support": 12
+  },
+  "teach": {
+   "precision": 0.7857142857142857,
+   "recall": 1.0,
+   "f1": 0.88,
+   "support": 11
+  },
+  "answer": {
+   "precision": 0.875,
+   "recall": 0.5833333333333334,
+   "f1": 0.7,
+   "support": 12
+  },
+  "ask": {
+   "precision": 0.7692307692307693,
+   "recall": 0.7692307692307693,
+   "f1": 0.7692307692307693,
+   "support": 13
+  },
+  "call": {
+   "precision": 0.6190476190476191,
+   "recall": 1.0,
+   "f1": 0.7647058823529411,
+   "support": 13
+  },
+  "meet": {
+   "precision": 1.0,
+   "recall": 0.9,
+   "f1": 0.9473684210526315,
+   "support": 10
+  },
+  "visit": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 11
+  },
+  "travel": {
+   "precision": 0.9285714285714286,
+   "recall": 0.9285714285714286,
+   "f1": 0.9285714285714286,
+   "support": 14
+  },
+  "arrive": {
+   "precision": 0.75,
+   "recall": 0.5454545454545454,
+   "f1": 0.631578947368421,
+   "support": 11
+  },
+  "leave": {
+   "precision": 0.8333333333333334,
+   "recall": 0.8333333333333334,
+   "f1": 0.8333333333333334,
+   "support": 12
+  },
+  "start": {
+   "precision": 0.8461538461538461,
+   "recall": 0.9166666666666666,
+   "f1": 0.88,
+   "support": 12
+  },
+  "stop": {
+   "precision": 0.6666666666666666,
+   "recall": 0.8333333333333334,
+   "f1": 0.7407407407407407,
+   "support": 12
+  },
+  "bring": {
+   "precision": 1.0,
+   "recall": 0.7142857142857143,
+   "f1": 0.8333333333333334,
+   "support": 14
+  },
+  "take": {
+   "precision": 1.0,
+   "recall": 0.8181818181818182,
+   "f1": 0.9,
+   "support": 11
+  },
+  "put": {
+   "precision": 0.9230769230769231,
+   "recall": 1.0,
+   "f1": 0.96,
+   "support": 12
+  },
+  "show": {
+   "precision": 0.8,
+   "recall": 0.6666666666666666,
+   "f1": 0.7272727272727273,
+   "support": 12
+  },
+  "tell": {
+   "precision": 1.0,
+   "recall": 0.75,
+   "f1": 0.8571428571428571,
+   "support": 12
+  },
+  "remember": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 13
+  },
+  "try": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 12
+  },
+  "practice": {
+   "precision": 0.8571428571428571,
+   "recall": 1.0,
+   "f1": 0.9230769230769231,
+   "support": 12
+  },
+  "enjoy": {
+   "precision": 0.8333333333333334,
+   "recall": 0.9090909090909091,
+   "f1": 0.8695652173913043,
+   "support": 11
+  },
+  "grandmother": {
+   "precision": 1.0,
+   "recall": 0.9090909090909091,
+   "f1": 0.9523809523809523,
+   "support": 11
+  },
+  "grandfather": {
+   "precision": 0.7857142857142857,
+   "recall": 0.7857142857142857,
+   "f1": 0.7857142857142857,
+   "support": 14
+  },
+  "husband": {
+   "precision": 0.7647058823529411,
+   "recall": 0.9285714285714286,
+   "f1": 0.8387096774193549,
+   "support": 14
+  },
+  "wife": {
+   "precision": 0.8571428571428571,
+   "recall": 0.5454545454545454,
+   "f1": 0.6666666666666666,
+   "support": 11
+  },
+  "son": {
+   "precision": 0.8333333333333334,
+   "recall": 0.8333333333333334,
+   "f1": 0.8333333333333334,
+   "support": 12
+  },
+  "daughter": {
+   "precision": 1.0,
+   "recall": 0.4166666666666667,
+   "f1": 0.5882352941176471,
+   "support": 12
+  },
+  "cousin": {
+   "precision": 1.0,
+   "recall": 0.8461538461538461,
+   "f1": 0.9166666666666666,
+   "support": 13
+  },
+  "parents": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 12
+  },
+  "family": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 12
+  },
+  "egg": {
+   "precision": 1.0,
+   "recall": 0.8461538461538461,
+   "f1": 0.9166666666666666,
+   "support": 13
+  },
+  "cheese": {
+   "precision": 0.7142857142857143,
+   "recall": 0.8333333333333334,
+   "f1": 0.7692307692307693,
+   "support": 12
+  },
+  "soup": {
+   "precision": 0.8181818181818182,
+   "recall": 0.6923076923076923,
+   "f1": 0.75,
+   "support": 13
+  },
+  "salad": {
+   "precision": 1.0,
+   "recall": 0.8181818181818182,
+   "f1": 0.9,
+   "support": 11
+  },
+  "banana": {
+   "precision": 0.8125,
+   "recall": 0.9285714285714286,
+   "f1": 0.8666666666666667,
+   "support": 14
+  },
+  "fruit": {
+   "precision": 0.8571428571428571,
+   "recall": 1.0,
+   "f1": 0.9230769230769231,
+   "support": 12
+  },
+  "vegetable": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 13
+  },
+  "meat": {
+   "precision": 1.0,
+   "recall": 0.9,
+   "f1": 0.9473684210526315,
+   "support": 10
+  },
+  "candy": {
+   "precision": 0.9230769230769231,
+   "recall": 0.9230769230769231,
+   "f1": 0.9230769230769231,
+   "support": 13
+  },
+  "juice": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 12
+  },
+  "tea": {
+   "precision": 1.0,
+   "recall": 0.8333333333333334,
+   "f1": 0.9090909090909091,
+   "support": 12
+  },
+  "sandwich": {
+   "precision": 0.8181818181818182,
+   "recall": 0.6428571428571429,
+   "f1": 0.72,
+   "support": 14
+  },
+  "hamburger": {
+   "precision": 0.9285714285714286,
+   "recall": 1.0,
+   "f1": 0.9629629629629629,
+   "support": 13
+  },
+  "head": {
+   "precision": 0.9,
+   "recall": 0.8181818181818182,
+   "f1": 0.8571428571428571,
+   "support": 11
+  },
+  "eyes": {
+   "precision": 0.9166666666666666,
+   "recall": 1.0,
+   "f1": 0.9565217391304348,
+   "support": 11
+  },
+  "nose": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 12
+  },
+  "mouth": {
+   "precision": 0.9090909090909091,
+   "recall": 0.9090909090909091,
+   "f1": 0.9090909090909091,
+   "support": 11
+  },
+  "face": {
+   "precision": 0.8333333333333334,
+   "recall": 0.8333333333333334,
+   "f1": 0.8333333333333334,
+   "support": 12
+  },
+  "heart": {
+   "precision": 1.0,
+   "recall": 0.9166666666666666,
+   "f1": 0.9565217391304348,
+   "support": 12
+  },
+  "stomach": {
+   "precision": 0.631578947368421,
+   "recall": 0.8571428571428571,
+   "f1": 0.7272727272727273,
+   "support": 14
+  },
+  "body": {
+   "precision": 0.8571428571428571,
+   "recall": 1.0,
+   "f1": 0.9230769230769231,
+   "support": 12
+  },
+  "medicine": {
+   "precision": 0.8181818181818182,
+   "recall": 0.6923076923076923,
+   "f1": 0.75,
+   "support": 13
+  },
+  "hospital": {
+   "precision": 1.0,
+   "recall": 0.8235294117647058,
+   "f1": 0.9032258064516129,
+   "support": 17
+  },
+  "pain": {
+   "precision": 0.5833333333333334,
+   "recall": 0.5,
+   "f1": 0.5384615384615384,
+   "support": 14
+  },
+  "hurt": {
+   "precision": 0.5625,
+   "recall": 0.75,
+   "f1": 0.6428571428571429,
+   "support": 12
+  },
+  "cough": {
+   "precision": 0.9230769230769231,
+   "recall": 1.0,
+   "f1": 0.96,
+   "support": 12
+  },
+  "church": {
+   "precision": 0.8461538461538461,
+   "recall": 1.0,
+   "f1": 0.9166666666666666,
+   "support": 11
+  },
+  "restaurant": {
+   "precision": 1.0,
+   "recall": 0.8333333333333334,
+   "f1": 0.9090909090909091,
+   "support": 12
+  },
+  "bank": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 14
+  },
+  "park": {
+   "precision": 0.6923076923076923,
+   "recall": 0.75,
+   "f1": 0.72,
+   "support": 12
+  },
+  "city": {
+   "precision": 0.9375,
+   "recall": 1.0,
+   "f1": 0.967741935483871,
+   "support": 15
+  },
+  "country": {
+   "precision": 0.8888888888888888,
+   "recall": 0.6666666666666666,
+   "f1": 0.7619047619047619,
+   "support": 12
+  },
+  "office": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 13
+  },
+  "kitchen": {
+   "precision": 0.875,
+   "recall": 0.5833333333333334,
+   "f1": 0.7,
+   "support": 12
+  },
+  "bathroom": {
+   "precision": 0.9285714285714286,
+   "recall": 0.9285714285714286,
+   "f1": 0.9285714285714286,
+   "support": 14
+  },
+  "bedroom": {
+   "precision": 1.0,
+   "recall": 0.8333333333333334,
+   "f1": 0.9090909090909091,
+   "support": 12
+  },
+  "door": {
+   "precision": 0.7,
+   "recall": 1.0,
+   "f1": 0.8235294117647058,
+   "support": 14
+  },
+  "window": {
+   "precision": 1.0,
+   "recall": 0.9230769230769231,
+   "f1": 0.96,
+   "support": 13
+  },
+  "street": {
+   "precision": 0.7142857142857143,
+   "recall": 0.7692307692307693,
+   "f1": 0.7407407407407407,
+   "support": 13
+  },
+  "money": {
+   "precision": 0.3125,
+   "recall": 0.4166666666666667,
+   "f1": 0.35714285714285715,
+   "support": 12
+  },
+  "key": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 12
+  },
+  "clothes": {
+   "precision": 0.8571428571428571,
+   "recall": 1.0,
+   "f1": 0.9230769230769231,
+   "support": 12
+  },
+  "shirt": {
+   "precision": 0.9285714285714286,
+   "recall": 1.0,
+   "f1": 0.9629629629629629,
+   "support": 13
+  },
+  "shoes": {
+   "precision": 0.8461538461538461,
+   "recall": 0.9166666666666666,
+   "f1": 0.88,
+   "support": 12
+  },
+  "hat": {
+   "precision": 1.0,
+   "recall": 0.9230769230769231,
+   "f1": 0.96,
+   "support": 13
+  },
+  "bag": {
+   "precision": 1.0,
+   "recall": 0.8461538461538461,
+   "f1": 0.9166666666666666,
+   "support": 13
+  },
+  "ball": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 11
+  },
+  "game": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 12
+  },
+  "movie": {
+   "precision": 0.4,
+   "recall": 0.7058823529411765,
+   "f1": 0.5106382978723404,
+   "support": 17
+  },
+  "music": {
+   "precision": 0.7777777777777778,
+   "recall": 0.5833333333333334,
+   "f1": 0.6666666666666666,
+   "support": 12
+  },
+  "gift": {
+   "precision": 0.8461538461538461,
+   "recall": 0.9166666666666666,
+   "f1": 0.88,
+   "support": 12
+  },
+  "week": {
+   "precision": 0.9090909090909091,
+   "recall": 0.7692307692307693,
+   "f1": 0.8333333333333334,
+   "support": 13
+  },
+  "month": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 11
+  },
+  "year": {
+   "precision": 0.9230769230769231,
+   "recall": 1.0,
+   "f1": 0.96,
+   "support": 12
+  },
+  "hour": {
+   "precision": 1.0,
+   "recall": 0.8461538461538461,
+   "f1": 0.9166666666666666,
+   "support": 13
+  },
+  "minute": {
+   "precision": 0.625,
+   "recall": 0.8333333333333334,
+   "f1": 0.7142857142857143,
+   "support": 12
+  },
+  "birthday": {
+   "precision": 1.0,
+   "recall": 0.8333333333333334,
+   "f1": 0.9090909090909091,
+   "support": 12
+  },
+  "monday": {
+   "precision": 0.7857142857142857,
+   "recall": 0.8461538461538461,
+   "f1": 0.8148148148148148,
+   "support": 13
+  },
+  "tuesday": {
+   "precision": 0.8181818181818182,
+   "recall": 0.75,
+   "f1": 0.782608695652174,
+   "support": 12
+  },
+  "wednesday": {
+   "precision": 0.8125,
+   "recall": 1.0,
+   "f1": 0.896551724137931,
+   "support": 13
+  },
+  "thursday": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 12
+  },
+  "friday": {
+   "precision": 0.8571428571428571,
+   "recall": 1.0,
+   "f1": 0.9230769230769231,
+   "support": 12
+  },
+  "saturday": {
+   "precision": 0.7333333333333333,
+   "recall": 0.8461538461538461,
+   "f1": 0.7857142857142857,
+   "support": 13
+  },
+  "sunday": {
+   "precision": 0.7857142857142857,
+   "recall": 0.9166666666666666,
+   "f1": 0.8461538461538461,
+   "support": 12
+  },
+  "big": {
+   "precision": 1.0,
+   "recall": 0.8333333333333334,
+   "f1": 0.9090909090909091,
+   "support": 12
+  },
+  "small": {
+   "precision": 0.8461538461538461,
+   "recall": 0.9166666666666666,
+   "f1": 0.88,
+   "support": 12
+  },
+  "long": {
+   "precision": 1.0,
+   "recall": 0.9090909090909091,
+   "f1": 0.9523809523809523,
+   "support": 11
+  },
+  "fast": {
+   "precision": 0.8571428571428571,
+   "recall": 1.0,
+   "f1": 0.9230769230769231,
+   "support": 12
+  },
+  "slow": {
+   "precision": 0.6923076923076923,
+   "recall": 0.6428571428571429,
+   "f1": 0.6666666666666666,
+   "support": 14
+  },
+  "new": {
+   "precision": 1.0,
+   "recall": 0.6153846153846154,
+   "f1": 0.7619047619047619,
+   "support": 13
+  },
+  "old": {
+   "precision": 1.0,
+   "recall": 0.8461538461538461,
+   "f1": 0.9166666666666666,
+   "support": 13
+  },
+  "young": {
+   "precision": 0.9166666666666666,
+   "recall": 1.0,
+   "f1": 0.9565217391304348,
+   "support": 11
+  },
+  "ugly": {
+   "precision": 1.0,
+   "recall": 0.75,
+   "f1": 0.8571428571428571,
+   "support": 12
+  },
+  "easy": {
+   "precision": 0.44,
+   "recall": 1.0,
+   "f1": 0.6111111111111112,
+   "support": 11
+  },
+  "important": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 15
+  },
+  "dirty": {
+   "precision": 1.0,
+   "recall": 0.9090909090909091,
+   "f1": 0.9523809523809523,
+   "support": 11
+  },
+  "full": {
+   "precision": 0.8,
+   "recall": 0.7272727272727273,
+   "f1": 0.7619047619047619,
+   "support": 11
+  },
+  "empty": {
+   "precision": 0.5714285714285714,
+   "recall": 0.7272727272727273,
+   "f1": 0.64,
+   "support": 11
+  },
+  "different": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 12
+  },
+  "sun": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 13
+  },
+  "moon": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 11
+  },
+  "star": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 14
+  },
+  "rain": {
+   "precision": 1.0,
+   "recall": 0.9333333333333333,
+   "f1": 0.9655172413793104,
+   "support": 15
+  },
+  "snow": {
+   "precision": 0.8333333333333334,
+   "recall": 0.9090909090909091,
+   "f1": 0.8695652173913043,
+   "support": 11
+  },
+  "wind": {
+   "precision": 0.8571428571428571,
+   "recall": 0.9230769230769231,
+   "f1": 0.8888888888888888,
+   "support": 13
+  },
+  "weather": {
+   "precision": 1.0,
+   "recall": 0.8461538461538461,
+   "f1": 0.9166666666666666,
+   "support": 13
+  },
+  "tree": {
+   "precision": 0.9230769230769231,
+   "recall": 0.9230769230769231,
+   "f1": 0.9230769230769231,
+   "support": 13
+  },
+  "flower": {
+   "precision": 0.9230769230769231,
+   "recall": 0.9230769230769231,
+   "f1": 0.9230769230769231,
+   "support": 13
+  },
+  "fire": {
+   "precision": 1.0,
+   "recall": 0.9230769230769231,
+   "f1": 0.96,
+   "support": 13
+  },
+  "ice": {
+   "precision": 1.0,
+   "recall": 0.9166666666666666,
+   "f1": 0.9565217391304348,
+   "support": 12
+  },
+  "bus": {
+   "precision": 1.0,
+   "recall": 0.9285714285714286,
+   "f1": 0.9629629629629629,
+   "support": 14
+  },
+  "train": {
+   "precision": 0.9375,
+   "recall": 1.0,
+   "f1": 0.967741935483871,
+   "support": 15
+  },
+  "airplane": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 13
+  },
+  "boat": {
+   "precision": 1.0,
+   "recall": 0.8181818181818182,
+   "f1": 0.9,
+   "support": 11
+  },
+  "excited": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 11
+  },
+  "lonely": {
+   "precision": 0.8,
+   "recall": 1.0,
+   "f1": 0.8888888888888888,
+   "support": 12
+  },
+  "bored": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 12
+  },
+  "english": {
+   "precision": 0.6153846153846154,
+   "recall": 0.7272727272727273,
+   "f1": 0.6666666666666666,
+   "support": 11
+  },
+  "deaf": {
+   "precision": 0.875,
+   "recall": 0.9333333333333333,
+   "f1": 0.9032258064516129,
+   "support": 15
+  },
+  "hearing": {
+   "precision": 0.9333333333333333,
+   "recall": 1.0,
+   "f1": 0.9655172413793104,
+   "support": 14
+  },
+  "interpreter": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 11
+  },
+  "sign": {
+   "precision": 0.8,
+   "recall": 1.0,
+   "f1": 0.8888888888888888,
+   "support": 12
+  },
+  "language": {
+   "precision": 0.9090909090909091,
+   "recall": 0.9090909090909091,
+   "f1": 0.9090909090909091,
+   "support": 11
+  },
+  "because": {
+   "precision": 0.8,
+   "recall": 0.8,
+   "f1": 0.8,
+   "support": 15
+  },
+  "with": {
+   "precision": 0.8333333333333334,
+   "recall": 0.8333333333333334,
+   "f1": 0.8333333333333334,
+   "support": 12
+  },
+  "without": {
+   "precision": 0.9166666666666666,
+   "recall": 0.9166666666666666,
+   "f1": 0.9166666666666666,
+   "support": 12
+  },
+  "maybe": {
+   "precision": 0.7777777777777778,
+   "recall": 1.0,
+   "f1": 0.875,
+   "support": 14
+  },
+  "never": {
+   "precision": 0.8333333333333334,
+   "recall": 0.7692307692307693,
+   "f1": 0.8,
+   "support": 13
+  },
+  "always": {
+   "precision": 0.9090909090909091,
+   "recall": 1.0,
+   "f1": 0.9523809523809523,
+   "support": 10
+  },
+  "welcome": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 12
+  },
+  "excuse": {
+   "precision": 0.8333333333333334,
+   "recall": 0.9090909090909091,
+   "f1": 0.8695652173913043,
+   "support": 11
+  },
+  "congratulations": {
+   "precision": 0.6666666666666666,
+   "recall": 0.3333333333333333,
+   "f1": 0.4444444444444444,
+   "support": 12
+  },
+  "ready": {
+   "precision": 1.0,
+   "recall": 0.75,
+   "f1": 0.8571428571428571,
+   "support": 12
+  },
+  "late": {
+   "precision": 0.9230769230769231,
+   "recall": 0.9230769230769231,
+   "f1": 0.9230769230769231,
+   "support": 13
+  },
+  "early": {
+   "precision": 0.6666666666666666,
+   "recall": 0.42857142857142855,
+   "f1": 0.5217391304347826,
+   "support": 14
+  },
+  "busy": {
+   "precision": 0.5384615384615384,
+   "recall": 0.5833333333333334,
+   "f1": 0.56,
+   "support": 12
+  },
+  "free": {
+   "precision": 0.9090909090909091,
+   "recall": 0.9090909090909091,
+   "f1": 0.9090909090909091,
+   "support": 11
+  },
+  "true": {
+   "precision": 0.9166666666666666,
+   "recall": 0.9166666666666666,
+   "f1": 0.9166666666666666,
+   "support": 12
+  },
+  "north": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 14
+  },
+  "south": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 12
+  },
+  "east": {
+   "precision": 1.0,
+   "recall": 0.8571428571428571,
+   "f1": 0.9230769230769231,
+   "support": 14
+  },
+  "west": {
+   "precision": 0.9,
+   "recall": 0.6923076923076923,
+   "f1": 0.782608695652174,
+   "support": 13
+  },
+  "left": {
+   "precision": 0.9230769230769231,
+   "recall": 1.0,
+   "f1": 0.96,
+   "support": 12
+  },
+  "right": {
+   "precision": 0.8666666666666667,
+   "recall": 0.9285714285714286,
+   "f1": 0.896551724137931,
+   "support": 14
+  },
+  "up": {
+   "precision": 1.0,
+   "recall": 0.8181818181818182,
+   "f1": 0.9,
+   "support": 11
+  },
+  "down": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 11
+  },
+  "nurse": {
+   "precision": 0.9,
+   "recall": 0.75,
+   "f1": 0.8181818181818182,
+   "support": 12
+  },
+  "student": {
+   "precision": 1.0,
+   "recall": 0.8333333333333334,
+   "f1": 0.9090909090909091,
+   "support": 12
+  },
+  "boss": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "support": 12
+  },
+  "cup": {
+   "precision": 0.6666666666666666,
+   "recall": 0.7272727272727273,
+   "f1": 0.6956521739130435,
+   "support": 11
+  },
+  "plate": {
+   "precision": 0.8461538461538461,
+   "recall": 0.9166666666666666,
+   "f1": 0.88,
+   "support": 12
   }
  },
  "worst_confusions": [
   [
-   "after",
-   "table",
+   "pain",
+   "hurt",
+   6
+  ],
+  [
+   "early",
+   "empty",
+   5
+  ],
+  [
+   "name",
+   "call",
+   5
+  ],
+  [
+   "thankyou",
+   "good",
+   5
+  ],
+  [
+   "busy",
+   "movie",
+   4
+  ],
+  [
+   "answer",
+   "go",
+   4
+  ],
+  [
+   "buy",
+   "money",
+   4
+  ],
+  [
+   "empty",
+   "early",
    3
   ],
   [
-   "need",
-   "where",
+   "new",
+   "buy",
    3
   ],
   [
-   "want",
-   "wait",
+   "tuesday",
+   "saturday",
    3
-  ],
-  [
-   "read",
-   "write",
-   3
-  ],
-  [
-   "what",
-   "write",
-   3
-  ],
-  [
-   "time",
-   "work",
-   2
-  ],
-  [
-   "today",
-   "now",
-   2
-  ],
-  [
-   "now",
-   "today",
-   2
-  ],
-  [
-   "learn",
-   "school",
-   2
-  ],
-  [
-   "learn",
-   "write",
-   2
   ]
  ]
 }

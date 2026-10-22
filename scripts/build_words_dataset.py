@@ -113,8 +113,8 @@ def main():
     labels = list(chosen)[:N_WORDS]
     print("unresolved words:", [w for w in PRIORITY if w not in chosen])
     assert len(labels) >= 100, f"only {len(labels)} words resolved"
-    old = json.loads((ARTIFACTS / "vocab_words.json").read_text())["labels"] if args.append else []
-    assert labels[:len(old)] == old, "--append needs the existing words to keep their order"
+    # words.npz, not the vocabulary file, says how many words are already extracted: the file may list more than was done
+    old_n = int(np.load(PROCESSED / "words.npz")["y"].max()) + 1 if args.append else 0
     ARTIFACTS.mkdir(exist_ok=True)
     (ARTIFACTS / "vocab_words.json").write_text(json.dumps({"labels": labels, "glosses": {w: chosen[w] for w in labels}}, indent=1))
 
@@ -125,7 +125,7 @@ def main():
         g = r["Gloss"]
         if g in gloss_to_word:
             kind, label = "word", gloss_to_word[g]
-            if label < len(old):
+            if label < old_n:
                 continue  # already extracted
         elif g in DIGIT_GLOSSES and not args.append:
             kind, label = "digit", DIGIT_GLOSSES[g]
@@ -137,7 +137,9 @@ def main():
                       "loc": (zi.header_offset, zi.compress_size, zi.compress_type)})
     del index
     tasks = tasks[:args.limit] if args.limit else tasks
-    print(len(tasks), "clips:", collections.Counter(t["kind"] for t in tasks))
+    print(len(tasks), "clips:", collections.Counter(t["kind"] for t in tasks), f"(words 0-{old_n - 1} already extracted)" if old_n else "")
+    if not tasks:
+        raise SystemExit("nothing to extract")
 
     words, digits, errors, t0 = [], [], collections.Counter(), time.time()
     with mp.get_context("spawn").Pool(args.workers, maxtasksperchild=100) as pool:

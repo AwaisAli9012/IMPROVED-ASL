@@ -3,6 +3,7 @@
 {% set script = 'converse.js' %}
 {% block title %}Converse · SignBridge{% endblock %}
 {% block main %}
+<h1 class="sr-only">Converse</h1>
 <div class="grid-2">
   <section class="stack" aria-label="Your signing">
     <div class="stage" id="stage" aria-busy="false">
@@ -64,7 +65,7 @@
         <h2>Conversation</h2>
         <button class="btn btn--ghost btn--sm" id="export" type="button"><i data-lucide="download"></i>Save</button>
       </div>
-      <div class="transcript" id="transcript" aria-label="Messages"></div>
+      <div class="transcript" id="transcript" role="log" aria-label="Messages"></div>
       <form class="composer" id="composer">
         <button class="btn btn--icon mic" id="mic" type="button" aria-pressed="false" aria-label="Speak a reply"><i data-lucide="mic"></i></button>
         <input class="field" id="reply" name="reply" placeholder="Type a reply" maxlength="500" autocomplete="off" aria-label="Type a reply">

@@ -4,13 +4,20 @@ Two-way sign language on one screen. A signer signs to the camera and gets an En
 
 ## What is in it
 
-- **Converse.** Sign words, letters or numbers. SignBridge builds the sentence, adds the right tone and question form, and speaks it. Type or speak a reply and the signing figure signs it back. The conversation can be saved as text.
-- **Learn.** 18 units: setting up, the alphabet, numbers, ten topics of everyday words, and whole sentences. Each sign is watched, tried on camera, and checked, then quizzed. Spaced repetition brings back signs you are losing, with XP, a daily streak and a printable certificate.
+- **Converse.** Sign words, letters or numbers. SignBridge builds the sentence, adds the right tone and question form, and speaks it. Type or speak a reply and the signing figure signs it back. The conversation can be saved as text. A **Model Inspector** (press `I`) shows the live top-5 guesses, answer time and camera frame rate.
+- **Learn.** A course of about 34 units: setting up, the alphabet, numbers, topic after topic of everyday words, and whole sentences. Each sign is watched, tried on camera, and checked, then quizzed. Spaced repetition brings back signs you are losing, with XP, a daily streak and a printable certificate.
+- **Progress.** A heatmap of every sign, the last 14 days, your weak spots, and ten badges.
+- **Phrases.** Tap a phrase to see it signed and hear it spoken: greetings, needs, questions, emergencies, and your own.
+- **Live captions.** Speech turned into large text as people talk, optionally signed back sentence by sentence.
 - **Dictionary.** Every supported sign, searchable by name or topic, played by the signing figure at half or full speed.
 - **Metrics.** Every accuracy figure with the confusion matrices and per-class scores, read from the saved evaluation reports.
 - **Tone and grammar from the face.** Expression sets the tone of the spoken sentence. Raised eyebrows mark a yes or no question and lowered eyebrows mark what, where and who, as they do in ASL.
+- **Settings.** Dark, light and high-contrast themes, four text sizes, reduce motion, voice and speaking speed, camera choice, signing defaults, and your data: download it or delete it.
+- **About.** The pipeline, what it knows, privacy, ethics and fairness, accessibility, limits and credits.
 
-Vocabulary: 100 common words, the alphabet A to Z and the numbers 0 to 4 and 6 to 9. Anything else is fingerspelled. (There is no number 5 yet: see Known limits.)
+Vocabulary: see the Dictionary for the full list. Anything outside it is fingerspelled. The alphabet A to Z and the numbers 0 to 4 and 6 to 9 are supported (there is no number 5 yet: see Known limits).
+
+**Quality checks.** 53 Python tests plus 5 Node tests for the browser logic; axe-core reports no accessibility violations on the 12 main pages in the dark, light and high-contrast themes; the landing page passes the scroll-craft checks for dead scroll and text contrast at desktop, phone and reduced-motion sizes. How the models are tested is in [docs/EVALUATION.md](docs/EVALUATION.md).
 
 ## Run it
 
@@ -53,7 +60,7 @@ Measured on data the models never trained on. The word model is tested on signer
 <!-- metrics:start -->
 | Task | Test set | Accuracy | Macro F1 | Precision | Recall | Top 3 | Answers in (p95) |
 |---|---|---|---|---|---|---|---|
-| Words | 1246 clips, 11 unseen signers | 89.7% | 89.7% | 90.8% | 89.8% | 96.6% | 7.6 ms |
+| Words | 3476 clips, 11 unseen signers | 86.1% | 86.2% | 87.7% | 86.1% | 94.7% | 3.4 ms |
 | Letters and numbers | 2391 samples | 97.2% | 96.7% | 96.8% | 96.7% | 99.0% | 0.3 ms |
 | Tone from the face | 2704 samples | 69.9% | 68.2% | 68.2% | 68.2% | 95.6% | 1.3 ms |
 <!-- metrics:end -->
@@ -99,6 +106,6 @@ Trained model weights and the evaluation reports are included. Whether weights t
 
 - Number 5 is missing: no open dataset has a signed 5. It needs real samples, for example recorded in the app.
 - One signer in view, with pauses between signs: lower your hands after each sign. This is taught in the first lesson.
-- 100 words is a core vocabulary, not the whole language. Fingerspelling covers the rest.
+- 280 words is a broad everyday vocabulary, not the whole language. Fingerspelling covers the rest. Accuracy falls as the vocabulary grows: the 100-word core scored 89.7% on the same unseen signers, the 280-word model scores 86.1%.
 - Tone is a hint for wording and voice, not a diagnosis of anyone's feelings.
 - Live accuracy on a given person and camera differs from the held-out figures.

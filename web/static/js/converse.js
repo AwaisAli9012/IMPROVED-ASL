@@ -1,6 +1,6 @@
 // Converse page: you sign, SignBridge reads, builds an English sentence and speaks it; the other person
 // types or speaks, and a signing figure answers.
-import { announce, config, download, el, fill, getPrefs, icon, initShell, listen, postJSON, refreshIcons, speak, toast } from './api.js';
+import { announce, config, download, el, fill, icon, initShell, listen, postJSON, refreshIcons, speak, toast } from './api.js';
 import { Avatar, syncAvatarControls } from './avatar.js';
 import { needsOnboarding, runOnboarding } from './onboarding.js';
 import { Recognizer, ToneTracker } from './recognizer.js';

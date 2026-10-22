@@ -105,7 +105,7 @@ html { scroll-behavior: auto; } /* Lenis handles easing */
 .range__fig .avatar { aspect-ratio: 16 / 9; }
 .range .rail { align-self: end; display: flex; flex-wrap: nowrap; gap: var(--sc-8); width: max-content; padding: 0 var(--sc-gutter) var(--sc-7); }
 .topic { flex: none; display: grid; gap: var(--sc-3); align-content: start; width: min(19rem, 78vw); }
-.topic h3 { font-family: var(--sc-font-display); font-size: var(--sc-t-lg); font-weight: 600; }
+.topic h2 { font-family: var(--sc-font-display); font-size: var(--sc-t-lg); font-weight: 600; }
 .topic--lead { width: min(24rem, 80vw); align-content: end; }
 .topic__words { display: flex; flex-wrap: wrap; gap: var(--sc-2); }
 .topic .chip { min-height: 36px; font-size: var(--sc-t-sm); }

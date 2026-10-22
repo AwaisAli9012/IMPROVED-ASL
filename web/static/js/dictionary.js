@@ -18,7 +18,7 @@ function renderList() {
   const shown = entries.filter((e) => (topic === 'All' || e.topic === topic) && (!q || e.display.toLowerCase().includes(q) || e.label.includes(q)));
   document.getElementById('count').textContent = `${shown.length} of ${entries.length} signs`;
   document.getElementById('list').replaceChildren(...shown.map((e) => el('li', {}, el('button', {
-    class: 'dict__item', type: 'button', 'aria-selected': e.label === selected?.label, onclick: () => select(e) },
+    class: 'dict__item', type: 'button', 'aria-current': e.label === selected?.label, onclick: () => select(e) },
   el('span', {}, e.display), el('span', { class: 'label' }, e.topic)))));
   if (!shown.length) document.getElementById('list').append(el('li', { class: 'muted', style: 'padding:var(--sc-4)' }, 'No sign matches.'));
 }

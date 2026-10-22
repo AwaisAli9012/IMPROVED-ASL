@@ -249,7 +249,12 @@ def post_profile():
 def health():
     a = config.ARTIFACTS
     models = {"words": (a / "words.pt").exists(), "static": (a / "static.joblib").exists(), "emotion": (a / "emotion.joblib").exists()}
-    return jsonify(status="ok" if all(models.values()) else "degraded", models=models, words=len(word_labels()), gemini=bool(os.getenv("GEMINI_API_KEY")))
+    try:  # the vocabulary file and the trained model must list the same words in the same order
+        consistent = get_words().labels == word_labels()
+    except (FileNotFoundError, OSError):
+        consistent = False
+    return jsonify(status="ok" if all(models.values()) and consistent else "degraded", models=models, vocabulary_matches_model=consistent,
+                   words=len(word_labels()), gemini=bool(os.getenv("GEMINI_API_KEY")))
 
 
 @app.get("/api/phrases")

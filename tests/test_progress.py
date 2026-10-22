@@ -50,6 +50,7 @@ def test_health_and_progress_endpoints(pid, monkeypatch):
     c = app.test_client()
     h = c.get("/api/health").get_json()
     assert h["status"] in ("ok", "degraded") and set(h["models"]) == {"words", "static", "emotion"}
+    assert h["status"] == "ok" or not (h["vocabulary_matches_model"] and all(h["models"].values()))  # degraded only for a real reason
     assert c.get(f"/api/progress/{pid}").get_json()["profile"]["name"] == "Sam"
     assert c.get("/api/progress/999").status_code == 400
     assert len(c.get("/api/phrases").get_json()) == 4

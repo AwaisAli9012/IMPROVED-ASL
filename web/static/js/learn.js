@@ -17,7 +17,8 @@ bar.setAttribute('aria-valuenow', Math.round((100 * passed) / units.length));
 
 fill(document.getElementById('actions'),
   data.due ? el('a', { class: 'btn btn--primary', href: '/learn/review' }, icon('rotate-ccw'), `Review ${data.due} due`) : null,
-  data.complete ? el('a', { class: 'btn btn--primary', href: '/certificate' }, icon('award'), 'Get your certificate') : null);
+  data.complete ? el('a', { class: 'btn btn--primary', href: '/certificate' }, icon('award'), 'Get your certificate') : null,
+  el('a', { class: 'btn', href: '/progress' }, icon('bar-chart-3'), 'Your progress'));
 
 const ICON = { locked: 'lock', open: 'play', passed: 'check' };
 const ACTION = { locked: 'Locked', open: 'Start', passed: 'Practise again' };

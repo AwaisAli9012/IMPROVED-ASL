@@ -27,6 +27,7 @@
 </header>
 
 <main id="top">
+  <h1 class="sr-only">SignBridge: sign language, both ways</h1>
 
   <!-- 1 · Your name, signed: the surface, already in a state -->
   <section id="act-name" data-sc-act="pin" data-sc-span="2.4" data-sc-drift="#0d110f">
@@ -68,7 +69,7 @@
           </li>
           <li data-sc-cue="0.48 0.78">
             <span class="label">3 · Model</span>
-            <p class="readout__line">One network reads the movement of a whole sign, not a single frame. It knows <b class="num" id="n-words">100</b> words, the alphabet and the numbers.</p>
+            <p class="readout__line">One network reads the movement of a whole sign, not a single frame. It knows <b class="num" id="n-words">280</b> words, the alphabet and the numbers.</p>
           </li>
           <li data-sc-cue="0.72 1" id="measured" hidden>
             <span class="label">4 · Measured</span>
@@ -103,7 +104,7 @@
   </section>
 
   <!-- 3b · The range: every topic as a column, tap a word to see it signed -->
-  <section id="act-range" data-sc-act="pan" data-sc-span="3.8" data-sc-drift="#0d110f">
+  <section id="act-range" data-sc-act="pan" data-sc-span="8" data-sc-drift="#0d110f">
     <div data-sc-stage class="stage-center range">
       <div class="range__fig">
         <div class="avatar"><canvas id="range-avatar" role="img" aria-label="Signing figure showing the chosen word"></canvas></div>
@@ -119,7 +120,10 @@
       <ul class="palette" data-sc-in data-sc-stagger="70" aria-label="Inside SignBridge">
         <li><a href="/app"><span class="palette__name">Converse</span><span class="muted">Sign to text and voice. Type or speak to get signing back.</span><span class="palette__go" aria-hidden="true">→</span></a></li>
         <li><a href="/learn"><span class="palette__name">Learn</span><span class="muted" id="inside-learn">A full course from camera setup to whole sentences.</span><span class="palette__go" aria-hidden="true">→</span></a></li>
+        <li><a href="/phrasebook"><span class="palette__name">Phrases</span><span class="muted">Tap a phrase to see it signed and hear it, or add your own.</span><span class="palette__go" aria-hidden="true">→</span></a></li>
         <li><a href="/dictionary"><span class="palette__name">Dictionary</span><span class="muted" id="inside-dict">Every sign, searchable, played by the signing figure.</span><span class="palette__go" aria-hidden="true">→</span></a></li>
+        <li><a href="/captions"><span class="palette__name">Live captions</span><span class="muted">Speech turned into large text as people talk, signed back if you like.</span><span class="palette__go" aria-hidden="true">→</span></a></li>
+        <li><a href="/progress"><span class="palette__name">Progress</span><span class="muted">A heatmap of every sign, your weak spots and badges.</span><span class="palette__go" aria-hidden="true">→</span></a></li>
         <li><a href="/metrics"><span class="palette__name">Metrics</span><span class="muted">Every accuracy number, measured on held-out signers, with the confusion matrix.</span><span class="palette__go" aria-hidden="true">→</span></a></li>
       </ul>
     </div>
