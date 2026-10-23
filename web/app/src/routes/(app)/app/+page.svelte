@@ -206,7 +206,7 @@
             {/each}
           </div>
           <div class="row">
-            <span class="tone" title="Tone read from your face"><ToneIcon /><span class="num">{TONE[toneName][1]} {Math.round(toneConf * 100)}%</span></span>
+            <span class="tone" title="Tone read from your face"><ToneIcon /><span class="num">{TONE[toneName][1]}{toneConf ? ` ${Math.round(toneConf * 100)}%` : ""}</span></span>
             <button class="btn btn--icon btn--sm" type="button" aria-label="Model inspector" aria-pressed={inspector} title="Model inspector (I)" onclick={() => (inspector = !inspector)}><Gauge /></button>
             <button class="btn btn--icon btn--sm" type="button" aria-label="Recalibrate neutral face" onclick={() => (camera.state === 'on' ? (calibrating = 'again') : toast('Start the camera first.'))}><ScanFace /></button>
           </div>
