@@ -29,7 +29,7 @@ def _present(seq, block):
     return np.isfinite(seq[:, block, 0]).any(axis=1)
 
 
-def frames_to_array(frames):
+def frames_to_array(frames: list[dict]) -> np.ndarray:
     """Client frames [{"lh","rh","pose","lips"}] -> (T, N_POINTS, 2). Trust boundary: validates shapes."""
     if not isinstance(frames, list) or not frames:
         raise ValueError("frames must be a non-empty list")
@@ -77,7 +77,7 @@ def assign_hands(hands, pose):
     return hands[0], hands[1]
 
 
-def assemble_frame(hands, pose, lips):
+def assemble_frame(hands: list, pose: np.ndarray | None, lips: np.ndarray | None) -> np.ndarray:
     """Detector outputs -> one (N_POINTS, 2) frame, NaN where missing. lips is (40, 2) or None."""
     out = np.full((N_POINTS, 2), np.nan, dtype=np.float32)
     for block, hand in zip((LH, RH), assign_hands(hands, pose)):
@@ -90,7 +90,7 @@ def assemble_frame(hands, pose, lips):
     return out
 
 
-def canonicalize(seq):
+def canonicalize(seq: np.ndarray) -> np.ndarray:
     """Make the dominant hand (more frames with a hand; tie -> right) the right hand."""
     # shortcut: lip points are mirrored in x but not paired left/right, so left-handed clips have
     # slightly different lip features, build a face L/R index map if left-handed accuracy is low.
@@ -105,22 +105,22 @@ def canonicalize(seq):
     return out
 
 
-def trim(seq):
+def trim(seq: np.ndarray) -> np.ndarray:
     """Drop leading and trailing frames with no hand. Unchanged if no frame has a hand."""
     idx = np.flatnonzero(_present(seq, LH) | _present(seq, RH))
     return seq[idx[0]:idx[-1] + 1] if len(idx) else seq
 
 
-def resample(seq, n):
+def resample(seq: np.ndarray, n: int) -> np.ndarray:
     return seq[np.linspace(0, len(seq) - 1, n).round().astype(int)]
 
 
-def prepare_sequence(seq):
+def prepare_sequence(seq: np.ndarray) -> np.ndarray:
     """Raw (T, N_POINTS, 2) -> (T_RAW, N_POINTS, 2)."""
     return resample(trim(canonicalize(seq)), T_RAW)
 
 
-def augment_sequence(seq, rng):
+def augment_sequence(seq: np.ndarray, rng: np.random.Generator) -> np.ndarray:
     """Training-time augmentation of a (T_RAW, N_POINTS, 2) sequence. Returns a new array."""
     seq = seq.copy()
     if rng.random() < 0.5:
@@ -143,7 +143,7 @@ def augment_sequence(seq, rng):
     return seq
 
 
-def sequence_features(seq):
+def sequence_features(seq: np.ndarray) -> np.ndarray:
     """(T_RAW, N_POINTS, 2) -> (T_MODEL, 400): position, velocity, dominant-hand local shape, presence."""
     s = resample(seq, T_MODEL)
     presence = np.stack([_present(s, LH), _present(s, RH)], axis=1).astype(np.float32)
@@ -172,7 +172,7 @@ def sequence_features(seq):
 _IU = np.triu_indices(HAND_N, 1)
 
 
-def hand_features(hand, aspect):
+def hand_features(hand: np.ndarray, aspect: float) -> np.ndarray:
     """(21, 3) image-normalized hand + width/height -> (273,): 63 local coords + 210 pairwise distances."""
     p = np.asarray(hand, dtype=np.float32).copy()
     p[:, 0] *= aspect
@@ -182,14 +182,14 @@ def hand_features(hand, aspect):
     return np.concatenate([p.ravel(), dist]).astype(np.float32)
 
 
-def mirror_hand(hand):
+def mirror_hand(hand: np.ndarray) -> np.ndarray:
     """Training augmentation for static data: x -> 1 - x."""
     h = np.asarray(hand, dtype=np.float32).copy()
     h[:, 0] = 1 - h[:, 0]
     return h
 
 
-def emotion_features(bs, baseline, neutral_mean):
+def emotion_features(bs: np.ndarray, baseline: np.ndarray | None, neutral_mean: np.ndarray) -> np.ndarray:
     """Shift the user's neutral face onto the training neutral. baseline may be None."""
     bs = np.asarray(bs, dtype=np.float32)
     if baseline is None:

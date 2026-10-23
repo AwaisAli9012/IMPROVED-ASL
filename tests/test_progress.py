@@ -1,10 +1,9 @@
 import json
 
 import pytest
-
-from signbridge import config, learn, nlg
 from fastapi.testclient import TestClient
 
+from signbridge import config, learn, nlg
 from signbridge.app import app
 
 

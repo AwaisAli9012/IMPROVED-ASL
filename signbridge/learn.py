@@ -45,7 +45,7 @@ def _profile(db, profile_id):
     return row
 
 
-def create_profile(name):
+def create_profile(name: str | None) -> dict:
     name = (name or "").strip()
     if not 1 <= len(name) <= 40:
         raise ValueError("name must be 1 to 40 characters")
@@ -54,7 +54,7 @@ def create_profile(name):
         return dict(db.execute("SELECT * FROM profiles WHERE name = ?", (name,)).fetchone())
 
 
-def list_profiles():
+def list_profiles() -> list[dict]:
     with _db() as db:
         return [dict(r) for r in db.execute("SELECT id, name, xp, streak FROM profiles ORDER BY name")]
 
@@ -68,7 +68,7 @@ def _add_xp(db, profile_id, xp):
     db.execute("UPDATE profiles SET xp = xp + ?, streak = ?, last_active = ? WHERE id = ?", (xp, streak, today.isoformat(), profile_id))
 
 
-def record_attempt(profile_id, item, correct):
+def record_attempt(profile_id: int, item: str, correct: bool) -> dict:
     if not isinstance(item, str) or item not in ITEMS:
         raise ValueError("unknown item")
     with _db() as db:
@@ -84,7 +84,7 @@ def record_attempt(profile_id, item, correct):
         return {"item": item, "box": box, "mastered": box >= MASTERED_BOX, "xp": _profile(db, profile_id)["xp"]}
 
 
-def record_unit_pass(profile_id, unit_id, score):
+def record_unit_pass(profile_id: int, unit_id: str, score: float) -> dict:
     """Records a pass at score >= 0.8 (the intro posts 1). XP is awarded the first time only."""
     if not isinstance(unit_id, str) or unit_id not in UNITS:
         raise ValueError("unknown unit")
@@ -103,14 +103,14 @@ def record_unit_pass(profile_id, unit_id, score):
         return {"passed": True, "first_time": new}
 
 
-def due_items(profile_id, limit=20):
+def due_items(profile_id: int, limit: int = 20) -> list[dict]:
     with _db() as db:
         rows = db.execute("SELECT item FROM progress WHERE profile_id = ? AND due_at <= ? ORDER BY due_at LIMIT ?",
                           (profile_id, datetime.now().isoformat(timespec="seconds"), limit))
         return [{"item": r["item"], "display": display(r["item"])} for r in rows]
 
 
-def curriculum_with_progress(profile_id):
+def curriculum_with_progress(profile_id: int) -> dict:
     with _db() as db:
         p = _profile(db, profile_id)
         boxes = {r["item"]: r["box"] for r in db.execute("SELECT item, box FROM progress WHERE profile_id = ?", (profile_id,))}
@@ -136,7 +136,7 @@ def _longest_run(days):
     return best
 
 
-def progress_report(profile_id):
+def progress_report(profile_id: int) -> dict:
     """Everything the progress page shows: per-sign mastery, accuracy, the last 14 days, weak signs and badges."""
     with _db() as db:
         p = _profile(db, profile_id)
@@ -173,7 +173,7 @@ def progress_report(profile_id):
             "badges": [{"id": b, "title": t, "detail": d, "earned": e} for b, t, d, e in badges]}
 
 
-def delete_profile(profile_id):
+def delete_profile(profile_id: int) -> None:
     """Remove a profile and everything stored about it."""
     with _db() as db:
         _profile(db, profile_id)

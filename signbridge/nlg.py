@@ -41,7 +41,7 @@ def _ask(prompt):
     return json.loads(resp.text)
 
 
-def gloss_to_english(glosses, tone="neutral", question="none"):
+def gloss_to_english(glosses: list[str], tone: str = "neutral", question: str = "none") -> dict:
     """glosses: display strings, fingerspelled ones as 'fs:NAME'. -> {"english", "source"}."""
     if not glosses:
         raise ValueError("no glosses")
@@ -84,7 +84,7 @@ def _lookup(w, vocab):
     return w
 
 
-def english_to_gloss(text):
+def english_to_gloss(text: str) -> dict:
     """-> {"tokens": [{"type": "sign", "label"} | {"type": "spell", "text"}], "source"}."""
     vocab = set(word_labels())
     if os.getenv("GEMINI_API_KEY"):

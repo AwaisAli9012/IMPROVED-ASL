@@ -1,7 +1,7 @@
 import numpy as np
 
 from scripts.export_references import hand_frame, word_frames
-from signbridge.config import LH, N_POINTS, RH
+from signbridge.config import LH, N_POINTS
 
 
 def test_word_frames_are_shoulder_normalised_and_json_ready():

@@ -2,8 +2,19 @@ import numpy as np
 import pytest
 
 from signbridge.config import LH, LIPS, N_POINTS, POSE, RH, T_MODEL, T_RAW, WORD_FEATURES
-from signbridge.landmarks import (assemble_frame, assign_hands, augment_sequence, canonicalize, emotion_features, frames_to_array,
-                                  hand_features, mirror_hand, prepare_sequence, sequence_features, trim)
+from signbridge.landmarks import (
+    assemble_frame,
+    assign_hands,
+    augment_sequence,
+    canonicalize,
+    emotion_features,
+    frames_to_array,
+    hand_features,
+    mirror_hand,
+    prepare_sequence,
+    sequence_features,
+    trim,
+)
 
 _PAIRS = ((43, 44), (45, 46), (47, 48))
 

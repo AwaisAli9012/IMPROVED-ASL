@@ -2,18 +2,8 @@ import pytest
 
 from signbridge import config
 from signbridge.vocab import word_labels
-from fastapi.testclient import TestClient
-
-from signbridge.app import app
 
 pytestmark = pytest.mark.skipif(not (config.ARTIFACTS / "vocab_words.json").exists(), reason="vocab not built yet")
-
-
-@pytest.fixture
-def client(tmp_path, monkeypatch):
-    monkeypatch.setattr(config, "DB_PATH", tmp_path / "t.db")
-    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
-    return TestClient(app)
 
 
 def test_config_has_everything_the_browser_needs(client):

@@ -7,10 +7,10 @@ from .config import ARTIFACTS
 DISPLAY = {"thankyou": "thank you"}  # labels are lowercase ASL Citizen glosses; only joined words need a display name
 
 
-def display(label):
+def display(label: str) -> str:
     return DISPLAY.get(label, label)
 
 
 @cache
-def word_labels():
+def word_labels() -> list[str]:
     return json.loads((ARTIFACTS / "vocab_words.json").read_text())["labels"]

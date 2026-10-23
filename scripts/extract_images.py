@@ -77,7 +77,7 @@ def run(pool, fn, path, names, source, keep):
     """Detect over one parquet file. Returns the kept results plus counts for the detection-rate printout."""
     kept, seen, found, t0 = [], 0, 0, time.time()
     jobs = list(batches(path))
-    for (imgs, labels), res in zip(jobs, pool.imap(fn, [j[0] for j in jobs])):
+    for (_imgs, labels), res in zip(jobs, pool.imap(fn, [j[0] for j in jobs])):
         for label, r in zip(labels, res):
             name = names[label]
             if name not in keep:

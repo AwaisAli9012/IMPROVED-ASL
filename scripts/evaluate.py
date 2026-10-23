@@ -12,8 +12,16 @@ import time
 import joblib
 import matplotlib
 import numpy as np
-from sklearn.metrics import (accuracy_score, balanced_accuracy_score, cohen_kappa_score, confusion_matrix, f1_score,
-                             matthews_corrcoef, precision_recall_fscore_support, top_k_accuracy_score)
+from sklearn.metrics import (
+    accuracy_score,
+    balanced_accuracy_score,
+    cohen_kappa_score,
+    confusion_matrix,
+    f1_score,
+    matthews_corrcoef,
+    precision_recall_fscore_support,
+    top_k_accuracy_score,
+)
 
 from signbridge.config import ARTIFACTS, EMOTIONS, PROCESSED, REPORTS
 from signbridge.landmarks import hand_features, sequence_features

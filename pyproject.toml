@@ -1,0 +1,16 @@
+[project]
+name = "signbridge"
+version = "2.0.0"
+requires-python = ">=3.12"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 140
+target-version = "py312"
+extend-exclude = ["legacy", "data", "web", ".venv"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E731", "E501", "B905"]  # dense one-liners are the house style; zip lengths are equal by construction
