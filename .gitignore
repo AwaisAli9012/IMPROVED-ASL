@@ -11,3 +11,5 @@ web/static/vendor/
 node_modules/
 web/scrollcraft/builds/*/lab/
 web/static/signs/
+web/app/node_modules/
+web/app/.svelte-kit/

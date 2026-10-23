@@ -28,10 +28,11 @@ def lesson_page(request: Request, unit_id: str):
     return templates.TemplateResponse(request, "lesson.html", {"unit_id": unit_id})
 
 
-@router.get("/{name}")
 def page(request: Request, name: str):
     if name in LANDING_FILES:
         return FileResponse(LANDING / name)
-    if name not in PAGES:
-        raise HTTPException(404)
     return templates.TemplateResponse(request, f"{PAGES[name]}.html")
+
+
+for _name in LANDING_FILES | PAGES.keys():  # only these single-segment URLs; anything else falls through to the SvelteKit app
+    router.add_api_route(f"/{_name}", lambda request, _n=_name: page(request, _n), methods=["GET"])
