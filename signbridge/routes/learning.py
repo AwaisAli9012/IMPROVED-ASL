@@ -47,6 +47,6 @@ def post_attempt(req: AttemptRequest):
 
 @router.post("/learn/unit_pass")
 def post_unit_pass(req: UnitPassRequest):
-    if not isinstance(req.score, (int, float)):
+    if not isinstance(req.score, (int, float)) or isinstance(req.score, bool):
         raise ValueError("score must be a number")
     return learn.record_unit_pass(req.profile_id, req.unit_id, req.score)

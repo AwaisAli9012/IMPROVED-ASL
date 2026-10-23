@@ -39,14 +39,14 @@ def _db():
 
 
 def _profile(db, profile_id):
-    row = db.execute("SELECT * FROM profiles WHERE id = ?", (profile_id,)).fetchone()
+    row = db.execute("SELECT * FROM profiles WHERE id = ?", (profile_id,)).fetchone() if type(profile_id) is int else None  # a list, dict or bool is not an id
     if row is None:
         raise ValueError("unknown profile")
     return row
 
 
 def create_profile(name: str | None) -> dict:
-    name = (name or "").strip()
+    name = name.strip() if isinstance(name, str) else ""
     if not 1 <= len(name) <= 40:
         raise ValueError("name must be 1 to 40 characters")
     with _db() as db:

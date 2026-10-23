@@ -26,7 +26,7 @@ async def lifespan(app: FastAPI):
 
 def spa(path: str):
     """Any other URL gets the SvelteKit app, which routes in the browser."""
-    if path.startswith("api/"):
+    if path == "api" or path.startswith("api/"):
         raise HTTPException(404, "not found")
     file = (BUILD / path).resolve()
     if path and file.is_file() and BUILD.resolve() in file.parents:

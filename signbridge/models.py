@@ -4,7 +4,7 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
-from .config import ARTIFACTS, T_MODEL, WORD_FEATURES
+from .config import ARTIFACTS, T_MODEL, TORCH_THREADS, WORD_FEATURES
 
 
 class ConvBlock(nn.Module):
@@ -52,6 +52,7 @@ class WordPredictor:
 
     def proba(self, feats):
         """(B, T_MODEL, WORD_FEATURES) float32 -> (B, n_classes)."""
+        torch.set_num_threads(TORCH_THREADS)  # the setting is per thread, and FastAPI runs requests in worker threads
         with torch.inference_mode():
             x = torch.from_numpy(feats)
             return torch.stack([F.softmax(m(x), dim=1) for m in self.models]).mean(0).numpy()
