@@ -45,3 +45,11 @@ BROW_RAISE_DELTA = 0.20
 BROW_DOWN_DELTA = 0.20
 EMOTION_INTERVAL_MS = 400
 EMOTION_EMA = 0.35
+
+# ---- server -----------------------------------------------------------------
+HOST = "127.0.0.1"
+PORT = 5000
+MAX_BODY_BYTES = 2 * 1024 * 1024
+MAX_FRAMES = 120
+MAX_GLOSSES = 30
+TORCH_THREADS = 4

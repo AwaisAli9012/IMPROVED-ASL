@@ -3,7 +3,9 @@ import json
 import pytest
 
 from signbridge import config, learn, nlg
-from signbridge.server import app
+from fastapi.testclient import TestClient
+
+from signbridge.app import app
 
 
 @pytest.fixture
@@ -47,19 +49,19 @@ def test_every_phrase_is_mostly_real_signs(monkeypatch):
 
 
 def test_health_and_progress_endpoints(pid, monkeypatch):
-    c = app.test_client()
-    h = c.get("/api/health").get_json()
+    c = TestClient(app)
+    h = c.get("/api/health").json()
     assert h["status"] in ("ok", "degraded") and set(h["models"]) == {"words", "static", "emotion"}
     assert h["status"] == "ok" or not (h["vocabulary_matches_model"] and all(h["models"].values()))  # degraded only for a real reason
-    assert c.get(f"/api/progress/{pid}").get_json()["profile"]["name"] == "Sam"
+    assert c.get(f"/api/progress/{pid}").json()["profile"]["name"] == "Sam"
     assert c.get("/api/progress/999").status_code == 400
-    assert len(c.get("/api/phrases").get_json()) == 4
+    assert len(c.get("/api/phrases").json()) == 4
 
 
 def test_delete_profile_removes_everything(pid):
     learn.record_attempt(pid, "hello", True)
     learn.record_unit_pass(pid, "start", 1)
-    c = app.test_client()
-    assert c.delete(f"/api/profiles/{pid}").get_json() == {"deleted": True}
+    c = TestClient(app)
+    assert c.delete(f"/api/profiles/{pid}").json() == {"deleted": True}
     assert learn.list_profiles() == []
     assert c.delete(f"/api/profiles/{pid}").status_code == 400  # already gone
