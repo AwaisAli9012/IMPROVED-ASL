@@ -5,13 +5,13 @@
   let ready = $state(false);
 
   /** The engine and its styles load only here, so they never touch the app pages. */
-  function load(tag: 'link' | 'script', url: string) {
+  function load(tag: 'link' | 'script', url: string, first = false) {
     return new Promise<HTMLElement>((resolve, reject) => {
       const n = document.createElement(tag);
       if (n instanceof HTMLLinkElement) { n.rel = 'stylesheet'; n.href = url; } else n.src = url;
       n.onload = () => resolve(n);
       n.onerror = () => reject(new Error(url));
-      document.head.append(n);
+      if (first) document.head.prepend(n); else document.head.append(n); // the engine's tokens must come before the app's brand tokens
     });
   }
 
@@ -19,7 +19,7 @@
     document.body.classList.add('landing');
     let stop: (() => void) | undefined;
     (async () => {
-      await Promise.all([load('link', '/landing/scrollcraft.css'), load('link', '/landing/landing.css')]);
+      await Promise.all([load('link', '/landing/scrollcraft.css', true), load('link', '/landing/landing.css')]);
       await load('script', '/landing/scrollcraft.js');
       ready = true;
       stop = await startLanding();
@@ -57,7 +57,7 @@
       <i class="ring ring--b" data-sc-parallax="0.3" aria-hidden="true"></i>
       <div class="surface" data-sc-tilt="4">
         <div class="surface__bar"><span class="label">Fingerspelling</span><span class="label num" id="spell-count"></span></div>
-        <div class="avatar avatar--tall"><canvas id="name-avatar" role="img" aria-label="Signing figure spelling the name you typed"></canvas></div>
+        <div class="avatar avatar--tall"><!-- svelte-ignore a11y_no_interactive_element_to_noninteractive_role --><canvas id="name-avatar" role="img" aria-label="Signing figure spelling the name you typed"></canvas></div>
         <ol class="tiles" id="tiles" aria-live="polite" aria-label="Letters being signed"></ol>
         <form class="composer" id="name-form">
           <label class="sr-only" for="name-input">Your name</label>
@@ -75,6 +75,7 @@
       <i class="ring ring--c" data-sc-parallax="0.25" aria-hidden="true"></i>
       <div class="reads">
         <figure class="points" id="points-box">
+          <!-- svelte-ignore a11y_no_interactive_element_to_noninteractive_role -->
           <canvas id="points" role="img" aria-label="The points SignBridge reads from a sign, flying together into hands, arms and lips"></canvas>
           <figcaption class="label num" id="points-caption"></figcaption>
         </figure>
@@ -114,7 +115,7 @@
         <div class="surface__bar"><span class="label">Conversation</span><span class="label num" id="talk-step">Scripted sample. The app does this live.</span></div>
         <div class="talk">
           <div class="stack">
-            <div class="avatar" id="talk-frame"><canvas id="talk-avatar" role="img" aria-label="Signing figure replying"></canvas></div>
+            <div class="avatar" id="talk-frame"><!-- svelte-ignore a11y_no_interactive_element_to_noninteractive_role --><canvas id="talk-avatar" role="img" aria-label="Signing figure replying"></canvas></div>
             <p class="caption" id="talk-caption" aria-hidden="true"></p>
           </div>
           <div class="transcript" id="talk-log" aria-live="polite" data-lenis-prevent></div>
@@ -127,7 +128,7 @@
   <section id="act-range" data-sc-act="pan" data-sc-span="8" data-sc-drift="#0d110f">
     <div data-sc-stage class="stage-center range">
       <div class="range__fig">
-        <div class="avatar"><canvas id="range-avatar" role="img" aria-label="Signing figure showing the chosen word"></canvas></div>
+        <div class="avatar"><!-- svelte-ignore a11y_no_interactive_element_to_noninteractive_role --><canvas id="range-avatar" role="img" aria-label="Signing figure showing the chosen word"></canvas></div>
         <p class="caption" id="range-caption" aria-live="polite"></p>
       </div>
       <div class="rail" data-sc-pan="0.04" id="range-rail"></div>

@@ -32,7 +32,7 @@
   }
 </script>
 
-<div class="avatar" style:aspect-ratio={ratio}><canvas bind:this={canvas} role="img" aria-label={label}></canvas></div>
+<div class="avatar" style:aspect-ratio={ratio}><!-- svelte-ignore a11y_no_interactive_element_to_noninteractive_role --><canvas bind:this={canvas} role="img" aria-label={label}></canvas></div>
 <p class="caption" aria-hidden="true">{caption}</p>
 {#if controls}
   <div class="row row--between">

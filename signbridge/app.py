@@ -11,7 +11,7 @@ from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from . import config, services
-from .routes import language, learning, legacy_pages, meta, recognition
+from .routes import language, learning, meta, recognition
 
 load_dotenv(config.ROOT / ".env")
 BUILD = config.WEB / "app" / "build"
@@ -75,7 +75,6 @@ def create_app() -> FastAPI:
         app.include_router(router, prefix="/api")
     app.mount("/static", StaticFiles(directory=config.WEB / "static"), name="static")
     app.mount("/reports", StaticFiles(directory=config.REPORTS), name="reports")
-    app.include_router(legacy_pages.router)  # shortcut: Jinja pages until the SvelteKit ones replace them (Phase 8)
     app.add_api_route("/{path:path}", spa, include_in_schema=False)
     return app
 

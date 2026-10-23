@@ -21,3 +21,14 @@
 - **280-word model results** (3 seeds, 11 unseen test signers, 3,476 clips): accuracy 86.1%, macro-F1 0.862, top-3 94.7%, precision 94.0% at its acceptance threshold (coverage 83%). The 100-word core scored 89.7% on the same signers. Replaying 300 test clips through the live API gave 83.7% top-1 and an 11 ms round trip. 5,532 clips were extracted with `--append` in about 2.4 hours.
 - **Extraction throughput:** 6 worker processes beat 10 (1.0 vs 0.6 clips per second). MediaPipe starts a thread pool per process, so more workers fight over the cores. `--append` takes its "already done" count from `words.npz`, not from `vocab_words.json`.
 - **Landing:** the vocabulary rail (a pan act, one column per topic, 22 screens in total) and Lenis smooth scrolling for mouse and trackpad only. `/api/health` reports "degraded" if the vocabulary file and the trained model disagree.
+
+## v2: SvelteKit front end and FastAPI backend
+- **Versions (Node 20.20 and a slow registry):** SvelteKit 2.70, Svelte 5.57, Vite 6.4, Vitest 3.2, TypeScript 5.9, adapter-static 3.0. Kit 3, Vite 8, Vitest 5 and TypeScript 7 were skipped because they need Node 22 or are not supported by svelte-check yet.
+- The front end is a client-only SPA (`ssr = false`, `fallback: index.html`). Its build output `web/app/build` is committed so a Python-only clone still runs.
+- FastAPI keeps every API path, payload and error shape. Request models are loose (`Any`) and `services.py` keeps the original validation and messages, so errors stay `{"error": ...}` with 400, 404, 413 and 503 as before. A bad path id is 404, as in Flask.
+- MediaPipe stays on the vendored 0.10.14 bundle, never the npm package, to match the training landmarks.
+- Lucide and Lenis come from npm now (`@lucide/svelte`, `lenis`), so the vendored copies were removed from `fetch_assets.py`.
+- The scroll-craft engine is copied unchanged to `web/app/static/landing/` and loaded only on the landing route. It has no teardown, so every link off the landing page is a full page load.
+- ruff ignores E501 and B905: the code base uses dense one-liners, and the zipped sequences are equal in length by construction.
+- Test tooling: `httpx` is installed for FastAPI's TestClient (a Starlette deprecation warning about `httpx2` is expected).
+- Scroll-craft harness on the ported landing page: no dead scroll and all cues clear 4.5:1 at desktop, phone and reduced-motion sizes.

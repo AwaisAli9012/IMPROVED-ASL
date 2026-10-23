@@ -17,7 +17,7 @@ Two-way sign language on one screen. A signer signs to the camera and gets an En
 
 Vocabulary: see the Dictionary for the full list. Anything outside it is fingerspelled. The alphabet A to Z and the numbers 0 to 4 and 6 to 9 are supported (there is no number 5 yet: see Known limits).
 
-**Quality checks.** 53 Python tests plus 5 Node tests for the browser logic; axe-core reports no accessibility violations on the 12 main pages in the dark, light and high-contrast themes; the landing page passes the scroll-craft checks for dead scroll and text contrast at desktop, phone and reduced-motion sizes. How the models are tested is in [docs/EVALUATION.md](docs/EVALUATION.md).
+**Quality checks.** Python tests (pytest, ruff), TypeScript checks (svelte-check) and unit tests (vitest), plus a browser suite (`web/app/e2e`) that loads every page, runs the main flows, and runs axe-core in the dark, light and high-contrast themes with no violations, checks phone width and camera speed; the landing page passes the scroll-craft checks for dead scroll and text contrast at desktop, phone and reduced-motion sizes. How the models are tested is in [docs/EVALUATION.md](docs/EVALUATION.md).
 
 ## Run it
 
@@ -26,16 +26,29 @@ python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
 .venv/bin/python -m scripts.fetch_assets      # MediaPipe models and browser libraries, ~40 MB
 cp .env.example .env                          # optional: add GEMINI_API_KEY for richer sentences
-.venv/bin/python -m signbridge.server         # open http://127.0.0.1:5000 in Chrome or Edge
+.venv/bin/python -m signbridge                # open http://127.0.0.1:5000 in Chrome or Edge
 ```
 
-The trained models and the evaluation reports are in the repository, so nothing needs training to run it. Without a Gemini key, sentences are built by simple offline rules. Speech input needs Chrome or Edge.
+The trained models, the evaluation reports and the built web app are in the repository, so nothing needs training or building to run it. Interactive API docs are at `/api/docs`. Without a Gemini key, sentences are built by simple offline rules. Speech input needs Chrome or Edge.
 
 **The signing figure needs one more step.** Its animations are made from real signers' recordings, which the dataset license does not let us republish, so they are not in the repository. Build them once on your own machine (this also needs the data pipeline below):
 
 ```bash
 .venv/bin/python -m scripts.export_references
 ```
+
+## Develop the web app and share it
+
+The front end is SvelteKit (Svelte 5, static build) in `web/app`. It needs Node 20.
+
+```bash
+cd web/app && npm ci
+npm run dev        # http://localhost:5173, proxies /api to the Python server on :5000
+npm run check && npm test && npm run build   # the build in web/app/build is committed, and the Python server serves it
+node e2e/run.mjs   # browser checks against the running server (uses the system Chrome)
+```
+
+To show it to someone else over the internet, run `scripts/tunnel.sh` while the server is up. It starts a Cloudflare quick tunnel and prints a temporary https address (the camera needs https). It needs outbound port 7844, which some networks block: try a phone hotspot.
 
 ## Rebuild everything from public data
 
@@ -70,7 +83,7 @@ Read the notes on each task in the Metrics page before quoting a number. In part
 ## How it works
 
 ```
-Browser camera -> MediaPipe in the browser (hands, pose, face)
+Browser (SvelteKit app) camera -> MediaPipe in the browser (hands, pose, face)
    words:    segment a sign (hands up to hands down) -> POST /api/predict/word   -> sequence model
    ABC/123:  dominant hand, every frame              -> POST /api/predict/static -> landmark classifier
    every 400 ms: 52 face blendshapes                 -> POST /api/emotion        -> tone
@@ -80,7 +93,7 @@ Reply: typed or spoken English -> POST /api/gloss -> sign tokens -> signing figu
 
 Hand, body and face detection runs on the CPU in the browser at about 20 frames per second (measured in Chrome at 640x360). Add `?gpu=1` to the address to try the GPU on a machine that has one: on a machine without a real GPU it silently falls back to slow software rendering, which is why CPU is the default.
 
-Only landmark numbers leave the browser, and only to the server running on the same computer. The server keeps no state, so each request carries everything it needs. Constants live in `signbridge/config.py` and the browser reads them from `/api/config`. Feature code lives in `signbridge/landmarks.py` and is shared by training and live use.
+Only landmark numbers leave the browser, and only to the FastAPI server running on the same computer. The API keeps no state, so each request carries everything it needs. Constants live in `signbridge/config.py` and the browser reads them from `/api/config`. Feature code lives in `signbridge/landmarks.py` and is shared by training and live use.
 
 ## A three-minute demo
 

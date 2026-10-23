@@ -8,6 +8,7 @@
 
   const DONE = 'sb.onboarded';
   let dlg: HTMLDialogElement;
+  // svelte-ignore state_referenced_locally
   let step = $state<'position' | 'neutral' | 'done'>(neutralOnly ? 'neutral' : 'position');
   let shoulders = $state(false);
   let hand = $state(false);
@@ -37,7 +38,7 @@
     step = 'done';
   }
 
-  const dots = neutralOnly ? [] : ['position', 'neutral', 'done'];
+  const dots = $derived(neutralOnly ? [] : ['position', 'neutral', 'done']);
 </script>
 
 <dialog bind:this={dlg} id="onboard" aria-label="Set up SignBridge">

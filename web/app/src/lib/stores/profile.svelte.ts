@@ -6,7 +6,7 @@ function read(): Profile | null {
   try { return JSON.parse(localStorage.getItem(KEY) ?? 'null'); } catch { return null; }
 }
 
-export const profile = $state<{ current: Profile | null; dialog: boolean; required: boolean }>({ current: null, dialog: false, required: false });
+export const profile = $state<{ current: Profile | null; dialog: boolean; required: boolean }>({ current: read(), dialog: false, required: false });
 
 export function loadProfile() {
   profile.current = read();

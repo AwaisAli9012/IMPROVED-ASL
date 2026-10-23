@@ -35,7 +35,7 @@
   onMount(() => {
     const v = new Vision(video, overlay);
     vision = v;
-    navigator.permissions?.query({ name: 'camera' as PermissionName }).then((p) => p.state === 'granted' && start()).catch(() => {});
+    navigator.permissions?.query({ name: 'camera' as PermissionName }).then((p) => { if (p.state === 'granted') start(); }).catch(() => {});
     return () => v.stop(); // leave no camera light on after navigating away
   });
 </script>

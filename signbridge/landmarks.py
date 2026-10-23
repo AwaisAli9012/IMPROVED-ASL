@@ -55,7 +55,7 @@ def assign_hands(hands, pose):
     """Detected hands -> (lh, rh), each (21, 3) or None. Un-mirrored image coords; pose is (7, 2) in POSE_IDX order or None.
 
     A hand goes to the slot of the nearer pose wrist. A hand whose wrist is lower than one shoulder
-    width below the shoulders counts as resting (absent). web/static/js/vision.js must follow the same rule.
+    width below the shoulders counts as resting (absent). web/app/src/lib/vision/vision.ts must follow the same rule.
     """
     hands = [np.asarray(h, dtype=np.float32) for h in hands]
     if pose is not None:

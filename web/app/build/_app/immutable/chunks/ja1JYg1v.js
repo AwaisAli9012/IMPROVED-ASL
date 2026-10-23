@@ -1,0 +1,1 @@
+import"./Bzak7iHL.js";import{s as t,r as a}from"./CfgQIuhp.js";import{I as p}from"./CbYgnB7X.js";const e={name:"play",size:24,node:[["path",{d:"M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"}]]};e.node;var n=new Set(["$$slots","$$events","$$legacy"]);function m(o,s){let r=a(s,n);p(o,t(()=>r,{get icon(){return e}}))}export{m as P};

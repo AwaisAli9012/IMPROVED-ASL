@@ -35,8 +35,7 @@
   let course: any;
   let unit = $state<any>(null);
   let vision = $state<Vision>();
-  let stage: CameraStage;
-  let figure: Avatar;
+  let figure = $state<Avatar>();
   let recognizer: Recognizer | undefined;
   let waiting: ((e: Hit) => void) | null = null; // set while a try is open: receives recognizer events
   let pending: ((v: any) => void) | null = null;
@@ -57,7 +56,7 @@
   const clicked = <T,>() => new Promise<T>((resolve) => { pending = resolve; });
   function answer(v: unknown) { const p = pending; pending = null; p?.(v); }
   function say(text: string, state = '') { fb = { text, state }; announce(text); }
-  const play = (item: string, loop = true) => figure.play([{ type: 'sign', label: item }], { loop });
+  const play = (item: string, loop = true) => figure!.play([{ type: 'sign', label: item }], { loop });
   const record = (item: string, correct: boolean) => postJSON('/api/learn/attempt', { profile_id: me.id, item, correct }, { quiet: true }).catch(() => {});
 
   $effect(() => {
@@ -139,7 +138,7 @@
   }
 
   async function signQuestion(item: string) {
-    figure.stop();
+    figure!.stop();
     view = { t: 'signq', item };
     say('Waiting for your sign…');
     const r = await attempt(item);
@@ -189,7 +188,7 @@
       progress = i / picks.length;
       stepsNow = 'Try it';
       view = { t: 'sentence', s };
-      figure.play(s.gloss.map((g) => ({ type: 'sign' as const, label: g })), { loop: true });
+      figure!.play(s.gloss.map((g) => ({ type: 'sign' as const, label: g })), { loop: true });
       recognizer!.setMode('words');
       const ok = await new Promise<boolean>((resolve) => {
         let k = 0;
@@ -218,7 +217,7 @@
       if (!items.length) { view = { t: 'plain', title: 'Nothing due', text: 'Come back tomorrow for a review.' }; return; }
       stepsNow = 'Review';
       for (const [i, item] of items.entries()) { progress = i / items.length; play(item); await practise(item); if (dead) return; }
-      figure.stop();
+      figure!.stop();
       view = { t: 'plain', title: 'Review done', text: '' };
       return;
     }
@@ -265,7 +264,7 @@
   <div class="lesson">
     <section class="stack" aria-label="Watch"><Avatar bind:this={figure} /></section>
     <section aria-label="Your turn">
-      <CameraStage bind:this={stage} bind:vision {busy}>
+      <CameraStage bind:vision {busy}>
         {#snippet band()}<CandidateBand {cand} />{/snippet}
         {#if trying}
           {#key trying}

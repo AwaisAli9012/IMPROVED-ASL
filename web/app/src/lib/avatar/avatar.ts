@@ -81,7 +81,7 @@ export class Avatar {
       if (this.dead) return;
       if (!this.busy && this.visible && !calm()) {
         const s = Math.sin(now / 1100);
-        this.#draw({ ...REST, pose: REST.pose.map(([x, y], i) => [x + (i === 0 ? s * 0.012 : 0), y + s * (i === 0 ? 0.02 : 0.01)]) }, false);
+        this.#draw({ ...REST, pose: REST.pose!.map(([x, y], i) => [x + (i === 0 ? s * 0.012 : 0), y + s * (i === 0 ? 0.02 : 0.01)]) }, false);
       }
       requestAnimationFrame(tick);
     };

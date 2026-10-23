@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onDestroy, onMount } from 'svelte';
   import { getJSON, loadConfig } from '$lib/api';
   import Avatar from '$lib/components/Avatar.svelte';
   import { toast } from '$lib/stores/toasts.svelte';
@@ -16,10 +16,14 @@
 
   const topics = $derived(['All', ...new Set(entries.map((e) => e.topic))]);
   const shown = $derived(entries.filter((e) => (topic === 'All' || e.topic === topic) && (!q.trim() || e.display.toLowerCase().includes(q.trim().toLowerCase()) || e.label.toLowerCase().includes(q.trim().toLowerCase()))));
-  const letters = $derived([...new Set(shown.map((e) => e.display[0].toUpperCase()))]);
+  const letters = $derived([...new Set(shown.map((e) => e.display[0].toUpperCase()))].filter((l) => /[A-Z]/.test(l)));
 
-  onMount(async () => {
+  onMount(() => {
+    load();
     shortcuts.page = [['↑ ↓', 'Move through the signs'], ['/', 'Search']];
+  });
+
+  async function load() {
     const [units, cfg] = await Promise.all([getJSON<any[]>('/api/curriculum'), loadConfig()]);
     const displayOf = Object.fromEntries(cfg.words.map((w) => [w.label, w.display]));
     entries = units.flatMap((u) => (u.kind === 'hand' || u.kind === 'word' ? u.items.map((item: string) => ({
@@ -27,8 +31,8 @@
     loading = false;
     const start = entries.find((e) => e.label === decodeURIComponent(location.hash.slice(1)));
     if (start) select(start);
-    return () => { shortcuts.page = []; };
-  });
+  }
+  onDestroy(() => { shortcuts.page = []; });
 
   function select(e: Entry) {
     selected = e;

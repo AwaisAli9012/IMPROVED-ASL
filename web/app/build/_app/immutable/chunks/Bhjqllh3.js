@@ -1,0 +1,1 @@
+import"./Bzak7iHL.js";import{s as r,r as p}from"./CfgQIuhp.js";import{I as a}from"./CbYgnB7X.js";const s={name:"plus",size:24,node:[["path",{d:"M5 12h14"}],["path",{d:"M12 5v14"}]]};s.node;var n=new Set(["$$slots","$$events","$$legacy"]);function l(e,o){let t=p(o,n);a(e,r(()=>t,{get icon(){return s}}))}export{l as P};

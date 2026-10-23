@@ -68,7 +68,7 @@
           <li class="badge" class:fresh={fresh.includes(b.id)} data-earned={b.earned} title={b.detail}><Icon /><b>{b.title}</b><span class="muted">{b.earned ? 'Earned' : b.detail}</span></li>
         {/each}
       </ul></div>
-    <div class="panel">
+    <div class="panel heat">
       <h2>Every sign</h2>
       <p class="muted">Darker squares are better known. Hover or focus one for details, click to see the sign.</p>
       <div class="legend row" aria-hidden="true"><span class="label">New</span>{#each [0, 1, 2, 3, 4, 5] as n (n)}<i class="cell" style="--b:{n}"></i>{/each}<span class="label">Mastered</span></div>
@@ -92,6 +92,7 @@
   .bars:global(.seen) i { transform: scaleY(var(--h)); }
   .fresh { animation: badge-in 0.5s var(--sc-ease-out) both; }
   @keyframes badge-in { from { opacity: 0; transform: scale(0.9); } }
+  .heat { overflow-x: clip; } /* a tooltip near the edge is clipped instead of widening the page on a phone */
   .tip { position: relative; }
   .tip::after { content: attr(data-tip); position: absolute; z-index: 5; left: 50%; bottom: calc(100% + 6px); translate: -50% 0; width: max-content; max-width: 16rem; padding: var(--sc-1) var(--sc-3);
     border-radius: var(--sc-r-sm); background: var(--sc-ink); color: var(--sc-canvas); font-size: var(--sc-t-xs); line-height: 1.4; pointer-events: none; opacity: 0; transition: opacity var(--sc-d-fast) var(--sc-ease-out); }

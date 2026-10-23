@@ -5,8 +5,10 @@ import pytest
 
 from signbridge.config import ROOT
 
+WEB = ROOT / "web" / "app"
 
-@pytest.mark.skipif(shutil.which("node") is None, reason="node is not installed")
+
+@pytest.mark.skipif(shutil.which("npm") is None or not (WEB / "node_modules").exists(), reason="run npm install in web/app first")
 def test_browser_logic_in_node():
-    r = subprocess.run(["node", "--experimental-default-type=module", "--test", "tests/js/"], cwd=ROOT, capture_output=True, text=True)
+    r = subprocess.run(["npm", "--prefix", str(WEB), "test"], capture_output=True, text=True)
     assert r.returncode == 0, r.stdout[-2000:] + r.stderr[-2000:]

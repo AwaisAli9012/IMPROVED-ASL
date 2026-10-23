@@ -1,0 +1,1 @@
+import{p as d}from"./63bzLRrg.js";const t=e=>1-Math.pow(1-e,4),o=()=>d.reduceMotion||typeof matchMedia<"u"&&matchMedia("(prefers-reduced-motion: reduce)").matches,a=e=>o()?0:e;export{a as d,t as e,o as r};
